@@ -3,6 +3,14 @@
   Author: pat@patfairbank.com (Patrick Fairbank)
 */
 
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+body {
+  background-image: none !important;
+  background-color: #0f0;
+}
+
 html {
   cursor: none;
   -webkit-user-select: none;
@@ -10,7 +18,6 @@ html {
   overflow: hidden;
 }
 #overlayCentering {
-  position: absolute;
   bottom: -210px;
   width: 100%;
   height: 170px;
@@ -19,16 +26,18 @@ html {
   align-items: center;
 }
 #matchOverlayContainer {
+  width: 100%;
   display: flex;
+  box-shadow: #333 0 0 16px;
 }
 #matchOverlay {
   display: flex;
   flex-direction: column;
-  border: 1px solid #222;
-  color: #222;
   font-size: 22px;
+  width: 100%;
 }
 #matchOverlayTop {
+  width: 100%;
   height: 100px;
   display: flex;
 }
@@ -62,37 +71,44 @@ html {
   border-left: none;
 }
 .teams {
-  width: 55px;
-  height: 100%;
   display: none;
-  flex-direction: column;
-  justify-content: space-evenly;
+  /* justify-content: space-evenly; */
+  gap: 24px;
   align-items: center;
-  background-color: #fff;
-  font-family: "FuturaLT";
+  font-family: "Roboto";
   font-size: 20px;
   line-height: 25px;
+  font-weight: 700;
+  opacity: .75;
+  color: white;
+  padding-inline: 8px;
 }
 #leftTeams {
-  border-right: 1px solid #222;
+  /* border-right: 1px solid #222; */
 }
 #rightTeams {
-  border-left: 1px solid #222;
+  /* border-left: 1px solid #222; */
+  justify-content: flex-end;
 }
 .reversible-left[data-reversed=false], .reversible-right[data-reversed=true] {
-  background-color: #ff4444;
+  background-color: #ED1C24;
 }
 .reversible-left[data-reversed=true], .reversible-right[data-reversed=false] {
-  background-color: #2080ff;
+  background-color: #0066B3;
 }
 .score {
+  flex-grow: 1;
   width: 0;
   height: 100%;
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
+  /* align-items: center; */
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 12px;
 }
 .score-right {
-  justify-content: flex-end;
+  justify-content: flex;
 }
 .avatars {
   min-width: 50px;
@@ -106,15 +122,19 @@ html {
   height: 25px;
 }
 .score-number {
-  width: 130px;
   height: 100%;
+  padding-inline: 32px;
+  padding-bottom: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: "FuturaLTBold";
+  font-family: "Roboto";
+  font-weight: 700;
+  font-style: normal;
   font-size: 55px;
   color: #fff;
   opacity: 0;
+  font-variant-numeric: tabular-nums;
 }
 .score-fields {
   height: 100%;
@@ -123,7 +143,7 @@ html {
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  font-family: "FuturaLTBold";
+  font-family: "Roboto"; font-weight: 700; font-style: normal;
   font-size: 20px;
   line-height: 25px;
   color: #fff;
@@ -146,23 +166,31 @@ html {
   height: 80px;
 }
 #matchTime {
-  position: relative;
-  top: 11px;
-  height: 60px;
-  color: #222;
-  font-family: "FuturaLTBold";
-  font-size: 32px;
+  width: 280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #000;
+  font-family: "Roboto"; font-weight: 700; font-style: normal;
+  font-size: 70px;
   opacity: 0;
+  background-color: white;
 }
 #eventMatchInfo {
+  position: fixed;
+  bottom: 0;
+  left: 0;
   height: 0;
+  width: 100%;
   display: none;
   justify-content: space-between;
-  z-index: -1;
+  flex-direction: row-reverse;
+  z-index: 100;
   align-items: flex-end;
   padding: 0 5px;
   background-color: #444;
-  font-family: "FuturaLT";
+  font-family: "IBM Plex Mono";
   font-size: 15px;
   line-height: 30px;
   color: #fff;
@@ -185,6 +213,8 @@ html {
 .valign-cell {
   display: table-cell;
   vertical-align: middle;
+  font-family: "Roboto";
+  font-weight: 700;
 }
 #blindsContainer {
   position: fixed;
@@ -234,10 +264,23 @@ html {
   z-index: 2;
 }
 .blindsCenter.full {
+  opacity: 1;
+  animation-name: vanish;
+  animation-delay: 2.25s;
+  animation-duration: 1.75s;
+  animation-fill-mode: both;
+  animation-iteration-count: 1;
   left: 0;
   right: 0;
   transform: rotateY(-180deg);
 }
+
+@keyframes vanish {
+  to {
+    opacity: 0;
+  }
+}
+
 .blinds.left .blindsCenter.blank {
   right: -155px;
 }
@@ -255,9 +298,9 @@ html {
 }
 #finalScore {
   position: fixed;
-  width: 1200px;
-  height: 450px;
-  top: 65px;
+  /* width: 1200px; */
+  /* height: 450px; */
+  top: 0;
   bottom: 0;
   left: 0;
   right: 0;
@@ -268,23 +311,24 @@ html {
   background-color: #444;
 }
 .final-score {
-  float: left;
-  width: 50%;
-  height: 50%;
-  line-height: 225px;
-  border-bottom: 2px solid #333;
-  color: #fff;
-  font-family: "FuturaLTBold";
+  background-color: transparent !important;
+  /* float: left; */
+  /* width: 50%; */
+  /* height: 50%; */
+  /* line-height: 225px; */
+  /* border-bottom: 2px solid #333; */
+  color: white;
+  font-family: "Roboto"; font-weight: 700; font-style: normal;
   font-size: 100px;
   text-align: center;
-  text-shadow: 0 0 3px #333;
+  /* text-shadow: 0 0 3px #333; */
 }
 #leftFinalScore {
-  padding-right: 150px;
+  /* padding-right: 150px; */
 }
 #rightFinalScore {
-  clear: right;
-  padding-left: 150px;
+  /* clear: right; */
+  /* padding-left: 150px; */
 }
 .final-teams {
   float: left;
@@ -294,7 +338,7 @@ html {
   line-height: 50px;
   text-align: center;
   color: #fff;
-  font-family: "FuturaLT";
+  font-family: "Roboto";
   font-size: 32px;
 }
 .final-team {
@@ -314,10 +358,11 @@ html {
   width: 28px;
   position: relative;
   bottom: 6px;
+  color: red !important;
 }
 .rank-box.rank-up {
   color: #fff;
-  background-color: #0a3;
+  background-color: #0a3 !important;
   border-bottom-left-radius: 3px;
   border-bottom-right-radius: 3px;
 }
@@ -389,7 +434,7 @@ html {
   text-align: center;
   background-color: #fff;
   color: #222;
-  font-family: "FuturaLT";
+  font-family: "Roboto";
   font-size: 24px;
 }
 #leftFinalBreakdown {
@@ -410,7 +455,7 @@ html {
   height: 9%;
   line-height: 50px;
   padding: 0px 25px;
-  font-family: "FuturaLT";
+  font-family: "Roboto";
   font-size: 28px;
   color: #fff;
 }
@@ -477,7 +522,7 @@ html {
   vertical-align: middle;
 }
 #sponsor h1, #sponsor h2 {
-  font-family: "FuturaLTBold";
+  font-family: "Roboto"; font-weight: 700; font-style: normal;
   margin: 0;
 }
 #sponsor h1 {
@@ -514,7 +559,7 @@ html {
   background-color: #fff;
   border: 2px solid #222;
   text-align: center;
-  font-family: "FuturaLT";
+  font-family: "Roboto";
   font-size: 3.5em;
 }
 #allianceSelectionTable img {
@@ -526,7 +571,7 @@ html {
 }
 .alliance-cell {
   padding: 0px 40px;
-  font-family: "FuturaLT";
+  font-family: "Roboto";
   color: #999;
 }
 .selection-cell {
@@ -554,17 +599,17 @@ html {
   position: relative;
   top: 10px;
   display: none;
-  font-family: "FuturaLTBold";
+  font-family: "Roboto"; font-weight: 700; font-style: normal;
 }
 #lowerThirdBottom {
   display: none;
-  font-family: "FuturaLT";
+  font-family: "Roboto";
   font-size: 23px;
   position: relative;
   top: 5px;
 }
 #lowerThirdSingle {
   display: none;
-  font-family: "FuturaLTBold";
+  font-family: "Roboto"; font-weight: 700; font-style: normal;
   line-height: 87px;
 }

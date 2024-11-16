@@ -635,7 +635,6 @@ var getRankingText = function(teamId, rankings) {
 $(function() {
   // Read the configuration for this display from the URL query string.
   var urlParams = new URLSearchParams(window.location.search);
-  document.body.style.backgroundColor = urlParams.get("background");
   var reversed = urlParams.get("reversed");
   if (reversed === "true") {
     redSide = "right";

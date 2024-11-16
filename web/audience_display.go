@@ -14,8 +14,8 @@ import (
 
 // Renders the audience display to be chroma keyed over the video feed.
 func (web *Web) audienceDisplayHandler(w http.ResponseWriter, r *http.Request) {
-	if !web.enforceDisplayConfiguration(w, r, map[string]string{"background": "#0f0", "reversed": "false",
-		"overlayLocation": "bottom"}) {
+	if !web.enforceDisplayConfiguration(w, r, map[string]string{"reversed": "true",
+		"overlayLocation": "top"}) {
 		return
 	}
 
@@ -25,10 +25,13 @@ func (web *Web) audienceDisplayHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// !!
 	data := struct {
 		*model.EventSettings
+		CurrentMatch *model.Match
 		MatchSounds []*game.MatchSound
-	}{web.arena.EventSettings, game.MatchSounds}
+	}{web.arena.EventSettings, web.arena.CurrentMatch, game.MatchSounds}
+
 	err = template.ExecuteTemplate(w, "audience_display.html", data)
 	if err != nil {
 		handleWebErr(w, err)

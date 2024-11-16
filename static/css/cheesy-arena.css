@@ -2,6 +2,320 @@
   Copyright 2014 Team 254. All Rights Reserved.
   Author: pat@patfairbank.com (Patrick Fairbank)
 */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+/** CSS CYBERRAIN (cr) - Início */
+
+body {
+  background-image: url("../img/cr-bg-cool.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+td {
+  border-top: 0 !important;
+}
+
+tr > td.cr-match-play-side-table-element {
+  padding: 2px !important;
+}
+
+th {
+  border-bottom: 0 !important;
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a.cr-match-play-side-table-top:hover {
+  background: 0 !important;
+}
+
+.nav-tabs > li.active > a.cr-match-play-side-table-top, .nav-tabs > li.active > a.cr-match-play-side-table-top:hover, .nav-tabs > li.active > a.cr-match-play-side-table-top:focus {
+  background: 0 !important;
+  color: #fff;
+}
+
+.nav > li > a.cr-match-play-side-table-top:hover, .nav > li > a.cr-match-play-side-table-top:focus {
+  background: 0 !important;
+  color: grey;
+}
+
+.green-border {
+  border-radius: 8px;
+  background: #EBFFE3;
+}
+
+.red-border {
+  border-radius: 8px;
+  background: #FFE3E3;
+}
+
+.orange-border {
+  border-radius: 8px;
+  background: #FFF3E3;
+}
+
+.blue-border {
+  border-radius: 8px;
+  background: #E3F2FF;
+}
+
+.navbar-default {
+  border-color: transparent;
+}
+
+.btn {
+  border-radius: 4px !important;
+  border: 1px solid #5C288F !important;
+  background: #8864AF !important;
+   
+  color: #FFF !important;
+  text-align: center !important;
+  font-family: Outfit !important;
+  font-size: 13px !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  line-height: normal !important;
+
+}
+
+.cr-win-top {
+  background-color: #F9FF43;
+  font-size: 34px;
+  font-weight: 700;
+  padding-block: 12px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  color: black;
+  border: solid 2px #0003;
+  border-radius: 1rem 1rem 0 0;
+}
+
+.cr-final-score-text-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding-block: 16px;
+  padding-inline: 24px;
+}
+
+.cr-final-result-scores-wrapper {
+  display: flex;
+  gap: 12px;
+}
+
+.cr-blue-alliance-scores {
+  border-radius: 1rem;
+  overflow: hidden;
+  width: 440px;
+  background-color: #0066B3;
+}
+
+.cr-red-alliance-scores {
+  border-radius: 1rem;
+  overflow: hidden;
+  width: 440px;
+  background-color: #ED1C24;
+}
+
+.cr-match-play-side-table {
+  color: #fff;
+}
+
+.cr-final-result-title {
+  color: black;
+  font-size: 70px;
+  margin: 0 auto;
+  font-weight: 700;
+}
+
+.cr-final-result-container {
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  padding: 64px;
+  padding-top: 48px;
+  border-radius: 16px;
+  gap: 48px;
+  margin: 48px auto 0;
+}
+
+.cr-hr-final-score {
+  border-color: #0003;
+}
+
+.well {
+  background-color: #E2E2E2 !important;
+  color: #171717;
+  font-family: 'Outfit';
+  font-size: 15px;
+  border-radius: 0;
+  opacity: 75%;
+}
+
+.cr-awl {
+  right: 48px;
+}
+
+.cr-awr {
+  left: 48px;
+}
+
+.cr-alliance-wins {
+  color: black;
+  background-color: #F9FF43;
+  padding-top: 8px;
+  padding-bottom: 2px;
+  padding-inline: 48px;
+  font-size: 34px;
+  font-weight: 700;
+  position: absolute;
+  bottom: 0;
+}
+
+.cr-alliance-wins::after {
+  content: "-";
+  color: transparent !important;
+  background-color: #F9FF43;
+  height: 100%;
+  width: 16px;
+  position: absolute;
+  right: -16px;
+  top: 0;
+  display: block;
+  clip-path: polygon(0% 0%, 0% 100%, 100% 100%);
+}
+
+.cr-alliance-wins::before {
+  content: "-";
+  color: transparent !important;
+  background-color: #F9FF43;
+  height: 100%;
+  width: 16px;
+  position: absolute;
+  left: -16px;
+  top: 0;
+  display: block;
+  clip-path: polygon(100% 0%, 0% 100%, 100% 100%);
+}
+
+.cr-alliance-blind-container {
+  display: flex;
+  border-bottom: #F9FF43 solid 8px;
+}
+
+.cr-left-alliance-blind-container {
+  position: relative;
+  padding-inline: 24px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-grow: 1;
+  background-color: #0066B3;
+  width: 100%;
+  height: 100px;
+  z-index: 876;
+}
+
+.cr-right-alliance-blind-container {
+  position: relative;
+  padding-inline: 24px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-grow: 1;
+  background-color: #ED1C24;
+  width: 100%;
+  height: 100px;
+  z-index: 876;
+}
+
+.cr-amp-span {
+  font-size: 16px;
+  opacity: .65;
+  margin-bottom: -4px;
+}
+
+.cr-score-and-team-number-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.cr-alliance-name {
+  color: white;
+  font-size: 37px;
+  font-weight: 700;
+  line-height: 120%;
+}
+
+.cr-btn-score {
+  width: 80px !important;
+  font-size: 10px !important;
+  padding: 0% !important;
+  margin-bottom: 2px !important;
+}
+
+.cr-sidebar-dropdown-menu-btn {
+  border-radius: 8px;
+  margin-bottom: 2px;
+}
+
+.cr-sidebar-dropdown-menu-btn:hover {
+  color: black !important;
+}
+
+.cr-sidebar-about-btn {
+  position: absolute !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  text-align: center;
+  width: 100%;
+  margin: 0 auto;
+  background-color: #4C4474;
+}
+
+.cr-sidebar-about-btn:hover {
+  background-color: #4C4474 !important;
+  opacity: .8;
+}
+
+.bg-cyber-purple {
+  background-color: #4C4474 !important;
+}
+
+.navbar-brand {
+  font-family: 'IBM Plex Mono', sans-serif !important; 
+  letter-spacing: 2px !important;
+  color: white !important;
+}
+
+#blink {
+  animation: blink-animation .75s steps(5, start) infinite;
+  -webkit-animation: blink-animation .75s steps(5, start) infinite;
+}
+
+/** CSS CYBERRAIN (cr) - Fim */
+
+
+
+
+
+@keyframes blink-animation {
+  to {
+      visibility: hidden;
+  }
+}
+
+@-webkit-keyframes blink-animation {
+  to {
+      visibility: hidden;
+  }
+}
+
+
 
 /* Bootstrap overrides. */
 .form-control[disabled] {

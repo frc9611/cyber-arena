@@ -61,7 +61,7 @@
           {{if $match.Red1}}
             <div class="row">
               <div class="col-lg-7">
-                {{$match.Red1}}<br />{{$match.Red2}}<br />{{$match.Red3}}
+                {{$match.Red1}}<br />{{$match.Red2}}<br /> <!-- {{$match.Red3}} !-->
                 {{range $team := (index $.RedOffFieldTeams $i) }}
                   <br />{{$team}}
                 {{end}}
@@ -88,7 +88,7 @@
                 {{end}}
               </div>
               <div class="col-lg-7">
-                {{$match.Blue1}}<br />{{$match.Blue2}}<br />{{$match.Blue3}}
+                {{$match.Blue1}}<br />{{$match.Blue2}}<br /><!-- {{$match.Blue3}} !-->
                 {{range $team := (index $.BlueOffFieldTeams $i) }}
                 <br />{{$team}}
                 {{end}}

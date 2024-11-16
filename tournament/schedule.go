@@ -1,25 +1,20 @@
 // Copyright 2014 Team 254. All Rights Reserved.
-// Author: pat@patfairbank.com (Patrick Fairbank)
+// Author: pat@patfairbank.com (Patrick Fairbank & Gabriel Paulo Toledo)
 //
 // Functions for creating practice and qualification match schedules.
 
 package tournament
 
-import (
-	"encoding/csv"
-	"fmt"
-	"github.com/Team254/cheesy-arena-lite/model"
+import (	"github.com/Team254/cheesy-arena-lite/model"
 	"math"
 	"math/rand"
-	"os"
-	"path/filepath"
-	"strconv"
 	"time"
+	"strconv"
 )
 
 const (
 	schedulesDir  = "schedules"
-	TeamsPerMatch = 6
+	TeamsPerMatch = 4
 )
 
 // Creates a random schedule for the given parameters and returns it as a list of matches.
@@ -33,53 +28,20 @@ func BuildRandomSchedule(teams []model.Team, scheduleBlocks []model.ScheduleBloc
 	// Adjust the number of matches to remove any excess from non-perfect block scheduling.
 	numMatches = int(math.Ceil(float64(numTeams) * float64(matchesPerTeam) / TeamsPerMatch))
 
-	file, err := os.Open(fmt.Sprintf("%s/%d_%d.csv", filepath.Join(model.BaseDir, schedulesDir), numTeams,
-		matchesPerTeam))
-	if err != nil {
-		return nil, fmt.Errorf("No schedule template exists for %d teams and %d matches", numTeams, matchesPerTeam)
-	}
-	defer file.Close()
-	reader := csv.NewReader(file)
-	csvLines, err := reader.ReadAll()
-	if err != nil {
-		return nil, err
-	}
-	if len(csvLines) != numMatches {
-		return nil, fmt.Errorf("Schedule file contains %d matches, expected %d", len(csvLines), numMatches)
-	}
+	// Randomize the schedule
+	rand.Seed(time.Now().UnixNano())
+	matches := make([]model.Match, 0, numMatches)
+	teamIndices := rand.Perm(numTeams)
 
-	// Convert string fields from schedule to integers.
-	anonSchedule := make([][12]int, numMatches)
 	for i := 0; i < numMatches; i++ {
-		for j := 0; j < 12; j++ {
-			anonSchedule[i][j], err = strconv.Atoi(csvLines[i][j])
-			if err != nil {
-				return nil, err
-			}
+		matchTeams := make([]model.Team, 0, TeamsPerMatch)
+		for j := 0; j < TeamsPerMatch; j++ {
+			teamIndex := teamIndices[(i*TeamsPerMatch+j)%numTeams]
+			matchTeams = append(matchTeams, teams[teamIndex])
 		}
+		matches = append(matches, model.Match{Blue1: matchTeams[0].Id, Blue2: matchTeams[1].Id, Red1: matchTeams[2].Id, Red2: matchTeams[3].Id, DisplayName: strconv.Itoa(i + 1), Type: matchType})
 	}
 
-	// Generate a random permutation of the team ordering to fill into the pre-randomized schedule.
-	teamShuffle := rand.Perm(numTeams)
-	matches := make([]model.Match, numMatches)
-	for i, anonMatch := range anonSchedule {
-		matches[i].Type = matchType
-		matches[i].DisplayName = strconv.Itoa(i + 1)
-		matches[i].Red1 = teams[teamShuffle[anonMatch[0]-1]].Id
-		matches[i].Red1IsSurrogate = anonMatch[1] == 1
-		matches[i].Red2 = teams[teamShuffle[anonMatch[2]-1]].Id
-		matches[i].Red2IsSurrogate = anonMatch[3] == 1
-		matches[i].Red3 = teams[teamShuffle[anonMatch[4]-1]].Id
-		matches[i].Red3IsSurrogate = anonMatch[5] == 1
-		matches[i].Blue1 = teams[teamShuffle[anonMatch[6]-1]].Id
-		matches[i].Blue1IsSurrogate = anonMatch[7] == 1
-		matches[i].Blue2 = teams[teamShuffle[anonMatch[8]-1]].Id
-		matches[i].Blue2IsSurrogate = anonMatch[9] == 1
-		matches[i].Blue3 = teams[teamShuffle[anonMatch[10]-1]].Id
-		matches[i].Blue3IsSurrogate = anonMatch[11] == 1
-	}
-
-	// Fill in the match times.
 	matchIndex := 0
 	for _, block := range scheduleBlocks {
 		for i := 0; i < block.NumMatches && matchIndex < numMatches; i++ {
@@ -87,7 +49,7 @@ func BuildRandomSchedule(teams []model.Team, scheduleBlocks []model.ScheduleBloc
 			matchIndex++
 		}
 	}
-
+	
 	return matches, nil
 }
 
@@ -99,3 +61,9 @@ func countMatches(scheduleBlocks []model.ScheduleBlock) int {
 	}
 	return numMatches
 }
+
+
+
+
+// matches[matchIndex].Time = block.StartTime.Add(time.Duration(i*block.MatchSpacingSec) * time.Second)
+			

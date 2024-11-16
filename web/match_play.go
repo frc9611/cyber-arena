@@ -7,6 +7,13 @@ package web
 
 import (
 	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"sort"
+	"strconv"
+	"time"
+
 	"github.com/Team254/cheesy-arena-lite/bracket"
 	"github.com/Team254/cheesy-arena-lite/field"
 	"github.com/Team254/cheesy-arena-lite/game"
@@ -15,12 +22,6 @@ import (
 	"github.com/Team254/cheesy-arena-lite/websocket"
 	"github.com/gorilla/mux"
 	"github.com/mitchellh/mapstructure"
-	"io"
-	"log"
-	"net/http"
-	"sort"
-	"strconv"
-	"time"
 )
 
 type MatchPlayListItem struct {
@@ -385,6 +386,51 @@ func (web *Web) matchPlayWebsocketHandler(w http.ResponseWriter, r *http.Request
 			web.arena.BlueScore.EndgamePoints = int(args["blueEndgame"].(float64))
 			web.arena.RedScore.EndgamePoints = int(args["redEndgame"].(float64))
 			web.arena.RealtimeScoreNotifier.Notify()
+			continue
+
+		case "addBluePoints":
+			// 1 = AUTO ; 2 = TELEOP ; 3 = END_GAME
+
+			args := data.(map[string]interface{})
+			modeId := int(args["modeId"].(float64))
+			points := int(args["points"].(float64))
+
+			switch modeId {
+			case 1:
+				web.arena.BlueScore.AutoPoints += points
+			case 2:
+				web.arena.BlueScore.TeleopPoints += points
+			case 3:
+				web.arena.BlueScore.EndgamePoints += points
+			default:
+				ws.WriteError(fmt.Sprintf("Tipo de modo de jogo invalido '%s'.", modeId))
+			}
+
+			web.arena.RealtimeScoreNotifier.Notify()
+
+		case "addRedPoints":
+			// 1 = AUTO ; 2 = TELEOP ; 3 = END_GAME
+
+			args := data.(map[string]interface{})
+			modeId := int(args["modeId"].(float64))
+			points := int(args["points"].(float64))
+
+			if web.arena.MatchState == 0 {
+				break
+			}
+
+			switch modeId {
+			case 1:
+				web.arena.RedScore.AutoPoints += points
+			case 2:
+				web.arena.RedScore.TeleopPoints += points
+			case 3:
+				web.arena.RedScore.EndgamePoints += points
+			default:
+				ws.WriteError(fmt.Sprintf("Tipo de modo de jogo invalido '%s'.", modeId))
+			}
+
+			web.arena.RealtimeScoreNotifier.Notify()
 		default:
 			ws.WriteError(fmt.Sprintf("Invalid message type '%s'.", messageType))
 			continue
@@ -538,6 +584,10 @@ func (list MatchPlayList) Swap(i, j int) {
 
 // Constructs the list of matches to display on the side of the match play interface.
 func (web *Web) buildMatchPlayList(matchType string) (MatchPlayList, error) {
+
+	web.arena.AllianceStations["R3"].Bypass = true
+	web.arena.AllianceStations["B3"].Bypass = true
+
 	matches, err := web.arena.Database.GetMatchesByType(matchType)
 	if err != nil {
 		return MatchPlayList{}, err
@@ -551,16 +601,16 @@ func (web *Web) buildMatchPlayList(matchType string) (MatchPlayList, error) {
 		matchPlayList[i].Status = match.Status
 		switch match.Status {
 		case game.RedWonMatch:
-			matchPlayList[i].ColorClass = "danger"
+			matchPlayList[i].ColorClass = "red-border"
 		case game.BlueWonMatch:
-			matchPlayList[i].ColorClass = "info"
+			matchPlayList[i].ColorClass = "blue-border"
 		case game.TieMatch:
-			matchPlayList[i].ColorClass = "warning"
+			matchPlayList[i].ColorClass = "orange-border"
 		default:
 			matchPlayList[i].ColorClass = ""
 		}
 		if web.arena.CurrentMatch != nil && matchPlayList[i].Id == web.arena.CurrentMatch.Id {
-			matchPlayList[i].ColorClass = "success"
+			matchPlayList[i].ColorClass = "green-border"
 		}
 	}
 

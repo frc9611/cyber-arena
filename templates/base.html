@@ -9,121 +9,156 @@
   <html>
     <head>
       {{template "head_common" .}}
+      <style>
+        /* Add custom styles for the sidebar */
+        .sidebar {
+          height: 100%;
+          width: 250px;
+          position: fixed;
+          top: 0;
+          right: 0;
+          background-color: #111;
+          padding-top: 20px;
+          z-index: 1000;
+        }
+        .sidebar a {
+          padding: 10px 15px;
+          text-decoration: none;
+          font-size: 18px;
+          color: white;
+          display: block;
+        }
+        .sidebar a:hover {
+          background-color: #575757;
+        }
+        .main-content {
+          margin-right: 250px; /* Same as the width of the sidebar */
+        }
+      </style>
     </head>
     <body>
-      <div class="navbar navbar-default navbar-static-top" role="navigation">
-        <div class="container">
-          <div class="navbar-header">
-            <a class="navbar-brand" href="/">Cheesy Arena Lite</a>
-            <button type="button" class="navbar-toggle" data-toggle="collapse"
-                data-target="#navbar-collapse-menu">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-          </div>
-          <div class="navbar-collapse collapse" id="navbar-collapse-menu">
-            <ul class="nav navbar-nav">
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Setup</a>
-                <ul class="dropdown-menu">
-                  <li><a href="/setup/settings">Settings</a></li>
-                  <li><a href="/setup/teams">Team List</a></li>
-                  <li><a href="/setup/schedule">Match Scheduling</a></li>
-                  <li><a href="/setup/awards">Awards</a></li>
-                  <li><a href="/setup/lower_thirds">Lower Thirds</a></li>
-                  <li><a href="/setup/sponsor_slides">Sponsor Slides</a></li>
-                  <li><a href="/setup/displays">Display Configuration</a></li>
-                  <li><a href="/setup/field_testing">Field Testing</a></li>
-                </ul>
-              </li>
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Run</a>
-                <ul class="dropdown-menu">
-                  <li><a href="/match_play">Match Play</a></li>
-                  <li><a href="/match_review">Match Review</a></li>
-                  <li><a href="/static/logs">Match Logs</a></li>
-                  <li><a href="/alliance_selection">Alliance Selection</a></li>
-                </ul>
-              </li>
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Report</a>
-                <ul class="dropdown-menu">
-                  <li class="dropdown-header">PDF Reports</li>
-                  <li><a target="_blank" href="/reports/pdf/teams">Team List</a></li>
-                  <li><a target="_blank" href="/reports/pdf/schedule/practice">Practice Schedule</a></li>
-                  <li><a target="_blank" href="/reports/pdf/schedule/qualification">Qualification Schedule</a></li>
-                  <li><a target="_blank" href="/reports/pdf/schedule/elimination">Playoff Schedule</a></li>
-                  <li><a target="_blank" href="/reports/pdf/rankings">Standings</a></li>
-                  <li><a target="_blank" href="/reports/pdf/alliances">Playoff Alliances</a></li>
-                  <li><a target="_blank" href="/reports/pdf/bracket">Playoff Bracket</a></li>
-                  <li><a target="_blank" href="/reports/pdf/backups">Backup Teams</a></li>
-                  <li><a target="_blank" href="/reports/pdf/coupons">Playoff Alliance Coupons</a></li>
-                  <li><a target="_blank" href="/reports/pdf/teams?showHasConnected=true">Team Connection Status</a></li>
-                  <li class="divider"></li>
-                  <li class="dropdown-header">CSV Data Export</li>
-                  <li><a target="_blank" href="/reports/csv/teams">Team List</a></li>
-                  <li><a target="_blank" href="/reports/csv/schedule/practice">Practice Schedule</a></li>
-                  <li><a target="_blank" href="/reports/csv/schedule/qualification">Qualification Schedule</a></li>
-                  <li><a target="_blank" href="/reports/csv/schedule/elimination">Playoff Schedule</a></li>
-                  <li><a target="_blank" href="/reports/csv/rankings">Standings</a></li>
-                  <li><a target="_blank" href="/reports/csv/backups">Backup Teams</a></li>
-                  {{if .EventSettings.NetworkSecurityEnabled}}
-                    <li><a target="_blank" href="/reports/csv/wpa_keys">WPA Keys</a></li>
-                  {{end}}
-                </ul>
-              </li>
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Display</a>
-                <ul class="dropdown-menu">
-                  <li><a href="/display">Placeholder</a></li>
-                  <li><a href="/displays/announcer">Announcer</a></li>
-                  <li><a href="/displays/audience">Audience</a></li>
-                  <li><a href="/displays/bracket">Bracket</a></li>
-                  <li><a href="/displays/field_monitor">Field Monitor</a></li>
-                  <li><a href="/displays/field_monitor?fta=true">Field Monitor (FTA)</a></li>
-                  <li><a href="/displays/queueing">Queueing</a></li>
-                  <li><a href="/displays/rankings">Rankings</a></li>
-                  <li class="divider"></li>
-                  <li class="dropdown-header">Alliance Station</li>
-                  <li><a href="/displays/alliance_station?station=R1">Red 1</a></li>
-                  <li><a href="/displays/alliance_station?station=R2">Red 2</a></li>
-                  <li><a href="/displays/alliance_station?station=R3">Red 3</a></li>
-                  <li><a href="/displays/alliance_station?station=B1">Blue 1</a></li>
-                  <li><a href="/displays/alliance_station?station=B2">Blue 2</a></li>
-                  <li><a href="/displays/alliance_station?station=B3">Blue 3</a></li>
-                  <li><a href="/displays/alliance_station?station=N2">Clock</a></li>
-                  <li><a href="/displays/alliance_station?station=N3">Red Score</a></li>
-                  <li><a href="/displays/alliance_station?station=N1">Blue Score</a></li>
-                </ul>
-              </li>
+      <div class="sidebar">
+        <a class="navbar-brand" href="/"><b>CyberArena Lite</b></a>
+        <ul class="nav navbar-nav" style="display: flex; flex-direction: column; padding: 7px;">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle cr-sidebar-dropdown-menu-btn" data-toggle="dropdown">Configurações</a>
+            <ul class="dropdown-menu">
+              <li><a href="/setup/settings">Configurações</a></li>
+              <li><a href="/setup/teams">Lista de Equipes</a></li>
+              <li><a href="/setup/schedule">Agendamento de Partidas</a></li>
+              <li><a href="/setup/awards">Prêmios</a></li>
+              <li><a href="/setup/lower_thirds">Terços Inferiores</a></li>
+              <li><a href="/setup/sponsor_slides">Slides de Patrocinadores</a></li>
+              <li><a href="/setup/displays">Configuração de Exibição</a></li>
+              <li><a href="/setup/field_testing">Teste de Campo</a></li>
             </ul>
-            <ul class="nav navbar-nav navbar-right">
-              <li><a href="#" onclick="$('#aboutPage').modal('show');">About</a></li>
+          </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle cr-sidebar-dropdown-menu-btn" data-toggle="dropdown">Execução</a>
+            <ul class="dropdown-menu">
+              <li><a href="/match_play">Execução de Partidas</a></li>
+              <li><a href="/match_review">Revisão de Partidas</a></li>
+              <li><a href="/static/logs">Logs de Partidas</a></li>
+              <li><a href="/alliance_selection">Seleção de Alianças</a></li>
             </ul>
+            </li>
+            <li class="dropdown">
+            <a href="#" class="dropdown-toggle cr-sidebar-dropdown-menu-btn" data-toggle="dropdown">Relatórios</a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header">Relatórios em PDF</li>
+              <li><a target="_blank" href="/reports/pdf/teams">Lista de Equipes</a></li>
+              <li><a target="_blank" href="/reports/pdf/schedule/practice">Agenda de Treinos</a></li>
+              <li><a target="_blank" href="/reports/pdf/schedule/qualification">Agenda de Qualificação</a></li>
+              <li><a target="_blank" href="/reports/pdf/schedule/elimination">Agenda de Eliminatórias</a></li>
+              <li><a target="_blank" href="/reports/pdf/rankings">Classificação</a></li>
+              <li><a target="_blank" href="/reports/pdf/alliances">Alianças de Eliminatórias</a></li>
+              <li><a target="_blank" href="/reports/pdf/bracket">Chave de Eliminatórias</a></li>
+              <li><a target="_blank" href="/reports/pdf/backups">Equipes de Backup</a></li>
+              <li><a target="_blank" href="/reports/pdf/coupons">Cupons de Alianças de Eliminatórias</a></li>
+              <li><a target="_blank" href="/reports/pdf/teams?showHasConnected=true">Status de Conexão das Equipes</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Exportação de Dados CSV</li>
+              <li><a target="_blank" href="/reports/csv/teams">Lista de Equipes</a></li>
+              <li><a target="_blank" href="/reports/csv/schedule/practice">Agenda de Treinos</a></li>
+              <li><a target="_blank" href="/reports/csv/schedule/qualification">Agenda de Qualificação</a></li>
+              <li><a target="_blank" href="/reports/csv/schedule/elimination">Agenda de Eliminatórias</a></li>
+              <li><a target="_blank" href="/reports/csv/rankings">Classificação</a></li>
+              <li><a target="_blank" href="/reports/csv/backups">Equipes de Backup</a></li>
+              {{if .EventSettings.NetworkSecurityEnabled}}
+              <li><a target="_blank" href="/reports/csv/wpa_keys">Chaves WPA</a></li>
+              {{end}}
+            </ul>
+            </li>
+            <li class="dropdown">
+            <a href="#" class="dropdown-toggle cr-sidebar-dropdown-menu-btn" data-toggle="dropdown">Exibição</a>
+            <ul class="dropdown-menu">
+              <li><a href="/display">Placeholder</a></li>
+              <li><a href="/displays/announcer">Anunciador</a></li>
+              <li><a href="/displays/audience">Público</a></li>
+              <li><a href="/displays/bracket">Chave</a></li>
+              <li><a href="/displays/field_monitor">Monitor de Campo</a></li>
+              <li><a href="/displays/field_monitor?fta=true">Monitor de Campo (FTA)</a></li>
+              <li><a href="/displays/queueing">Fila</a></li>
+              <li><a href="/displays/rankings">Classificação</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Estação de Aliança</li>
+              <li><a href="/displays/alliance_station?station=R1">Vermelho 1</a></li>
+              <li><a href="/displays/alliance_station?station=R2">Vermelho 2</a></li>
+              <li><a href="/displays/alliance_station?station=R3">Vermelho 3</a></li>
+              <li><a href="/displays/alliance_station?station=B1">Azul 1</a></li>
+              <li><a href="/displays/alliance_station?station=B2">Azul 2</a></li>
+              <li><a href="/displays/alliance_station?station=B3">Azul 3</a></li>
+              <li><a href="/displays/alliance_station?station=N2">Relógio</a></li>
+              <li><a href="/displays/alliance_station?station=N3">Pontuação Vermelha</a></li>
+              <li><a href="/displays/alliance_station?station=N1">Pontuação Azul</a></li>
+            </ul>
+            </li>
+
+            <a href="#" class="cr-sidebar-about-btn" onclick="$('#aboutPage').modal('show');">
+              <strong style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                Sobre
+                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11h2v5m-2 0h4m-2.592-8.5h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                </svg>
+              </strong>
+            </a>
+        </ul>
+
+      </div>
+      <div class="main-content">
+        <div class="navbar navbar-default navbar-static-top bg-cyber-purple" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="/"><b>CyberArena Lite<span id="blink">_</span></b></a>            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                  data-target="#navbar-collapse-menu">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="container">
-        {{template "body" .}}
-      </div>
-      <div id="aboutPage" class="modal" style="top: 20%;">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-              <h4 class="modal-title">About Cheesy Arena Lite</h4>
-            </div>
-            <div class="modal-body">
-              <p>A game-agnostic field management system that just works.</p>
-              <p>Copyright &copy; 2014-2022 Team 254. All Rights Reserved.</p>
-              <p>
-                <a href="https://github.com/Team254/cheesy-arena-lite">https://github.com/Team254/cheesy-arena-lite</a>
-              </p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <div class="container">
+          {{template "body" .}}
+        </div>
+        <div id="aboutPage" class="modal" style="top: 20%;">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">About Cheesy Arena Lite</h4>
+              </div>
+              <div class="modal-body">
+                <p>A game-agnostic field management system that just works.</p>
+                <p>Copyright &copy; 2014-2022 Team 254. All Rights Reserved.</p>
+                <p>
+                  <a href="https://github.com/Team254/cheesy-arena-lite">https://github.com/Team254/cheesy-arena-lite</a>
+                </p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
             </div>
           </div>
         </div>

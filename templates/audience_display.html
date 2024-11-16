@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Audience Display - {{.EventSettings.Name}} - Cheesy Arena </title>
+    <title>Audience Display - {{.EventSettings.Name}} - Cyber Arena </title>
     <link rel="shortcut icon" href="/static/img/favicon.ico">
     <link rel="stylesheet" href="/static/css/lib/bootstrap.min.css" />
     <link rel="stylesheet" href="/static/css/cheesy-arena.css" />
@@ -15,40 +15,53 @@
   </head>
   <body>
     <div id="overlayCentering">
-      <div id="matchOverlayContainer">
+      <div id="matchOverlayContainer" style="background-color: white;">
         <div class="elim-alliance" id="leftElimAlliance"></div>
         <div id="matchOverlay">
           <div id="matchOverlayTop">
-            <div class="teams" id="leftTeams">
-              <div id="leftTeam1"></div>
-              <div id="leftTeam2"></div>
-              <div id="leftTeam3"></div>
-            </div>
             <div class="score reversible-left">
               <div class="avatars">
                 <img class="avatar" id="leftTeam1Avatar" src="" />
                 <img class="avatar" id="leftTeam2Avatar" src="" />
                 <img class="avatar" id="leftTeam3Avatar" src="" />
               </div>
+              <div class="cr-score-and-team-number-wrapper">
+                <span class="cr-alliance-name">Aliança Azul</span>
+                <div class="teams" id="leftTeams">
+                  <div id="leftTeam1"></div>
+                  <span class="cr-amp-span">&</span>
+                  <div id="leftTeam2"></div>
+                  <!-- <div id="leftTeam3"></div> -->
+                </div>
+              </div>
               <div class="score-number" id="leftScoreNumber"></div>
             </div>
+            <div id="matchTime"></div>
             <div class="score score-right reversible-right">
-              <div class="score-number" id="rightScoreNumber"></div>
               <div class="avatars">
                 <img class="avatar" id="rightTeam1Avatar" src="" />
                 <img class="avatar" id="rightTeam2Avatar" src="" />
                 <img class="avatar" id="rightTeam3Avatar" src="" />
               </div>
-            </div>
-            <div class="teams" id="rightTeams">
-              <div id="rightTeam1"></div>
-              <div id="rightTeam2"></div>
-              <div id="rightTeam3"></div>
+              <div class="score-number" id="rightScoreNumber"></div>
+              <div class="cr-score-and-team-number-wrapper">
+                <span class="cr-alliance-name">Aliança Vermelha</span>
+                <div class="teams" id="rightTeams">
+                  <div id="rightTeam1"></div>
+                  <span class="cr-amp-span">&</span>
+                  <div id="rightTeam2"></div>
+                  <!-- <div id="rightTeam3"></div> -->
+                </div>
+              </div>
             </div>
           </div>
           <div id="eventMatchInfo">
-            <span>{{.EventSettings.Name}}</span>
-            <span id="matchName"></span>
+            <span class="cr-powered-by-us">Powered by <b>#9611</b></span>
+            <div>
+              <span>{{.EventSettings.Name}} {{.CurrentMatch.DisplayName}}</span>
+              -
+              <span id="matchName"></span>
+            </div>
           </div>
         </div>
         <div class="elim-alliance" id="rightElimAlliance"></div>
@@ -56,10 +69,10 @@
       <div id="elimSeriesStatus">
         <span id="leftElimAllianceWins"></span>&nbsp;-&nbsp;<span id="rightElimAllianceWins"></span>
       </div>
-      <div class="text-center" id="matchCircle">
+      <!-- <div class="text-center" id="matchCircle">
         <img id="logo" src="/static/img/lower-third-logo.png" alt="logo" />
         <div id="matchTime"></div>
-      </div>
+      </div> -->
     </div>
     <div id="blindsContainer">
       <div class="blinds right background">
@@ -69,20 +82,55 @@
         <div class="blindsCenter blank"></div>
       </div>
       <div class="blindsCenter full">
-        <img id="blindsLogo" src="/static/img/lower-third-logo.png" alt="logo" />
+        <!-- <img id="blindsLogo" src="/static/img/lower-third-logo.png" alt="logo" /> -->
+        <img id="blindsLogo" src="/static/img/cr-logo-xsr-purple.svg" alt="logo" />
       </div>
       <div id="finalScore">
-        <div class="final-score reversible-left" id="leftFinalScore"></div>
-        <div class="final-score reversible-right" id="rightFinalScore"></div>
+        <div class="cr-alliance-blind-container">
+          <div class="cr-left-alliance-blind-container">
+            <span class="cr-alliance-name">Aliança Azul</span>
+            <span class="cr-alliance-wins cr-awl">WINNER</span>
+          </div>
+          <div class="cr-right-alliance-blind-container">
+            <span class="cr-alliance-wins cr-awr">WINNER</span>
+            <span class="cr-alliance-name">Aliança Vermelha</span>
+          </div>
+        </div>
+        <div class="cr-final-result-container">
+          <span class="cr-final-result-title">Resultado</span>
+          <div class="cr-final-result-scores-wrapper">
+            <div class="cr-blue-alliance-scores">
+              <span class="cr-win-top">WINNER</span>
+              <div class="cr-final-score-text-container">
+                <span class="cr-alliance-name">
+                  Aliança<br/>
+                  Azul
+                </span>
+                <div class="final-score reversible-left" id="leftFinalScore"></div>
+              </div>
+              <hr class="cr-hr-final-score">
+              <div class="final-team" id="leftFinalTeam1"></div><img class="final-avatar" id="leftFinalTeam1Avatar" src="" />
+              <div class="final-team" id="leftFinalTeam2"></div><img class="final-avatar" id="leftFinalTeam2Avatar" src="" />
+              <!-- <div class="final-team" id="leftFinalTeam3"></div><img class="final-avatar" id="leftFinalTeam3Avatar" src="" /> -->
+            </div>
+            <div class="cr-red-alliance-scores">
+              <span class="cr-win-top">WINNER</span>
+              <div class="cr-final-score-text-container">
+                <div class="final-score reversible-right" id="rightFinalScore"></div>
+                <span class="cr-alliance-name">
+                  Aliança<br/>
+                  Vermelha
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="final-teams" id="leftFinalTeams">
-          <div class="final-team" id="leftFinalTeam1"></div><img class="final-avatar" id="leftFinalTeam1Avatar" src="" />
-          <div class="final-team" id="leftFinalTeam2"></div><img class="final-avatar" id="leftFinalTeam2Avatar" src="" />
-          <div class="final-team" id="leftFinalTeam3"></div><img class="final-avatar" id="leftFinalTeam3Avatar" src="" />
         </div>
         <div class="final-teams" id="rightFinalTeams">
           <div class="final-team" id="rightFinalTeam1"></div><img class="final-avatar" id="rightFinalTeam1Avatar" src="" />
           <div class="final-team" id="rightFinalTeam2"></div><img class="final-avatar" id="rightFinalTeam2Avatar" src="" />
-          <div class="final-team" id="rightFinalTeam3"></div><img class="final-avatar" id="rightFinalTeam3Avatar" src="" />
+          <!-- <div class="final-team" id="rightFinalTeam3"></div><img class="final-avatar" id="rightFinalTeam3Avatar" src="" /> -->
         </div>
         <div class="final-breakdown" id="leftFinalBreakdown">
           <span class="valign-cell">
@@ -119,7 +167,8 @@
       <div id="allianceSelection"></div>
     </div>
     <div id="lowerThird">
-      <img id="lowerThirdLogo" src="/static/img/lower-third-logo.png" alt="logo" />
+      <!-- <img id="lowerThirdLogo" src="/static/img/lower-third-logo.png" alt="logo" /> -->
+      <img id="lowerThirdLogo" src="/static/img/cr-logo-xsr-purple.svg" alt="logo" />
       <div id="lowerThirdTop"></div>
       <div id="lowerThirdBottom"></div>
       <div id="lowerThirdSingle"></div>

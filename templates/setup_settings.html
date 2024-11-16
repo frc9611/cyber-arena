@@ -17,162 +17,161 @@
     <div class="well">
       <form class="form-horizontal" action="/setup/settings" method="POST">
         <fieldset>
-          <legend>Event Settings</legend>
+          <legend>Configurações do Evento</legend>
           <div class="form-group">
-            <label class="col-lg-5 control-label">Name</label>
+            <label class="col-lg-5 control-label">Nome</label>
             <div class="col-lg-7">
               <input type="text" class="form-control" name="name" placeholder="{{.Name}}">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">Playoff Type</label>
+            <label class="col-lg-5 control-label">Tipo de Playoff</label>
             <div class="col-lg-7">
               <div class="radio">
                 <label>
                   <input type="radio" name="elimType" value="single" onclick="updateNumElimAlliances(false);"
                       {{if eq .ElimType "single"}}checked{{end}}>
-                  Single-Elimination (2-16 alliances)
+                  Eliminação Simples (2-16 alianças)
                 </label>
               </div>
               <div class="radio">
                 <label>
                   <input type="radio" name="elimType" value="double" onclick="updateNumElimAlliances(true);"
                       {{if eq .ElimType "double"}}checked{{end}}>
-                  Double-Elimination (8 alliances)
+                  Eliminação Dupla (8 alianças)
                 </label>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">Number of Alliances</label>
+            <label class="col-lg-5 control-label">Número de Alianças</label>
             <div class="col-lg-7">
               <input type="text" class="form-control" name="numElimAlliances" value="{{.NumElimAlliances}}"
                   {{if eq .ElimType "double"}}disabled{{end}}>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">Round 2 Selection Order</label>
+            <label class="col-lg-5 control-label">Ordem de Seleção da 2ª Rodada</label>
             <div class="col-lg-7">
               <div class="radio">
                 <label>
                   <input type="radio" name="selectionRound2Order" value="F"
                       {{if eq .SelectionRound2Order "F"}}checked{{end}}>
-                  First to Last
+                  Primeiro ao Último
                 </label>
               </div>
               <div class="radio">
                 <label>
                   <input type="radio" name="selectionRound2Order" value="L"
                       {{if eq .SelectionRound2Order "L"}}checked{{end}}>
-                  Last to First
+                  Último ao Primeiro
                 </label>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">Round 3 Selection Order</label>
+            <label class="col-lg-5 control-label">Ordem de Seleção da 3ª Rodada</label>
             <div class="col-lg-7">
               <div class="radio">
                 <label>
                   <input type="radio" name="selectionRound3Order" value="F"
                       {{if eq .SelectionRound3Order "F"}}checked{{end}}>
-                  First to Last
+                  Primeiro ao Último
                 </label>
               </div>
               <div class="radio">
                 <label>
                   <input type="radio" name="selectionRound3Order" value="L"
                       {{if eq .SelectionRound3Order "L"}}checked{{end}}>
-                  Last to First
+                  Último ao Primeiro
                 </label>
               </div>
               <div class="radio">
                 <label>
                   <input type="radio" name="selectionRound3Order" value=""
                       {{if eq .SelectionRound3Order ""}}checked{{end}}>
-                  None
+                  Nenhum
                 </label>
               </div>
             </div>
           </div>
         </fieldset>
         <fieldset>
-          <legend>Automatic Team Info Download</legend>
+          <legend>Download Automático de Informações da Equipe</legend>
           <div class="form-group">
-            <label class="col-lg-9 control-label">Enable Automatic Team Info Download (From TBA)</label>
+            <label class="col-lg-9 control-label">Habilitar Download Automático de Informações da Equipe (Do TBA)</label>
             <div class="col-lg-1 checkbox">
               <input type="checkbox" name="TBADownloadEnabled"{{if .TBADownloadEnabled}} checked{{end}}>
             </div>
           </div>
         </fieldset>
         <fieldset>
-          <legend>Publishing</legend>
-          <p>Contact The Blue Alliance to obtain an event code and credentials.</p>
+          <legend>Publicação</legend>
+          <p>Entre em contato com The Blue Alliance para obter um código de evento e credenciais.</p>
           <div class="form-group">
-            <label class="col-lg-7 control-label">Enable The Blue Alliance publishing</label>
+            <label class="col-lg-7 control-label">Habilitar publicação no The Blue Alliance</label>
             <div class="col-lg-1 checkbox">
               <input type="checkbox" name="tbaPublishingEnabled"{{if .TbaPublishingEnabled}} checked{{end}}>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">TBA Event Code</label>
+            <label class="col-lg-5 control-label">Código do Evento TBA</label>
             <div class="col-lg-7">
               <input type="text" class="form-control" name="tbaEventCode" value="{{.TbaEventCode}}">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">TBA Auth ID</label>
+            <label class="col-lg-5 control-label">ID de Autenticação TBA</label>
             <div class="col-lg-7">
               <input type="text" class="form-control" name="tbaSecretId" value="{{.TbaSecretId}}">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">TBA Secret</label>
+            <label class="col-lg-5 control-label">Segredo TBA</label>
             <div class="col-lg-7">
               <input type="text" class="form-control" name="tbaSecret" value="{{.TbaSecret}}">
             </div>
           </div>
         </fieldset>
         <fieldset>
-          <legend>Authentication</legend>
-          <p>Configure password to enable authentication, or leave blank to disable.</p>
+          <legend>Autenticação</legend>
+          <p>Configure a senha para habilitar a autenticação, ou deixe em branco para desabilitar.</p>
           <div class="form-group">
-            <label class="col-lg-5 control-label">Password for 'admin' user</label>
+            <label class="col-lg-5 control-label">Senha para o usuário 'admin'</label>
             <div class="col-lg-7">
               <input type="password" class="form-control" name="adminPassword" value="{{.AdminPassword}}">
             </div>
           </div>
         </fieldset>
         <fieldset>
-          <legend>Networking</legend>
-          <p>Enable this setting if you have a Linksys WRT1900ACS access point and Catalyst 3500-series
-              switch available, for isolating each team to its own SSID and VLAN.</p>
+          <legend>Rede</legend>
+          <p>Habilite esta configuração se você tiver um ponto de acesso Linksys WRT1900ACS e um switch da série Catalyst 3500 disponíveis, para isolar cada equipe em seu próprio SSID e VLAN.</p>
           <div class="form-group">
-            <label class="col-lg-7 control-label">Enable advanced network security</label>
+            <label class="col-lg-7 control-label">Habilitar segurança avançada de rede</label>
             <div class="col-lg-1 checkbox">
               <input type="checkbox" name="networkSecurityEnabled"{{if .NetworkSecurityEnabled}} checked{{end}}>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">AP Address</label>
+            <label class="col-lg-5 control-label">Endereço do AP</label>
             <div class="col-lg-7">
               <input type="text" class="form-control" name="apAddress" value="{{.ApAddress}}">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">AP Username</label>
+            <label class="col-lg-5 control-label">Nome de Usuário do AP</label>
             <div class="col-lg-7">
               <input type="text" class="form-control" name="apUsername" value="{{.ApUsername}}">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">AP Password</label>
+            <label class="col-lg-5 control-label">Senha do AP</label>
             <div class="col-lg-7">
               <input type="password" class="form-control" name="apPassword" value="{{.ApPassword}}">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">AP Team Channel (5GHz)</label>
+            <label class="col-lg-5 control-label">Canal da Equipe do AP (5GHz)</label>
             <div class="col-lg-7">
               <select class="form-control" name="apTeamChannel" value="{{.ApTeamChannel}}">
                 <option{{if eq .ApTeamChannel 36}} selected{{end}}>36</option>
@@ -187,10 +186,10 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">AP Admin Channel (2.4GHz)</label>
+            <label class="col-lg-5 control-label">Canal de Administração do AP (2.4GHz)</label>
             <div class="col-lg-7">
               <select class="form-control" name="apAdminChannel" value="{{.ApAdminChannel}}">
-                <option{{if eq .ApAdminChannel 0}} selected{{end}}>Disabled</option>
+                <option{{if eq .ApAdminChannel 0}} selected{{end}}>Desabilitado</option>
                 <option{{if eq .ApAdminChannel 1}} selected{{end}}>1</option>
                 <option{{if eq .ApAdminChannel 6}} selected{{end}}>6</option>
                 <option{{if eq .ApAdminChannel 11}} selected{{end}}>11</option>
@@ -198,48 +197,47 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">AP Admin WPA Key</label>
+            <label class="col-lg-5 control-label">Chave WPA de Administração do AP</label>
             <div class="col-lg-7">
               <input type="password" class="form-control" name="apAdminWpaKey" value="{{.ApAdminWpaKey}}">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">Switch Address</label>
+            <label class="col-lg-5 control-label">Endereço do Switch</label>
             <div class="col-lg-7">
               <input type="text" class="form-control" name="switchAddress" value="{{.SwitchAddress}}">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">Switch Password</label>
+            <label class="col-lg-5 control-label">Senha do Switch</label>
             <div class="col-lg-7">
               <input type="password" class="form-control" name="switchPassword" value="{{.SwitchPassword}}">
             </div>
           </div>
-          <p>If you have a second access point available and want to use one for each alliance to increase available
-            bandwidth, configure the second one below.</p>
+          <p>Se você tiver um segundo ponto de acesso disponível e quiser usar um para cada aliança para aumentar a largura de banda disponível, configure o segundo abaixo.</p>
           <div class="form-group">
-            <label class="col-lg-5 control-label">Second AP Address</label>
+            <label class="col-lg-5 control-label">Endereço do Segundo AP</label>
             <div class="col-lg-7">
               <input type="text" class="form-control" name="ap2Address" value="{{.Ap2Address}}">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">Second AP Username</label>
+            <label class="col-lg-5 control-label">Nome de Usuário do Segundo AP</label>
             <div class="col-lg-7">
               <input type="text" class="form-control" name="ap2Username" value="{{.Ap2Username}}">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">Second AP Password</label>
+            <label class="col-lg-5 control-label">Senha do Segundo AP</label>
             <div class="col-lg-7">
               <input type="password" class="form-control" name="ap2Password" value="{{.Ap2Password}}">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">Second AP Team Channel (5GHz)</label>
+            <label class="col-lg-5 control-label">Canal da Equipe do Segundo AP (5GHz)</label>
             <div class="col-lg-7">
               <select class="form-control" name="ap2TeamChannel" value="{{.Ap2TeamChannel}}">
-                <option{{if eq .Ap2TeamChannel 0}} selected{{end}}>Disabled</option>
+                <option{{if eq .Ap2TeamChannel 0}} selected{{end}}>Desabilitado</option>
                 <option{{if eq .Ap2TeamChannel 36}} selected{{end}}>36</option>
                 <option{{if eq .Ap2TeamChannel 40}} selected{{end}}>40</option>
                 <option{{if eq .Ap2TeamChannel 44}} selected{{end}}>44</option>
@@ -255,34 +253,34 @@
         <fieldset>
           <legend>PLC</legend>
           <div class="form-group">
-            <label class="col-lg-5 control-label">PLC Address</label>
+            <label class="col-lg-5 control-label">Endereço do PLC</label>
             <div class="col-lg-7">
               <input type="text" class="form-control" name="plcAddress" value="{{.PlcAddress}}">
             </div>
           </div>
         </fieldset>
         <fieldset>
-          <legend>Game-Specific</legend>
+          <legend>Específico do Jogo</legend>
           <div class="form-group">
-            <label class="col-lg-5 control-label">Autonomous Period Duration (seconds)</label>
+            <label class="col-lg-5 control-label">Duração do Período Autônomo (segundos)</label>
             <div class="col-lg-7">
               <input type="text" class="form-control" name="autoDurationSec" value="{{.AutoDurationSec}}">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">Pause Duration (seconds)</label>
+            <label class="col-lg-5 control-label">Duração da Pausa (segundos)</label>
             <div class="col-lg-7">
               <input type="text" class="form-control" name="pauseDurationSec" value="{{.PauseDurationSec}}">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">Teleoperated Period Duration (seconds)</label>
+            <label class="col-lg-5 control-label">Duração do Período Teleoperado (segundos)</label>
             <div class="col-lg-7">
               <input type="text" class="form-control" name="teleopDurationSec" value="{{.TeleopDurationSec}}">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-5 control-label">Warning Remaining Duration (seconds)</label>
+            <label class="col-lg-5 control-label">Duração Restante do Aviso (segundos)</label>
             <div class="col-lg-7">
               <input type="text" class="form-control" name="warningRemainingDurationSec"
                 value="{{.WarningRemainingDurationSec}}">
@@ -291,7 +289,7 @@
         </fieldset>
         <div class="form-group">
           <div class="col-lg-7 col-lg-offset-5">
-            <button type="submit" class="btn btn-info">Save</button>
+            <button type="submit" class="btn btn-info">Salvar</button>
           </div>
         </div>
       </form>
@@ -299,18 +297,18 @@
   </div>
   <div class="col-lg-4">
     <div class="well">
-      <legend>Database</legend>
+      <legend>Banco de Dados</legend>
       <p>
-        <a href="/setup/db/save"><button class="btn btn-info">Save Copy of Database</button></a>
+        <a href="/setup/db/save"><button class="btn btn-info">Salvar Cópia do Banco de Dados</button></a>
       </p>
       <p>
         <button type="button" class="btn btn-primary" onclick="$('#uploadDatabase').modal('show');">
-          Load Database from Backup
+          Carregar Banco de Dados de Backup
         </button>
       </p>
       <p>
         <button type="button" class="btn btn-primary" onclick="$('#confirmClearData').modal('show');">
-          Clear All Match Data
+          Limpar Todos os Dados de Partida
         </button>
       </p>
     </div>
@@ -321,16 +319,16 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h4 class="modal-title">Choose Backup File</h4>
+        <h4 class="modal-title">Escolher Arquivo de Backup</h4>
       </div>
       <form class="form-horizontal" action="/setup/db/restore" enctype="multipart/form-data" method="POST">
         <div class="modal-body">
-          <p>Select the database file to load from. <b>This will overwrite any existing data.</b></p>
+          <p>Selecione o arquivo de banco de dados para carregar. <b>Isso substituirá quaisquer dados existentes.</b></p>
           <input type="file" name="databaseFile">
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Load Database from Backup</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Carregar Banco de Dados de Backup</button>
         </div>
       </form>
     </div>
@@ -341,15 +339,15 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h4 class="modal-title">Confirm</h4>
+        <h4 class="modal-title">Confirmar</h4>
       </div>
       <div class="modal-body">
-        <p>Are you sure you want to clear all match, ranking, and alliance selection data?</p>
+        <p>Tem certeza de que deseja limpar todos os dados de partida, classificação e seleção de alianças?</p>
       </div>
       <div class="modal-footer">
         <form class="form-horizontal" action="/setup/db/clear" method="POST">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Clear All Match Data</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Limpar Todos os Dados de Partida</button>
         </form>
       </div>
     </div>
