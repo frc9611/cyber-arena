@@ -9,46 +9,45 @@
 {{if .ShowErrorMessage}}
   <div class="alert alert-dismissable alert-danger">
     <button type="button" class="close" data-dismiss="alert">×</button>
-    You can't modify the team list once the qualification schedule has been generated. If you need to change
-    the team list, clear all other data first on the Settings page.
+    Você não pode modificar a lista de equipes uma vez que o cronograma de qualificação foi gerado. Se você precisar mudar a lista de equipes, limpe todos os outros dados primeiro na página de Configurações.
   </div>
 {{end}}
 <div class="row">
   <div class="col-lg-2">
     <form class="form-horizontal" action="/setup/teams" method="POST">
       <fieldset>
-        <legend>Import Teams</legend>
-        {{if not .EventSettings.TBADownloadEnabled}}<p>To automatically download data about teams, enable TBA Team Info Download on the settings page</p>{{end}}
+        <legend>Importar Equipes</legend>
+        {{if not .EventSettings.TBADownloadEnabled}}<p>Para baixar automaticamente dados sobre as equipes, habilite o Download de Informações da TBA na página de configurações</p>{{end}}
         <div class="form-group">
           <textarea class="form-control" rows="10" name="teamNumbers"
-              placeholder="One team number per line"></textarea>
+              placeholder="Um número de equipe por linha"></textarea>
         </div>
         <div class="form-group">
-          <button type="submit" class="btn btn-info">Add Teams</button>
+          <button type="submit" class="btn btn-info">Adicionar Equipes</button>
         </div>
         {{if .EventSettings.TBADownloadEnabled}}
           <div class="form-group">
-            <a href="/setup/teams/refresh" class="btn btn-info">Refresh Team Data from TBA</a>
+            <a href="/setup/teams/refresh" class="btn btn-info">Atualizar Dados das Equipes da TBA</a>
           </div>
         {{end}}
         <div class="form-group">
           <button type="button" class="btn btn-primary" onclick="$('#confirmClearTeams').modal('show');">
-            Clear Team List
+            Limpar Lista de Equipes
           </button>
         </div>
         {{if .EventSettings.TbaPublishingEnabled}}
           <div class="form-group">
             <button type="button" class="btn btn-info" onclick="$('#confirmPublishTeams').modal('show');">
-              Publish Team List to TBA
+              Publicar Lista de Equipes na TBA
             </button>
           </div>
         {{end}}
         {{if .EventSettings.NetworkSecurityEnabled}}
           <div class="form-group">
-            <a href="/setup/teams/generate_wpa_keys?all=true" class="btn btn-primary">Generate All WPA Keys</a>
+            <a href="/setup/teams/generate_wpa_keys?all=true" class="btn btn-primary">Gerar Todas as Chaves WPA</a>
           </div>
           <div class="form-group">
-            <a href="/setup/teams/generate_wpa_keys?all=false" class="btn btn-primary">Generate Missing WPA Keys</a>
+            <a href="/setup/teams/generate_wpa_keys?all=false" class="btn btn-primary">Gerar Chaves WPA Faltantes</a>
           </div>
         {{end}}
       </fieldset>
@@ -59,12 +58,12 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Name</th>
-          <th>Nickname</th>
-          <th>Location</th>
-          <th>Rookie Year</th>
-          <th>Robot Name</th>
-          <th>Action</th>
+          <th>Nome</th>
+          <th>Apelido</th>
+          <th>Localização</th>
+          <th>Ano de Estreia</th>
+          <th>Nome do Robô</th>
+          <th>Ação</th>
         </tr>
       </thead>
       <tbody>
@@ -92,7 +91,7 @@
         {{end}}
       </tbody>
     </table>
-    <b>{{len .Teams}} teams</b>
+    <b>{{len .Teams}} equipes</b>
   </div>
 </div>
 <div id="confirmClearTeams" class="modal" style="top: 20%;">
@@ -100,15 +99,15 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h4 class="modal-title">Confirm</h4>
+        <h4 class="modal-title">Confirmar</h4>
       </div>
       <div class="modal-body">
-        <p>Are you sure you want to clear the team list?</p>
+        <p>Você tem certeza de que deseja limpar a lista de equipes?</p>
       </div>
       <div class="modal-footer">
         <form class="form-horizontal" action="/setup/teams/clear" method="POST">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Clear Team List</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Limpar Lista de Equipes</button>
         </form>
       </div>
     </div>
@@ -119,16 +118,15 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h4 class="modal-title">Confirm</h4>
+        <h4 class="modal-title">Confirmar</h4>
       </div>
       <div class="modal-body">
-        <p>Are you sure you want to publish the team list to The Blue Alliance? This will overwrite any
-          existing team list data.</p>
+        <p>Você tem certeza de que deseja publicar a lista de equipes no The Blue Alliance? Isso substituirá qualquer dado de lista de equipes existente.</p>
       </div>
       <div class="modal-footer">
         <form class="form-horizontal" action="/setup/teams/publish" method="POST">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Publish Team List</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Publicar Lista de Equipes</button>
         </form>
       </div>
     </div>

@@ -4,48 +4,48 @@
 
   UI for configuring the audience display sponsor roll.
 */}}
-{{define "title"}}Sponsor Slides Configuration{{end}}
+{{define "title"}}Configuração de Slides de Patrocinadores{{end}}
 {{define "body"}}
 <div class="row">
   <div class="col-lg-8 col-lg-offset-2">
     <div class="well">
-      <legend>Sponsor Slides Configuration</legend>
-      <p>Place images in /static/img/sponsors/</p>
+      <legend>Configuração de Slides de Patrocinadores</legend>
+      <p>Coloque as imagens em /static/img/sponsors/</p>
       {{range $i, $sponsorSlide := .SponsorSlides}}
         <form class="form-horizontal existing" action="/setup/sponsor_slides" method="POST">
           <div class="form-group">
             <div class="col-lg-7">
               <input type="hidden" name="id" value="{{$sponsorSlide.Id}}" />
                 <div class="form-group imagetoggle">
-                  <label for="image" class="col-sm-5 control-label">Image File Name</label>
+                  <label for="image" class="col-sm-5 control-label">Nome do Arquivo de Imagem</label>
                   <div class="col-sm-7">
                     <input type="text" class="form-control" name="image" placeholder="image.svg"
                         value="{{$sponsorSlide.Image}}">
                   </div>
                 </div>
                 <div class="form-group hidden imagetoggle">
-                  <label for="line1" class="col-sm-5 control-label">Line 1 Text</label>
+                  <label for="line1" class="col-sm-5 control-label">Texto da Linha 1</label>
                   <div class="col-sm-7">
                     <input type="text" class="form-control" value="{{$sponsorSlide.Line1}}" name="line1"
-                        placeholder="Chezy">
+                        placeholder="Cyber">
                   </div>
                 </div>
                 <div class="form-group hidden imagetoggle">
-                  <label for="line2" class="col-sm-5 control-label">Line 2 Text</label>
+                  <label for="line2" class="col-sm-5 control-label">Texto da Linha 2</label>
                   <div class="col-sm-7">
                     <input type="text" class="form-control" value="{{$sponsorSlide.Line2}}" name="line2"
-                        placeholder="Industries">
+                        placeholder="Indústrias">
                   </div>
                 </div>
               <div class="form-group">
-                <label for="subtitle" class="col-sm-5 control-label">Subtitle Text</label>
+                <label for="subtitle" class="col-sm-5 control-label">Texto do Subtítulo</label>
                 <div class="col-sm-7">
                   <input type="text" class="form-control" name="subtitle" value="{{$sponsorSlide.Subtitle}}"
-                      placeholder="Gold Sponsor">
+                      placeholder="Patrocinador Ouro">
                 </div>
               </div>
               <div class="form-group">
-                <label for="displayTimeSec" class="col-sm-5 control-label">Display Time (s)</label>
+                <label for="displayTimeSec" class="col-sm-5 control-label">Tempo de Exibição (s)</label>
                 <div class="col-sm-7">
                   <input type="number" class="form-control" name="displayTimeSec"
                       value="{{$sponsorSlide.DisplayTimeSec}}" placeholder="10">
@@ -53,21 +53,21 @@
               </div>
             </div>
             <div class="col-lg-5">
-              <button type="submit" class="btn btn-info btn-lower-third" name="action" value="save">Save</button>
+              <button type="submit" class="btn btn-info btn-lower-third" name="action" value="save" style="margin-bottom: 10px;">Salvar</button>
               {{if lt $i (add (len $.SponsorSlides) -1) }}
                 <button type="submit" class="btn btn-info" name="action" value="reorderUp">
                   <i class="glyphicon glyphicon-arrow-up"></i>
                 </button>
                 <br />
                 <button type="submit" class="btn btn-primary btn-lower-third" name="action" value="delete">
-                  Delete
+                  Excluir
                 </button>
                 <button type="submit" class="btn btn-info" name="action" value="reorderDown">
                   <i class="glyphicon glyphicon-arrow-down"></i>
                 </button>
               {{end}}
               <br />
-              <button class="btn btn-warning" name="toggleImage">Toggle Image/Text</button>
+              <button class="btn btn-warning" name="toggleImage">Alternar Imagem/Texto</button>
             </div>
           </div>
         </form>

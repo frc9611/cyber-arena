@@ -9,7 +9,7 @@
 <div class="row">
   <div class="col-lg-3">
     <div class="well">
-      <legend>Game Sounds</legend>
+      <legend>Sons da Partida</legend>
       {{range $sound := .MatchSounds}}
         <p>
           <button type="button" class="btn btn-sm btn-info btn-game-sound" onclick="playSound('{{$sound.Name}}');">
@@ -21,12 +21,12 @@
   </div>
   <div class="col-lg-7">
     <div class="well">
-      <legend>PLC</legend>
+      <legend>CLP</legend>
       <div class="row">
         <div class="col-lg-4">
           <table class="table">
             <tr>
-              <th colspan="2">Inputs</th>
+              <th colspan="2">Entradas</th>
             </tr>
             {{range $i, $name := .InputNames}}
             <tr>
@@ -39,7 +39,7 @@
         <div class="col-lg-4">
           <table class="table">
             <tr>
-              <th colspan="2">Registers</th>
+              <th colspan="2">Registradores</th>
             </tr>
             {{range $i, $name := .RegisterNames}}
             <tr>
@@ -52,7 +52,7 @@
         <div class="col-lg-4">
           <table class="table">
             <tr>
-              <th colspan="2">Coils</th>
+              <th colspan="2">Bobinas</th>
             </tr>
             {{range $i, $name := .CoilNames}}
             <tr>
