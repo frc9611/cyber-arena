@@ -1,4 +1,4 @@
-Cheesy Arena Lite [![Build Status](https://github.com/Team254/cheesy-arena-lite/actions/workflows/test.yml/badge.svg)](https://github.com/Team254/cheesy-arena-lite/actions)
+Cyber Arena Lite (Cheesy Arena Lite fork for 4 teams per match tournament)
 ============
 A game-agnostic field management system that just works.
 
