@@ -79,6 +79,92 @@ th {
 
 }
 
+.rank-spacer {
+  display: none !important;
+}
+
+.final-team {
+  color: white;
+  font-size: 28px;
+  font-weight: 600;
+  font-family: "Roboto";
+}
+
+.final-avatar {
+  bottom: auto !important;
+  margin-left: -12px !important;
+}
+
+.cr-final-team-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  height: fit-content;
+  padding: 12px 8px;
+}
+
+.cr-final-score-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-block: 48px;
+}
+
+.cr-score-points-span {
+  background-color: white;
+  color: black;
+  font-size: 36px;
+  font-weight: 600;
+  padding-block: 8px;
+  border-radius: 0 8px 8px 0;
+  width: 100px;
+  display: flex;
+  justify-content: center;
+}
+
+.cr-score-points-span.cr-reversed {
+  border-radius: 8px 0 0 8px;
+}
+
+#finalEventMatchInfo {
+  position: fixed;
+  bottom: -64px;
+  font-weight: 600;
+}
+
+.cr-final-score-type-wrapper {
+  display: flex;
+  width: 85%;
+  margin-inline: auto;
+}
+
+.cr-final-score-type-wrapper.cr-reversed {
+  flex-direction: row-reverse;
+}
+
+.cr-reversed.cr-alliance-name {
+  text-align: right;
+}
+
+.cr-final-score-type-name {
+  flex-grow: 1;
+  background-color: #fff1;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: white 1px solid;
+  border-radius: 8px 0 0 8px;
+  font-size: 24px;
+  font-weight: 600;
+  font-family: "Roboto";
+}
+
+.cr-final-score-type-name.cr-reversed {
+  border-radius: 0 8px 8px 0;
+}
+
 .cr-win-top {
   background-color: #F9FF43;
   font-size: 34px;
@@ -145,6 +231,7 @@ th {
 
 .cr-hr-final-score {
   border-color: #0003;
+  margin: 0 !important;
 }
 
 .well {
@@ -183,10 +270,13 @@ th {
   height: 100%;
   width: 16px;
   position: absolute;
-  right: -16px;
-  top: 0;
+  right: -15.5px;
+  top: 0.5px;
   display: block;
   clip-path: polygon(0% 0%, 0% 100%, 100% 100%);
+  /* position: relative; */
+  /* bottom: -0.1px; */
+  /* left: -0.1px; */
 }
 
 .cr-alliance-wins::before {
@@ -196,8 +286,8 @@ th {
   height: 100%;
   width: 16px;
   position: absolute;
-  left: -16px;
-  top: 0;
+  left: -15.5px;
+  top: 0.5px;
   display: block;
   clip-path: polygon(100% 0%, 0% 100%, 100% 100%);
 }

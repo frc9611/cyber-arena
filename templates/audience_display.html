@@ -89,18 +89,18 @@
         <div class="cr-alliance-blind-container">
           <div class="cr-left-alliance-blind-container">
             <span class="cr-alliance-name">Aliança Azul</span>
-            <span class="cr-alliance-wins cr-awl">WINNER</span>
+            <span id="cr-blue-wins-winner-text" class="cr-alliance-wins cr-awl">WINNER</span>
           </div>
           <div class="cr-right-alliance-blind-container">
             <span class="cr-alliance-wins cr-awr">WINNER</span>
-            <span class="cr-alliance-name">Aliança Vermelha</span>
+            <span id="cr-red-wins-winner-text" class="cr-alliance-name">Aliança Vermelha</span>
           </div>
         </div>
         <div class="cr-final-result-container">
           <span class="cr-final-result-title">Resultado</span>
           <div class="cr-final-result-scores-wrapper">
             <div class="cr-blue-alliance-scores">
-              <span class="cr-win-top">WINNER</span>
+              <span id="cr-blue-wins-winner-card-top" class="cr-win-top">WINNER</span>
               <div class="cr-final-score-text-container">
                 <span class="cr-alliance-name">
                   Aliança<br/>
@@ -109,46 +109,87 @@
                 <div class="final-score reversible-left" id="leftFinalScore"></div>
               </div>
               <hr class="cr-hr-final-score">
-              <div class="final-team" id="leftFinalTeam1"></div><img class="final-avatar" id="leftFinalTeam1Avatar" src="" />
-              <div class="final-team" id="leftFinalTeam2"></div><img class="final-avatar" id="leftFinalTeam2Avatar" src="" />
+              <div class="cr-final-team-wrapper">
+                <div class="final-team" id="leftFinalTeam1"></div><img class="final-avatar" id="leftFinalTeam1Avatar" src="" />
+                <div class="final-team" id="leftFinalTeam2"></div><img class="final-avatar" id="leftFinalTeam2Avatar" src="" />
+              </div>
+              <hr class="cr-hr-final-score">
+              <div class="cr-final-score-wrapper">
+                <div class="cr-final-score-type-wrapper">
+                  <span class="cr-final-score-type-name">Autônomo</span>
+                  <span class="cr-score-points-span" id="leftFinalAutoPoints"></span><br />
+                </div>
+                <div class="cr-final-score-type-wrapper">
+                  <span class="cr-final-score-type-name">Teleoperado</span>
+                  <span class="cr-score-points-span" id="leftFinalTeleopPoints"></span><br />
+                </div>
+                <div class="cr-final-score-type-wrapper">
+                  <span class="cr-final-score-type-name">Endgame</span>
+                  <span class="cr-score-points-span" id="leftFinalEndgamePoints"></span><br />
+                </div>
+              </div>
               <!-- <div class="final-team" id="leftFinalTeam3"></div><img class="final-avatar" id="leftFinalTeam3Avatar" src="" /> -->
             </div>
             <div class="cr-red-alliance-scores">
-              <span class="cr-win-top">WINNER</span>
+              <span id="cr-red-wins-winner-card-top" class="cr-win-top">WINNER</span>
               <div class="cr-final-score-text-container">
                 <div class="final-score reversible-right" id="rightFinalScore"></div>
-                <span class="cr-alliance-name">
+                <span class="cr-reversed cr-alliance-name">
                   Aliança<br/>
                   Vermelha
                 </span>
               </div>
+              <hr class="cr-hr-final-score">
+              <div class="cr-final-team-wrapper">
+                <div class="final-team" id="rightFinalTeam1"></div><img class="final-avatar" id="rightFinalTeam1Avatar" src="" />
+                <div class="final-team" id="rightFinalTeam2"></div><img class="final-avatar" id="rightFinalTeam2Avatar" src="" />
+              </div>
+              <hr class="cr-hr-final-score">
+              <div class="cr-final-score-wrapper">
+                <div class="cr-reversed cr-final-score-type-wrapper">
+                  <span class="cr-reversed cr-final-score-type-name">Autônomo</span>
+                  <span class="cr-reversed cr-score-points-span" id="rightFinalAutoPoints"></span><br />
+                </div>
+                <div class="cr-reversed cr-final-score-type-wrapper">
+                  <span class="cr-reversed cr-final-score-type-name">Teleoperado</span>
+                  <span class="cr-reversed cr-score-points-span" id="rightFinalTeleopPoints"></span><br />
+                </div>
+                <div class="cr-reversed cr-final-score-type-wrapper">
+                  <span class="cr-reversed cr-final-score-type-name">Endgame</span>
+                  <span class="cr-reversed cr-score-points-span" id="rightFinalEndgamePoints"></span><br />
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="final-teams" id="leftFinalTeams">
+        
+        <div style="display: none;">
+          <div class="final-teams" id="leftFinalTeams">
+          </div>
+          <div class="final-teams" id="rightFinalTeams">
+            <div class="final-team" id="rightFinalTeam1"></div><img class="final-avatar" id="rightFinalTeam1Avatar" src="" />
+            <div class="final-team" id="rightFinalTeam2"></div><img class="final-avatar" id="rightFinalTeam2Avatar" src="" />
+            <!-- <div class="final-team" id="rightFinalTeam3"></div><img class="final-avatar" id="rightFinalTeam3Avatar" src="" /> -->
+          </div>
+          <div class="final-breakdown" id="leftFinalBreakdown">
+            <span class="valign-cell">
+              <span id="leftFinalAutoPoints"></span><br />
+              <span id="leftFinalTeleopPoints"></span><br />
+              <span id="leftFinalEndgamePoints"></span><br />
+            </span>
+          </div>
+          <div class="final-breakdown" id="centerFinalBreakdown">
+            <span class="valign-cell">Auto<br />Teleop<br />Endgame</span>
+          </div>
+          <div class="final-breakdown" id="rightFinalBreakdown">
+            <span class="valign-cell">
+              <span id="rightFinalAutoPoints"></span><br />
+              <span id="rightFinalTeleopPoints"></span><br />
+              <span id="rightFinalEndgamePoints"></span><br />
+            </span>
+          </div>
         </div>
-        <div class="final-teams" id="rightFinalTeams">
-          <div class="final-team" id="rightFinalTeam1"></div><img class="final-avatar" id="rightFinalTeam1Avatar" src="" />
-          <div class="final-team" id="rightFinalTeam2"></div><img class="final-avatar" id="rightFinalTeam2Avatar" src="" />
-          <!-- <div class="final-team" id="rightFinalTeam3"></div><img class="final-avatar" id="rightFinalTeam3Avatar" src="" /> -->
-        </div>
-        <div class="final-breakdown" id="leftFinalBreakdown">
-          <span class="valign-cell">
-            <span id="leftFinalAutoPoints"></span><br />
-            <span id="leftFinalTeleopPoints"></span><br />
-            <span id="leftFinalEndgamePoints"></span><br />
-          </span>
-        </div>
-        <div class="final-breakdown" id="centerFinalBreakdown">
-          <span class="valign-cell">Auto<br />Teleop<br />Endgame</span>
-        </div>
-        <div class="final-breakdown" id="rightFinalBreakdown">
-          <span class="valign-cell">
-            <span id="rightFinalAutoPoints"></span><br />
-            <span id="rightFinalTeleopPoints"></span><br />
-            <span id="rightFinalEndgamePoints"></span><br />
-          </span>
-        </div>
+
         <div id="finalEventMatchInfo">
           <div class="final-footer">{{.EventSettings.Name}}</div>
           <div class="final-footer" id="finalSeriesStatus">&nbsp;</div>
