@@ -169,6 +169,25 @@ var handleScorePosted = function(data) {
   $("#finalSeriesStatus").attr("data-leader", data.SeriesLeader);
   $("#finalMatchName").text(data.MatchType + " " + data.Match.DisplayName);
 
+  const blueScore = data.BlueScoreSummary.Score
+  const redScore = data.RedScoreSummary.Score
+
+  if (blueScore > redScore) {
+    $("#cr-red-wins-winner-text").css("display", "none");
+    $("#cr-blue-wins-winner-text").css("display", "flex");
+
+    $("#cr-red-wins-winner-card-top").css("color", "transparent");
+    $("#cr-blue-wins-winner-card-top").css("color", "black");
+  }
+  
+  if (redScore > blueScore) {
+    $("#cr-red-wins-winner-text").css("display", "flex");
+    $("#cr-blue-wins-winner-text").css("display", "none");
+  
+    $("#cr-red-wins-winner-card-top").css("color", "black");
+    $("#cr-blue-wins-winner-card-top").css("color", "transparent");
+  }
+
   // Reload the bracket to reflect any changes.
   $("#bracketSvg").attr("src", "/api/bracket/svg?activeMatch=saved&v=" + new Date().getTime());
 };
