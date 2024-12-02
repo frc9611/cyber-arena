@@ -496,12 +496,12 @@ func (web *Web) commitMatchScore(match *model.Match, matchResult *model.MatchRes
 
 		if match.ShouldUpdateEliminationMatches() {
 			if err = web.arena.Database.UpdateAllianceFromMatch(
-				match.ElimRedAlliance, [3]int{match.Red1, match.Red2, match.Red3},
+				match.ElimRedAlliance, [2]int{match.Red1, match.Red2},
 			); err != nil {
 				return err
 			}
 			if err = web.arena.Database.UpdateAllianceFromMatch(
-				match.ElimBlueAlliance, [3]int{match.Blue1, match.Blue2, match.Blue3},
+				match.ElimBlueAlliance, [2]int{match.Blue1, match.Blue2},
 			); err != nil {
 				return err
 			}

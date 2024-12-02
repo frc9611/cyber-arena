@@ -1,0 +1,314 @@
+{{/*
+  Copyright 2023 Team 254. All Rights Reserved.
+  Author: pat@patfairbank.com (Patrick Fairbank)
+
+  UI for entering and tracking fouls and red/yellow cards.
+*/}}
+{{define "title"}}Arbitragem{{end}}
+{{define "body"}}
+
+<div class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0; background-color: #fff1 !important; opacity: 100% !important;">
+    <div class="navbar-header" style="text-align: center !important;">
+      <a class="navbar-brand" href="/" style="font-family: 'Roboto' !important; font-weight: 600;">Arbitragem - CyberArena</a>
+    </div>
+</div>
+
+<div id="matchName"></div>
+<div id="refereePanel">
+  <div style="height: fit-content;">
+    <div style="display: flex;">
+      <div id="blueScore" class="col-lg-2 text-center">&nbsp;</div>
+      <div id="matchTime" class="col-lg-2 text-center">&nbsp;</div>
+      <div id="redScore" class="col-lg-2 text-center">&nbsp;</div>
+    </div>
+    <div style="display: flex; height: fit-content; background-color: white; justify-content: space-between; padding-block: 4px; border-top: solid 1px #0003;">
+      <div id="cr-match-name" class="col-lg-3 text-center" style="text-transform: uppercase;">
+        {{if eq .Match.Type "elimination"}}playoff{{else}}{{.Match.Type}}{{end}}
+        {{if ne .Match.Type "test" }}{{.Match.DisplayName}}{{end}}
+      </div>
+      <div id="matchState" class="col-lg-3 text-center">&nbsp;</div>
+    </div>
+  </div>
+  <div id="scoring">
+    <h3>Pontuação</h3>
+    <div style="display: flex; width: 100%; justify-content: space-evenly;">
+
+      <div class="cr-red-score-block">
+        <div class="cr-score-class-title">Auto</div>
+        <div style="margin-block: 16px;">
+          <div class="cr-score-action-container">
+            <span class="cr-score-action-name-text">Zona Baixa</span><br>
+            <div class="cr-score-buttons-wrapper">
+              <button data-score-type="down" type="button" class="cr-btn-score cr-btn-score-auto"
+              onclick="addBluePoints('ZONA_BAIXA', -3, 1, document.getElementById('cr-curr-value-score-auto-ZONA_BAIXA'))">
+                [-3]
+              </button>
+              
+              <input class="cr-text-input-score-points" type="text" value="0" id="cr-curr-value-score-auto-ZONA_BAIXA" disabled>
+              <button data-score-type="up" type="button" class="cr-btn-score cr-btn-score-auto"
+              onclick="addBluePoints('ZONA_BAIXA', 3, 1, document.getElementById('cr-curr-value-score-auto-ZONA_BAIXA'))">
+                [+3]
+              </button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-block: 16px;">
+          <div class="cr-score-action-container">
+            <span class="cr-score-action-name-text">Plataforma</span><br>
+            <div class="cr-score-buttons-wrapper">
+              <button data-score-type="down" type="button" class="cr-btn-score cr-btn-score-auto"
+              onclick="addBluePoints('PLATAFORMA', -3, 1, document.getElementById('cr-curr-value-score-auto-PLATAFORMA'))">
+                [-3]
+              </button>
+              <input class="cr-text-input-score-points" type="text" value="0" id="cr-curr-value-score-auto-PLATAFORMA" disabled>
+              <button data-score-type="up" type="button" class="cr-btn-score cr-btn-score-auto"
+              onclick="addBluePoints('PLATAFORMA', 3, 1, document.getElementById('cr-curr-value-score-auto-PLATAFORMA'))">
+                [+3]
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="cr-score-class-title">Teleop</div>
+        <div style="margin-block: 16px;">
+          <div class="cr-score-action-container">
+            <span class="cr-score-action-name-text">Zona Baixa</span><br>
+            <div class="cr-score-buttons-wrapper">
+              <button data-score-type="down" type="button" class="cr-btn-score cr-btn-score-teleop"
+              onclick="addBluePoints('ZONA_BAIXA', -1, 2, document.getElementById('cr-curr-value-score-teleop-ZONA_BAIXA'))">
+                [-1]
+              </button>
+              <input class="cr-text-input-score-points" type="text" value="0" id="cr-curr-value-score-teleop-ZONA_BAIXA" disabled>
+              <button data-score-type="up" type="button" class="cr-btn-score cr-btn-score-teleop"
+              onclick="addBluePoints('ZONA_BAIXA', 1, 2, document.getElementById('cr-curr-value-score-teleop-ZONA_BAIXA'))">
+                [+1]
+              </button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-block: 16px;">
+          <div class="cr-score-action-container">
+            <span class="cr-score-action-name-text">Zona Alta</span><br>
+            <div class="cr-score-buttons-wrapper">
+              <button data-score-type="down" type="button" class="cr-btn-score cr-btn-score-teleop"
+              onclick="addBluePoints('ZONA_ALTA', -3, 2, document.getElementById('cr-curr-value-score-teleop-ZONA_ALTA'))">
+                [-3]
+              </button>
+              <input class="cr-text-input-score-points" type="text" value="0" id="cr-curr-value-score-teleop-ZONA_ALTA" disabled>
+              <button data-score-type="up" type="button" class="cr-btn-score cr-btn-score-teleop"
+              onclick="addBluePoints('ZONA_ALTA', 3, 2, document.getElementById('cr-curr-value-score-teleop-ZONA_ALTA'))">
+                [+3]
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="cr-score-class-title">Endgame</div>
+        <div style="margin-block: 16px;">
+          <div class="cr-score-action-container">
+            <span class="cr-score-action-name-text">Plataforma</span><br>
+            <div class="cr-score-buttons-wrapper">
+              <button data-score-type="down" type="button" class="cr-btn-score cr-btn-score-endgame"
+              onclick="addBluePoints('PLATAFORMA', -5, 3, document.getElementById('cr-curr-value-score-endgame-PLATAFORMA'))">
+                [-5]
+              </button>
+              <input class="cr-text-input-score-points" type="text" value="0" id="cr-curr-value-score-endgame-PLATAFORMA" disabled>
+              <button data-score-type="up" type="button" class="cr-btn-score cr-btn-score-endgame"
+              onclick="addBluePoints('PLATAFORMA', 5, 3, document.getElementById('cr-curr-value-score-endgame-PLATAFORMA'))">
+                [+5]
+              </button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-block: 16px;">
+          <div class="cr-score-action-container">
+            <span class="cr-score-action-name-text">Estacionar</span><br>
+            <div class="cr-score-buttons-wrapper">
+              <button data-score-type="down" type="button" class="cr-btn-score cr-btn-score-endgame"
+              onclick="addBluePoints('ESTACIONAR', -2, 3, document.getElementById('cr-curr-value-score-endgame-ESTACIONAR'))">
+                [-2]
+              </button>
+              <input class="cr-text-input-score-points" type="text" value="0" id="cr-curr-value-score-endgame-ESTACIONAR" disabled>
+              <button data-score-type="up" type="button" class="cr-btn-score cr-btn-score-endgame"
+              onclick="addBluePoints('ESTACIONAR', 2, 3, document.getElementById('cr-curr-value-score-endgame-ESTACIONAR'))">
+                [+2]
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+
+
+
+
+
+      <div class="cr-red-score-block">
+        <div class="cr-score-class-title">Auto</div>
+        <div style="margin-block: 16px;">
+          <div class="cr-score-action-container">
+            <span class="cr-score-action-name-text">Zona Baixa</span><br>
+            <div class="cr-score-buttons-wrapper">
+              <button data-score-type="down" type="button" class="cr-btn-score cr-btn-score-auto"
+              onclick="addRedPoints('ZONA_BAIXA', -3, 1, document.getElementById('cr-curr-value-red-score-auto-ZONA_BAIXA'))">
+                [-3]
+              </button>
+              <input class="cr-text-input-score-points" type="text" value="0" id="cr-curr-value-red-score-auto-ZONA_BAIXA" disabled>
+              <button data-score-type="up" type="button" class="cr-btn-score cr-btn-score-auto"
+              onclick="addRedPoints('ZONA_BAIXA', 3, 1, document.getElementById('cr-curr-value-red-score-auto-ZONA_BAIXA'))">
+                [+3]
+              </button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-block: 16px;">
+          <div class="cr-score-action-container">
+            <span class="cr-score-action-name-text">Plataforma</span><br>
+            <div class="cr-score-buttons-wrapper">
+              <button data-score-type="down" type="button" class="cr-btn-score cr-btn-score-auto"
+              onclick="addRedPoints('PLATAFORMA', -3, 1, document.getElementById('cr-curr-value-red-score-auto-PLATAFORMA'))">
+                [-3]
+              </button>
+              <input class="cr-text-input-score-points" type="text" value="0" id="cr-curr-value-red-score-auto-PLATAFORMA" disabled>
+              <button data-score-type="up" type="button" class="cr-btn-score cr-btn-score-auto"
+              onclick="addRedPoints('PLATAFORMA', 3, 1, document.getElementById('cr-curr-value-red-score-auto-PLATAFORMA'))">
+                [+3]
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="cr-score-class-title">Teleop</div>
+        <div style="margin-block: 16px;">
+          <div class="cr-score-action-container">
+            <span class="cr-score-action-name-text">Zona Baixa</span><br>
+            <div class="cr-score-buttons-wrapper">
+              <button data-score-type="down" type="button" class="cr-btn-score cr-btn-score-teleop"
+              onclick="addRedPoints('ZONA_BAIXA', -1, 2, document.getElementById('cr-curr-value-red-score-teleop-ZONA_BAIXA'))">
+                [-1]
+              </button>
+              <input class="cr-text-input-score-points" type="text" value="0" id="cr-curr-value-red-score-teleop-ZONA_BAIXA" disabled>
+              <button data-score-type="up" type="button" class="cr-btn-score cr-btn-score-teleop"
+              onclick="addRedPoints('ZONA_BAIXA', 1, 2, document.getElementById('cr-curr-value-red-score-teleop-ZONA_BAIXA'))">
+                [+1]
+              </button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-block: 16px;">
+          <div class="cr-score-action-container">
+            <span class="cr-score-action-name-text">Zona Alta</span><br>
+            <div class="cr-score-buttons-wrapper">
+              <button data-score-type="down" type="button" class="cr-btn-score cr-btn-score-teleop"
+              onclick="addRedPoints('ZONA_ALTA', -3, 2, document.getElementById('cr-curr-value-red-score-teleop-ZONA_ALTA'))">
+                [-3]
+              </button>
+              <input class="cr-text-input-score-points" type="text" value="0" id="cr-curr-value-red-score-teleop-ZONA_ALTA" disabled>
+              
+              <button data-score-type="up" type="button" class="cr-btn-score cr-btn-score-teleop"
+              onclick="addRedPoints('ZONA_ALTA', 3, 2, document.getElementById('cr-curr-value-red-score-teleop-ZONA_ALTA'))">
+                [+3]
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="cr-score-class-title">Endgame</div>
+        <div style="margin-block: 16px;">
+          <div class="cr-score-action-container">
+            <span class="cr-score-action-name-text">Plataforma</span><br>
+            <div class="cr-score-buttons-wrapper">
+              <button data-score-type="down" type="button" class="cr-btn-score cr-btn-score-endgame"
+              onclick="addRedPoints('PLATAFORMA', -5, 3, document.getElementById('cr-curr-value-red-score-endgame-PLATAFORMA'))">
+                [-5]
+              </button>
+              <input class="cr-text-input-score-points" type="text" value="0" id="cr-curr-value-red-score-endgame-PLATAFORMA" disabled>
+              <button data-score-type="up" type="button" class="cr-btn-score cr-btn-score-endgame"
+              onclick="addRedPoints('PLATAFORMA', 5, 3, document.getElementById('cr-curr-value-red-score-endgame-PLATAFORMA'))">
+                [+5]
+              </button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-block: 16px;">
+          <div class="cr-score-action-container">
+            <span class="cr-score-action-name-text">Estacionar</span><br>
+            <div class="cr-score-buttons-wrapper">
+              <button data-score-type="down" type="button" class="cr-btn-score cr-btn-score-endgame"
+              onclick="addRedPoints('ESTACIONAR', -2, 3, document.getElementById('cr-curr-value-red-score-endgame-ESTACIONAR'))">
+                [-2]
+              </button>
+              <input class="cr-text-input-score-points" type="text" value="0" id="cr-curr-value-red-score-endgame-ESTACIONAR" disabled>
+              <button data-score-type="up" type="button" class="cr-btn-score cr-btn-score-endgame"
+              onclick="addRedPoints('ESTACIONAR', 2, 3, document.getElementById('cr-curr-value-red-score-endgame-ESTACIONAR'))">
+                [+2]
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="fouls">
+    <h3>Penalidades</h3>
+    <div class="cr-referee-panel-fouls-wrapper" id="foulButtons">
+      <div>
+        <span class="cr-referee-panel-alliance-name">Aliança Vermelha</span>
+        <span class="cr-referee-panel-title">AUTO</span>
+        <button class="foul-button red-foul" data-color="red" onclick="addFoul('red', 10);">Cruzou a linha central</button>
+        <span class="cr-referee-panel-title">GERAL</span>
+        <button class="foul-button red-foul" data-color="red" onclick="addFoul('red', 5);">Bola fora do campo intencionalmente</button>
+        <button class="foul-button red-foul" data-color="red" onclick="addFoul('red', 3);">Possuiu 2 bolas</button>
+        <div style="display: flex; gap: 8px;">
+          <button style="width: auto; flex-grow: 1;" class="foul-button red-foul" data-color="red" onclick="addFoul('red', 3 * (document.getElementById('cr-referee-panel-red-foul-balls').value - 1));">Possuiu 'n' bolas (Modificar ao lado)</button>
+          <input style="width: 100px;" value="3" type="number" id="cr-referee-panel-red-foul-balls">
+        </div>
+        <button class="foul-button red-foul" data-color="red" onclick="addFoul('red', 5);">Jogador humano retendo bola</button>
+      </div>
+      
+      <div>
+        <span class="cr-referee-panel-alliance-name">Aliança Azul</span>
+        <span class="cr-referee-panel-title">AUTO</span>
+        <button class="foul-button blue-foul" data-color="blue" onclick="addFoul('blue', 10);">Cruzou a linha central</button>
+        <span class="cr-referee-panel-title">GERAL</span>
+        <button class="foul-button blue-foul" data-color="blue" onclick="addFoul('blue', 5);">Bola fora do campo intencionalmente</button>
+        <button class="foul-button blue-foul" data-color="blue" onclick="addFoul('blue', 3);">Possuiu 2 bolas</button>
+        <div style="display: flex; gap: 8px;">
+          <button style="width: auto; flex-grow: 1;" class="foul-button blue-foul" data-color="blue" onclick="addFoul('blue', 3 * (document.getElementById('cr-referee-panel-blue-foul-balls').value - 1));">Possuiu 'n' bolas (Modificar ao lado)</button>
+          <input style="width: 100px;" value="3" type="number" id="cr-referee-panel-blue-foul-balls">
+        </div>
+        <button class="foul-button blue-foul" data-color="blue" onclick="addFoul('blue', 5);">Jogador humano retendo bola</button>
+      </div>
+    </div>
+    <div id="foulList"></div>
+  </div>
+  <div id="cards" class="headRef-dependent">
+    <h3>Cartões Vermelhos/Amarelos</h3>
+    <div class="alliance-cards" id="redCards">
+      {{range $i := seq 3}}
+        {{template "teamCard" dict "alliance" "red" "position" $i}}
+      {{end}}
+    </div>
+    <div class="alliance-cards" id="blueCards">
+      {{range $i := seq 3}}
+        {{template "teamCard" dict "alliance" "blue" "position" $i}}
+      {{end}}
+    </div>
+    <div class="scoring-status" id="redScoreStatus"></div>
+    <div class="scoring-status" id="blueScoreStatus"></div>
+  </div>
+{{end}}
+{{define "head"}}
+<link rel="manifest" href="/static/manifest/referee.manifest">
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<link href="/static/css/referee_panel.css" rel="stylesheet">
+{{end}}
+{{define "script"}}
+<script src="/static/js/match_timing.js"></script>
+<script src="/static/js/referee_panel.js"></script>
+{{end}}
+{{define "teamCard"}}
+<div class="team-card" id="{{.alliance}}Team{{.position}}Card" data-alliance="{{.alliance}}" onclick="cycleCard(this);">
+</div>
+{{end}}

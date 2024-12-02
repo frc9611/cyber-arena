@@ -4,10 +4,11 @@
 package web
 
 import (
+	"testing"
+
 	"github.com/Team254/cheesy-arena-lite/game"
 	"github.com/Team254/cheesy-arena-lite/model"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestAllianceSelection(t *testing.T) {
@@ -16,7 +17,7 @@ func TestAllianceSelection(t *testing.T) {
 	web.arena.AllianceSelectionAlliances = []model.Alliance{}
 	cachedRankedTeams = []*RankedTeam{}
 	web.arena.EventSettings.NumElimAlliances = 15
-	web.arena.EventSettings.SelectionRound3Order = "L"
+	web.arena.EventSettings.SelectionRound2Order = "L"
 	for i := 1; i <= 10; i++ {
 		web.arena.Database.CreateRanking(&game.Ranking{TeamId: 100 + i, Rank: i})
 	}
@@ -43,7 +44,7 @@ func TestAllianceSelection(t *testing.T) {
 	assert.NotContains(t, recorder.Body.String(), "Captain")
 	assert.NotContains(t, recorder.Body.String(), ">110<")
 	web.arena.EventSettings.NumElimAlliances = 3
-	web.arena.EventSettings.SelectionRound3Order = ""
+	web.arena.EventSettings.SelectionRound2Order = ""
 	recorder = web.postHttpResponse("/alliance_selection/start", "")
 	assert.Equal(t, 303, recorder.Code)
 	if assert.Equal(t, 3, len(web.arena.AllianceSelectionAlliances)) {
@@ -220,8 +221,8 @@ func TestAllianceSelectionAutofocus(t *testing.T) {
 	web.arena.EventSettings.NumElimAlliances = 2
 
 	// Straight draft.
+	web.arena.EventSettings.SelectionRound1Order = "F"
 	web.arena.EventSettings.SelectionRound2Order = "F"
-	web.arena.EventSettings.SelectionRound3Order = "F"
 	recorder := web.postHttpResponse("/alliance_selection/start", "")
 	assert.Equal(t, 303, recorder.Code)
 	i, j := web.determineNextCell()
@@ -261,8 +262,8 @@ func TestAllianceSelectionAutofocus(t *testing.T) {
 	assert.Equal(t, -1, j)
 
 	// Double-serpentine draft.
+	web.arena.EventSettings.SelectionRound1Order = "L"
 	web.arena.EventSettings.SelectionRound2Order = "L"
-	web.arena.EventSettings.SelectionRound3Order = "L"
 	recorder = web.postHttpResponse("/alliance_selection/reset", "")
 	assert.Equal(t, 303, recorder.Code)
 	recorder = web.postHttpResponse("/alliance_selection/start", "")

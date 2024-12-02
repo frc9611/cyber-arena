@@ -29,6 +29,7 @@ type ArenaNotifiers struct {
 	RealtimeScoreNotifier              *websocket.Notifier
 	ReloadDisplaysNotifier             *websocket.Notifier
 	ScorePostedNotifier                *websocket.Notifier
+	PointsContextNotifier			   *websocket.Notifier
 }
 
 type MatchTimeMessage struct {
@@ -60,6 +61,7 @@ func (arena *Arena) configureNotifiers() {
 	arena.RealtimeScoreNotifier = websocket.NewNotifier("realtimeScore", arena.generateRealtimeScoreMessage)
 	arena.ReloadDisplaysNotifier = websocket.NewNotifier("reload", nil)
 	arena.ScorePostedNotifier = websocket.NewNotifier("scorePosted", arena.generateScorePostedMessage)
+	arena.PointsContextNotifier = websocket.NewNotifier("pointsContext", arena.generatePointsContextMessage)
 }
 
 func (arena *Arena) generateAllianceSelectionMessage() interface{} {
@@ -188,6 +190,13 @@ func (arena *Arena) generateRealtimeScoreMessage() interface{} {
 	fields.Blue = getAudienceAllianceScoreFields(arena.BlueScore, arena.BlueScoreSummary())
 	fields.MatchState = arena.MatchState
 	return &fields
+}
+
+func (arena *Arena) generatePointsContextMessage() interface{} {
+	if arena.CurrentMatch == nil {
+		return nil
+	}
+	return arena.CurrentMatch.ScoreContext
 }
 
 func (arena *Arena) generateScorePostedMessage() interface{} {

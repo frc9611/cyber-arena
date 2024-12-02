@@ -54,9 +54,8 @@
               <th>Alliance #</th>
               <th>Captain</th>
               <th>Pick 1</th>
-              <th>Pick 2</th>
-              {{if (index .Alliances 0).TeamIds | len | eq 4}}
-                <th>Pick 3</th>
+              {{if (index .Alliances 0).TeamIds | len | eq 3}}
+                <th>Pick 2</th>
               {{end}}
             </tr>
           </thead>

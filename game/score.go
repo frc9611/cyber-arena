@@ -9,6 +9,7 @@ type Score struct {
 	AutoPoints    int
 	TeleopPoints  int
 	EndgamePoints int
+	FoulPoints	  int
 }
 
 // Calculates and returns the summary fields used for ranking and display.
@@ -18,7 +19,8 @@ func (score *Score) Summarize() *ScoreSummary {
 	summary.AutoPoints = score.AutoPoints
 	summary.TeleopPoints = score.TeleopPoints
 	summary.EndgamePoints = score.EndgamePoints
-	summary.Score = summary.AutoPoints + summary.TeleopPoints + summary.EndgamePoints
+	summary.FoulPoints = score.FoulPoints
+	summary.Score = summary.AutoPoints + summary.TeleopPoints + summary.EndgamePoints + summary.FoulPoints
 
 	return summary
 }
@@ -27,7 +29,8 @@ func (score *Score) Summarize() *ScoreSummary {
 func (score *Score) Equals(other *Score) bool {
 	if score.AutoPoints != other.AutoPoints ||
 		score.TeleopPoints != other.TeleopPoints ||
-		score.EndgamePoints != other.EndgamePoints {
+		score.EndgamePoints != other.EndgamePoints ||
+		score.FoulPoints != other.FoulPoints {
 		return false
 	}
 

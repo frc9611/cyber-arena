@@ -15,7 +15,7 @@ func CreateTestAlliances(database *model.Database, allianceCount int) {
 		alliance := model.Alliance{
 			Id:      i,
 			TeamIds: []int{100*i + 1, 100*i + 2, 100*i + 3, 100*i + 4},
-			Lineup:  [3]int{100*i + 2, 100*i + 1, 100*i + 3},
+			Lineup:  [2]int{100*i + 2, 100*i + 1},
 		}
 		database.CreateAlliance(&alliance)
 	}

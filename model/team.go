@@ -19,6 +19,7 @@ type Team struct {
 	Accomplishments string
 	WpaKey          string
 	HasConnected    bool
+	PassedInspection bool
 	FtaNotes        string
 }
 

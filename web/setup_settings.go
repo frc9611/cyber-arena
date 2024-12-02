@@ -7,7 +7,6 @@ package web
 
 import (
 	"fmt"
-	"github.com/Team254/cheesy-arena-lite/model"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -15,6 +14,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Team254/cheesy-arena-lite/model"
 )
 
 // Shows the event settings editing page.
@@ -54,8 +55,8 @@ func (web *Web) settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	eventSettings.NumElimAlliances = numAlliances
-	eventSettings.SelectionRound2Order = r.PostFormValue("selectionRound2Order")
-	eventSettings.SelectionRound3Order = r.PostFormValue("selectionRound3Order")
+	eventSettings.SelectionRound1Order = r.PostFormValue("SelectionRound1Order")
+	eventSettings.SelectionRound2Order = r.PostFormValue("SelectionRound2Order")
 	eventSettings.TBADownloadEnabled = r.PostFormValue("TBADownloadEnabled") == "on"
 	eventSettings.TbaPublishingEnabled = r.PostFormValue("tbaPublishingEnabled") == "on"
 	eventSettings.TbaEventCode = r.PostFormValue("tbaEventCode")

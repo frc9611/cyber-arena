@@ -1,0 +1,220 @@
+.cr-referee-panel-alliance-name {
+  display: block;
+  color: white;
+  font-size: 32px;
+  font-weight: 600;
+  font-family: "Roboto";
+}
+
+.cr-referee-panel-title {
+  display: block;
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+  font-family: "Roboto";
+  opacity: .7;
+  margin-block: 4px;
+  margin-left: 4px;
+}
+
+#cr-referee-panel-blue-foul-balls,
+#cr-referee-panel-red-foul-balls,
+.foul-button {
+  padding-block: 16px;
+  width: 500px;
+  font-size: 16px;
+  font-weight: 600;
+  border: solid 1px #fff3;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  color: white;
+  background-color: transparent;
+}
+
+.foul-button[data-color="red"] {
+  background-color: #d62d33 !important;
+}
+
+.foul-button[data-color="blue"] {
+  background-color: #0066B3 !important;
+}
+
+.cr-referee-panel-fouls-wrapper {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
+
+.cr-referee-panel-fouls-wrapper > div {
+  margin-block: 8px;
+}
+
+#cr-referee-panel-blue-foul-balls,
+#cr-referee-panel-red-foul-balls {
+  background-color: white;
+  color: black;
+  padding: 4px 8px;
+  font-size: 24px;
+}
+
+h3 {
+  display: block;
+  color: white;
+  font-size: 32px;
+  font-weight: 600;
+  font-family: "Roboto";
+  background-color: #fff1;
+  border-top: #fff3 solid 1px;
+  box-shadow: 0 6px 8px 2px #0005;
+  padding: 8px 12px;
+  margin-bottom: 24px;
+}
+
+.container {
+  background-color: #fff1;
+  padding: 0;
+}
+
+#redScore {
+  background-color: #ED1C24 !important;
+}
+
+#blueScore {
+  background-color: #0066B3 !important;
+}
+
+#blueScore {
+  flex-grow: 1;
+  height: 72px;
+  border: none;
+  display: flex;
+  align-items: center;
+  color: white;
+  font-size: 48px;
+  font-weight: 600;
+}
+
+#matchTime {
+  height: 72px;
+  padding-inline: 32px;
+  padding-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Roboto";
+  font-weight: 700;
+  font-style: normal;
+  font-size: 55px;
+  color: #000;
+  background-color: white !important;
+  font-variant-numeric: tabular-nums;
+}
+
+#redScore {
+  flex-grow: 1;
+  height: 72px;
+  border: none;
+  display: flex;
+  align-items: center;
+  color: white;
+  font-size: 48px;
+  font-weight: 600;
+}
+
+#blueScore,
+#matchTime,
+#redScore {
+  margin: 0;
+  justify-content: center;
+}
+
+#cr-match-name {
+  background-color: white !important;
+  border: none;
+  font-weight: 600;
+  font-family: "Roboto";
+  font-size: 20px;
+}
+
+#matchState {
+  background-color: white !important;
+  border: none;
+  font-weight: 600;
+  font-family: "Roboto";
+  font-size: 20px;
+}
+
+.cr-score-action-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cr-score-buttons-wrapper {
+  display: flex;
+  gap: 0;
+}
+
+.cr-score-action-name-text {
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: -16px;
+  margin-top: -4px;
+}
+
+.cr-red-score-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background-color: #fff1;
+  width: 500px;
+  box-shadow: 0 6px 8px 2px #0005;
+}
+
+.cr-score-class-title {
+  color: white;
+  font-size: 32px;
+  font-weight: 600;
+  padding-top: 12px;
+  border-top: #fff3 solid 1px;
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+}
+
+[data-score-type] {
+  padding-block: 8px !important;
+  width: 100px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  color: white !important;
+  margin: 0 !important;
+}
+
+[data-score-type="up"] {
+  background-color: #3d8933 !important;
+  border-radius: 0 4px 4px 0;
+}
+
+[data-score-type="down"] {
+  background-color: #de6832 !important;
+  border-radius: 4px 0 0 4px;
+}
+
+.cr-text-input-score-points {
+  background-color: white;
+  padding: 8px 12px;
+  width: 72px;
+  display: inline-flex;
+  justify-content: center;
+  border: none;
+  color: #000;
+  font-weight: 600;
+}

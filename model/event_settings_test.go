@@ -4,8 +4,9 @@
 package model
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestEventSettingsReadWrite(t *testing.T) {
@@ -21,8 +22,8 @@ func TestEventSettingsReadWrite(t *testing.T) {
 			Name:                        "Untitled Event",
 			ElimType:                    "single",
 			NumElimAlliances:            8,
-			SelectionRound2Order:        "L",
-			SelectionRound3Order:        "",
+			SelectionRound1Order:        "L",
+			SelectionRound2Order:        "",
 			TBADownloadEnabled:          true,
 			ApTeamChannel:               157,
 			ApAdminChannel:              0,
@@ -38,8 +39,8 @@ func TestEventSettingsReadWrite(t *testing.T) {
 
 	eventSettings.Name = "Chezy Champs"
 	eventSettings.NumElimAlliances = 6
-	eventSettings.SelectionRound2Order = "F"
-	eventSettings.SelectionRound3Order = "L"
+	eventSettings.SelectionRound1Order = "F"
+	eventSettings.SelectionRound2Order = "L"
 	err = db.UpdateEventSettings(eventSettings)
 	assert.Nil(t, err)
 	eventSettings2, err := db.GetEventSettings()

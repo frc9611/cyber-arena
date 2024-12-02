@@ -12,8 +12,8 @@ type EventSettings struct {
 	Name                        string
 	ElimType                    string
 	NumElimAlliances            int
+	SelectionRound1Order        string
 	SelectionRound2Order        string
-	SelectionRound3Order        string
 	TBADownloadEnabled          bool
 	TbaPublishingEnabled        bool
 	TbaEventCode                string
@@ -55,8 +55,8 @@ func (database *Database) GetEventSettings() (*EventSettings, error) {
 		Name:                        "Untitled Event",
 		ElimType:                    "single",
 		NumElimAlliances:            8,
-		SelectionRound2Order:        "L",
-		SelectionRound3Order:        "",
+		SelectionRound1Order:        "L",
+		SelectionRound2Order:        "",
 		TBADownloadEnabled:          true,
 		ApTeamChannel:               157,
 		ApAdminChannel:              0,

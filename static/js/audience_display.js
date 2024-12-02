@@ -176,15 +176,18 @@ var handleScorePosted = function(data) {
     $("#cr-red-wins-winner-text").css("display", "none");
     $("#cr-blue-wins-winner-text").css("display", "flex");
 
-    $("#cr-red-wins-winner-card-top").css("color", "transparent");
+    $("#cr-red-wins-winner-card-top").css("color", "transparent");  
+    $("#cr-red-wins-winner-card-top").css("border", "0");
     $("#cr-blue-wins-winner-card-top").css("color", "black");
   }
   
   if (redScore > blueScore) {
     $("#cr-red-wins-winner-text").css("display", "flex");
     $("#cr-blue-wins-winner-text").css("display", "none");
+
   
     $("#cr-red-wins-winner-card-top").css("color", "black");
+    $("#cr-blue-wins-winner-card-top").css("border", "0");
     $("#cr-blue-wins-winner-card-top").css("color", "transparent");
   }
 

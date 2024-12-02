@@ -31,6 +31,8 @@ var renderResults = function(alliance) {
   getInputElement(alliance, "AutoPoints").val(result.score.AutoPoints);
   getInputElement(alliance, "TeleopPoints").val(result.score.TeleopPoints);
   getInputElement(alliance, "EndgamePoints").val(result.score.EndgamePoints);
+  getInputElement(alliance, "FoulPoints").val(result.score.FoulPoints);
+
 };
 
 // Converts the current form values back into JSON structures and caches them.
@@ -44,6 +46,7 @@ var updateResults = function(alliance) {
   result.score.AutoPoints = parseInt(formData[alliance + "AutoPoints"]);
   result.score.TeleopPoints = parseInt(formData[alliance + "TeleopPoints"]);
   result.score.EndgamePoints = parseInt(formData[alliance + "EndgamePoints"]);
+  result.score.FoulPoints = parseInt(formData[alliance + "FoulPoints"]);
 };
 
 // Returns the form input element having the given parameters.

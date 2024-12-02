@@ -8,13 +8,14 @@ package web
 import (
 	"bytes"
 	"fmt"
-	"github.com/Team254/cheesy-arena-lite/model"
-	"github.com/dchest/uniuri"
-	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Team254/cheesy-arena-lite/model"
+	"github.com/dchest/uniuri"
+	"github.com/gorilla/mux"
 )
 
 const wpaKeyLength = 8
@@ -168,6 +169,7 @@ func (web *Web) teamEditPostHandler(w http.ResponseWriter, r *http.Request) {
 	team.RookieYear, _ = strconv.Atoi(r.PostFormValue("rookieYear"))
 	team.RobotName = r.PostFormValue("robotName")
 	team.Accomplishments = r.PostFormValue("accomplishments")
+	team.PassedInspection = r.PostFormValue("passedInspection") == "on"
 	if web.arena.EventSettings.NetworkSecurityEnabled {
 		team.WpaKey = r.PostFormValue("wpaKey")
 		if len(team.WpaKey) < 8 || len(team.WpaKey) > 63 {
@@ -305,6 +307,7 @@ func (web *Web) populateOfficialTeamInfo(team *model.Team) error {
 	team.StateProv = tbaTeam.StateProv
 	team.Country = tbaTeam.Country
 	team.RookieYear = tbaTeam.RookieYear
+	team.PassedInspection = false
 	team.RobotName, err = web.arena.TbaClient.GetRobotName(team.Id, time.Now().Year())
 	if err != nil {
 		return err

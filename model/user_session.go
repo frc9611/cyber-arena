@@ -12,6 +12,7 @@ type UserSession struct {
 	Token     string
 	Username  string
 	CreatedAt time.Time
+	Role      string  // "ADMIN" | "SCORE_REFEREE"
 }
 
 func (database *Database) CreateUserSession(session *UserSession) error {

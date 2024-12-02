@@ -241,8 +241,7 @@ func (matchup *Matchup) update(database *model.Database) error {
 		if !match.IsComplete() {
 			// Update the teams in the match if they are not yet set or are incorrect.
 			changed := false
-			if match.Red1 != redAlliance.Lineup[0] || match.Red2 != redAlliance.Lineup[1] ||
-				match.Red3 != redAlliance.Lineup[2] {
+			if match.Red1 != redAlliance.Lineup[0] || match.Red2 != redAlliance.Lineup[1]{
 				positionRedTeams(&match, redAlliance)
 				match.ElimRedAlliance = redAlliance.Id
 				changed = true
@@ -250,8 +249,7 @@ func (matchup *Matchup) update(database *model.Database) error {
 					return err
 				}
 			}
-			if match.Blue1 != blueAlliance.Lineup[0] || match.Blue2 != blueAlliance.Lineup[1] ||
-				match.Blue3 != blueAlliance.Lineup[2] {
+			if match.Blue1 != blueAlliance.Lineup[0] || match.Blue2 != blueAlliance.Lineup[1] {
 				positionBlueTeams(&match, blueAlliance)
 				match.ElimBlueAlliance = blueAlliance.Id
 				changed = true
@@ -314,12 +312,10 @@ func (matchup *Matchup) update(database *model.Database) error {
 func positionRedTeams(match *model.Match, alliance *model.Alliance) {
 	match.Red1 = alliance.Lineup[0]
 	match.Red2 = alliance.Lineup[1]
-	match.Red3 = alliance.Lineup[2]
 }
 
 // Assigns the lineup from the alliance into the blue team slots for the match.
 func positionBlueTeams(match *model.Match, alliance *model.Alliance) {
 	match.Blue1 = alliance.Lineup[0]
 	match.Blue2 = alliance.Lineup[1]
-	match.Blue3 = alliance.Lineup[2]
 }

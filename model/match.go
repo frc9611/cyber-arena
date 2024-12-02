@@ -6,10 +6,11 @@
 package model
 
 import (
-	"github.com/Team254/cheesy-arena-lite/game"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/Team254/cheesy-arena-lite/game"
 )
 
 type Match struct {
@@ -37,6 +38,7 @@ type Match struct {
 	StartedAt        time.Time
 	ScoreCommittedAt time.Time
 	Status           game.MatchStatus
+	ScoreContext	 string
 }
 
 func (database *Database) CreateMatch(match *Match) error {

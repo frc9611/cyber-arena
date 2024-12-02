@@ -10,7 +10,7 @@ import "sort"
 type Alliance struct {
 	Id      int `db:"id,manual"`
 	TeamIds []int
-	Lineup  [3]int
+	Lineup  [2]int
 }
 
 func (database *Database) CreateAlliance(alliance *Alliance) error {
@@ -45,7 +45,7 @@ func (database *Database) GetAllAlliances() ([]Alliance, error) {
 }
 
 // Updates the alliance, if necessary, to include whoever played in the match, in case there was a substitute.
-func (database *Database) UpdateAllianceFromMatch(allianceId int, matchTeamIds [3]int) error {
+func (database *Database) UpdateAllianceFromMatch(allianceId int, matchTeamIds [2]int) error {
 	alliance, err := database.GetAllianceById(allianceId)
 	if err != nil {
 		return err
@@ -109,7 +109,7 @@ func (database *Database) getOffFieldTeamIdsForAlliance(allianceId int, teamId1,
 	}
 	offFieldTeamIds := []int{}
 	for _, allianceTeamId := range alliance.TeamIds {
-		if allianceTeamId != teamId1 && allianceTeamId != teamId2 && allianceTeamId != teamId3 {
+		if allianceTeamId != teamId1 && allianceTeamId != teamId2 {
 			offFieldTeamIds = append(offFieldTeamIds, allianceTeamId)
 		}
 	}

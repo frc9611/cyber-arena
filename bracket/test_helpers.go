@@ -32,6 +32,6 @@ func scoreMatch(database *model.Database, displayName string, winner game.MatchS
 	match, _ := database.GetMatchByName("elimination", displayName)
 	match.Status = winner
 	database.UpdateMatch(match)
-	database.UpdateAllianceFromMatch(match.ElimRedAlliance, [3]int{match.Red1, match.Red2, match.Red3})
-	database.UpdateAllianceFromMatch(match.ElimBlueAlliance, [3]int{match.Blue1, match.Blue2, match.Blue3})
+	database.UpdateAllianceFromMatch(match.ElimRedAlliance, [2]int{match.Red1, match.Red2})
+	database.UpdateAllianceFromMatch(match.ElimBlueAlliance, [2]int{match.Blue1, match.Blue2})
 }

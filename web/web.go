@@ -150,6 +150,8 @@ func (web *Web) newHandler() http.Handler {
 	router.HandleFunc("/match_review", web.matchReviewHandler).Methods("GET")
 	router.HandleFunc("/match_review/{matchId}/edit", web.matchReviewEditGetHandler).Methods("GET")
 	router.HandleFunc("/match_review/{matchId}/edit", web.matchReviewEditPostHandler).Methods("POST")
+	router.HandleFunc("/referee", web.refereePanelHandler).Methods("GET")
+	router.HandleFunc("/referee/websocket", web.refereePanelWebsocketHandler).Methods("GET")
 	router.HandleFunc("/reports/csv/backups", web.backupTeamsCsvReportHandler).Methods("GET")
 	router.HandleFunc("/reports/csv/rankings", web.rankingsCsvReportHandler).Methods("GET")
 	router.HandleFunc("/reports/csv/schedule/{type}", web.scheduleCsvReportHandler).Methods("GET")
