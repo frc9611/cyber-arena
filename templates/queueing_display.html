@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Queueing Display - {{.EventSettings.Name}} - Cheesy Arena</title>
+    <title>Queueing Display - {{.EventSettings.Name}} - Cyber Arena</title>
     <link rel="shortcut icon" href="/static/img/favicon.ico">
     <link rel="stylesheet" href="/static/css/lib/bootstrap.min.css" />
     <link rel="stylesheet" href="/static/css/cheesy-arena.css" />
@@ -52,6 +52,7 @@
             </div>
           {{end}}
         </div>
+        
         <div class="col-lg-1 avatars text-right">
           <img class="avatar" src="/api/teams/{{$match.Red1}}/avatar" /><br />
           <img class="avatar" src="/api/teams/{{$match.Red2}}/avatar" /><br />
@@ -102,7 +103,9 @@
           <img class="avatar" src="/api/teams/{{$match.Blue3}}/avatar" />
         </div>
       </div>
+      
     {{end}}
+    
     <div id="earlyLateMessage" class="col-lg-10 col-lg-offset-1"></div>
   </body>
   <script src="/static/js/lib/jquery.min.js"></script>
