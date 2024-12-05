@@ -55,21 +55,6 @@ const addFoul = function(alliance, points) {
   websocket.send("addFoul", {Alliance: alliance, Points: points});
 }
 
-// Cycles through no card, yellow card, and red card.
-var cycleCard = function(cardButton) {
-  var newCard = "";
-  if ($(cardButton).attr("data-card") === "") {
-    newCard = "yellow";
-  } else if ($(cardButton).attr("data-card") === "yellow") {
-    newCard = "red";
-  }
-  websocket.send(
-    "card",
-    {Alliance: $(cardButton).attr("data-alliance"), TeamId: parseInt($(cardButton).attr("data-team")), Card: newCard}
-  );
-  $(cardButton).attr("data-card", newCard);
-};
-
 // Sends a websocket message to signal to the teams that they may enter the field.
 var signalReset = function() {
   websocket.send("signalReset");
@@ -127,13 +112,6 @@ const handleContext = function(data) {
 // Handles a websocket message to update the teams for the current match.
 var handleMatchLoad = function(data) {
   $("#matchName").text(data.Match.LongName);
-
-  setTeamCard("red", 1, data.Teams["R1"]);
-  setTeamCard("red", 2, data.Teams["R2"]);
-  setTeamCard("red", 3, data.Teams["R3"]);
-  setTeamCard("blue", 1, data.Teams["B1"]);
-  setTeamCard("blue", 2, data.Teams["B2"]);
-  setTeamCard("blue", 3, data.Teams["B3"]);
 };
 
 // Handles a websocket message to update the match status.
@@ -191,21 +169,6 @@ const handleScoringStatus = function(data) {
   $("#redScoreStatus").attr("data-ready", data.RedScoreReady);
   $("#blueScoreStatus").text("Blue Scoring " + data.NumBlueScoringPanelsReady + "/" + data.NumBlueScoringPanels);
   $("#blueScoreStatus").attr("data-ready", data.BlueScoreReady);
-}
-
-// Populates the red/yellow card button for a given team.
-const setTeamCard = function(alliance, position, team) {
-  const cardButton = $(`#${alliance}Team${position}Card`);
-  if (team === null) {
-    cardButton.text(0);
-    cardButton.attr("data-team", 0)
-    cardButton.attr("data-old-yellow-card", "");
-  } else {
-    cardButton.text(team.Id);
-    cardButton.attr("data-team", team.Id)
-    cardButton.attr("data-old-yellow-card", team.YellowCard);
-  }
-  cardButton.attr("data-card", "");
 }
 
 // Produces a hash code of the given object for use in equality comparisons.

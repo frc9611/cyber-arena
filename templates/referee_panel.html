@@ -283,21 +283,6 @@
     </div>
     <div id="foulList"></div>
   </div>
-  <div id="cards" class="headRef-dependent">
-    <h3>Cartões Vermelhos/Amarelos</h3>
-    <div class="alliance-cards" id="redCards">
-      {{range $i := seq 3}}
-        {{template "teamCard" dict "alliance" "red" "position" $i}}
-      {{end}}
-    </div>
-    <div class="alliance-cards" id="blueCards">
-      {{range $i := seq 3}}
-        {{template "teamCard" dict "alliance" "blue" "position" $i}}
-      {{end}}
-    </div>
-    <div class="scoring-status" id="redScoreStatus"></div>
-    <div class="scoring-status" id="blueScoreStatus"></div>
-  </div>
 {{end}}
 {{define "head"}}
 <link rel="manifest" href="/static/manifest/referee.manifest">

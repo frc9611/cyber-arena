@@ -95,40 +95,6 @@ func (web *Web) refereePanelWebsocketHandler(w http.ResponseWriter, r *http.Requ
 
 			}
 			web.arena.RealtimeScoreNotifier.Notify()
-		case "card":
-			args := struct {
-				Alliance string
-				TeamId   int
-				Card     string
-			}{}
-			err = mapstructure.Decode(data, &args)
-			if err != nil {
-				ws.WriteError(err.Error())
-				continue
-			}
-
-			// Set the card in the correct alliance's score.
-			//var cards map[string]string
-			if args.Alliance == "red" {
-				//cards = web.arena.RedRealtimeScore.Cards
-			} else {
-				//cards = web.arena.BlueRealtimeScore.Cards
-			}
-			//if web.arena.CurrentMatch.Type == model.Playoff {
-			// Cards apply to the whole alliance in playoffs.
-			if args.Alliance == "red" {
-				//cards[strconv.Itoa(web.arena.CurrentMatch.Red1)] = args.Card
-				//cards[strconv.Itoa(web.arena.CurrentMatch.Red2)] = args.Card
-				//cards[strconv.Itoa(web.arena.CurrentMatch.Red3)] = args.Card
-			} else {
-				//cards[strconv.Itoa(web.arena.CurrentMatch.Blue1)] = args.Card
-				//cards[strconv.Itoa(web.arena.CurrentMatch.Blue2)] = args.Card
-				//cards[strconv.Itoa(web.arena.CurrentMatch.Blue3)] = args.Card
-			}
-			//} else {
-			//cards[strconv.Itoa(args.TeamId)] = args.Card
-			//}
-			web.arena.RealtimeScoreNotifier.Notify()
 		case "signalReset":
 			if web.arena.MatchState != field.PostMatch {
 				// Don't allow clearing the field until the match is over.
