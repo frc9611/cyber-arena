@@ -11,6 +11,7 @@ body {
   height: 100%;
   font-family: FuturaLTBold;
   color: #fff;
+  background-color: #2e2e2e;
 }
 .center {
   display: flex;
@@ -25,7 +26,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  background-color: #333;
+  background-color: #2e2e2e;
   font-size: 1.5vw;
   text-transform: uppercase;
 }
@@ -35,15 +36,18 @@ body {
   font-size: 6vw;
 }
 .left-position[data-reversed=false], .right-position[data-reversed=true] {
-  background-color: #f44;
+  background-color: #ED1C24;
 }
 .left-position[data-reversed=true], .right-position[data-reversed=false] {
-  background-color: #2080ff;
+  background-color: #0066B3;
 }
 .team {
   width: 42%;
-  height: 100%;
-  background-color: #333;
+  height: 95%;
+  background-color: #3339;
+  border: 0.5vw solid #333;
+  border-radius: 1vw;
+  margin: 0 .5vw;
   display: flex;
   flex-direction: column;
 }
@@ -81,7 +85,7 @@ body {
   width: 20%;
   height: 100%;
   font-size: 2.5vw;
-  background-color: #333;
+  background-color: #2e2e2e;
 }
 .team-box[data-status-ok="true"] {
   background-color: #0a3;
