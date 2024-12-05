@@ -55,6 +55,8 @@ body {
   width: 100%;
   height: 80%;
   font-size: 11vw;
+  border-top-left-radius: 1vw;
+  border-top-right-radius: 1vw;
 }
 .team-id[data-fta="true"] {
   height: 40%;
@@ -84,7 +86,7 @@ body {
 .team-box {
   width: 20%;
   height: 100%;
-  font-size: 2.5vw;
+  font-size: 2vw;
   background-color: #2e2e2e;
 }
 .team-box[data-status-ok="true"] {
