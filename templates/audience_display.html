@@ -20,11 +20,6 @@
         <div id="matchOverlay">
           <div id="matchOverlayTop">
             <div class="score reversible-left">
-              <div class="avatars">
-                <img class="avatar" id="leftTeam1Avatar" src="" />
-                <img class="avatar" id="leftTeam2Avatar" src="" />
-                <img class="avatar" id="leftTeam3Avatar" src="" />
-              </div>
               <div class="cr-score-and-team-number-wrapper">
                 <span class="cr-alliance-name">Aliança Azul</span>
                 <div class="teams" id="leftTeams">
@@ -33,6 +28,11 @@
                   <div id="leftTeam2"></div>
                   <!-- <div id="leftTeam3"></div> -->
                 </div>
+              </div>
+              <div class="avatars">
+                <img class="avatar" id="leftTeam1Avatar" src="" />
+                <img class="avatar" id="leftTeam2Avatar" src="" />
+                <img class="avatar" id="leftTeam3Avatar" src="" />
               </div>
               <div class="score-number" id="leftScoreNumber"></div>
             </div>
@@ -58,7 +58,7 @@
           <div id="eventMatchInfo">
             <span class="cr-powered-by-us">Powered by <b>#9611</b></span>
             <div>
-              <span>{{.EventSettings.Name}} {{.CurrentMatch.DisplayName}}</span>
+              <span>{{.EventSettings.Name}}</span>
               -
               <span id="matchName"></span>
             </div>
