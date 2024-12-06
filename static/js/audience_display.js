@@ -145,7 +145,20 @@ var handleRealtimeScore = function(data) {
 
 // Handles a websocket message to populate the final score data.
 var handleScorePosted = function(data) {
-  $("#" + redSide + "FinalScore").text(data.RedScoreSummary.Score);
+  let coopertitionBonus = 0;
+
+  if (data.RedScoreSummary.EndgamePoints + data.BlueScoreSummary.EndgamePoints === 28) {
+    // COOPERTITION +20
+    coopertitionBonus = 20;
+  } else if ([4, 9, 14].includes(data.RedScoreSummary.EndgamePoints) && [4, 9, 14].includes(data.BlueScoreSummary.EndgamePoints)) {
+    // COOPERTITION +5
+    coopertitionBonus = 5;
+  }
+
+  $("#leftCoopertitionPoints").text(coopertitionBonus);
+  $("#righCoopertitionPoints").text(coopertitionBonus);
+
+  $("#" + redSide + "FinalScore").text(data.RedScoreSummary.Score + coopertitionBonus);
   $("#" + redSide + "FinalTeam1").html(getRankingText(data.Match.Red1, data.Rankings) + "" + data.Match.Red1);
   $("#" + redSide + "FinalTeam2").html(getRankingText(data.Match.Red2, data.Rankings) + "" + data.Match.Red2);
   $("#" + redSide + "FinalTeam3").html(getRankingText(data.Match.Red3, data.Rankings) + "" + data.Match.Red3);
@@ -155,7 +168,7 @@ var handleScorePosted = function(data) {
   $("#" + redSide + "FinalAutoPoints").text(data.RedScoreSummary.AutoPoints);
   $("#" + redSide + "FinalTeleopPoints").text(data.RedScoreSummary.TeleopPoints);
   $("#" + redSide + "FinalEndgamePoints").text(data.RedScoreSummary.EndgamePoints);
-  $("#" + blueSide + "FinalScore").text(data.BlueScoreSummary.Score);
+  $("#" + blueSide + "FinalScore").text(data.BlueScoreSummary.Score + coopertitionBonus);
   $("#" + blueSide + "FinalTeam1").html(getRankingText(data.Match.Blue1, data.Rankings) + "" + data.Match.Blue1);
   $("#" + blueSide + "FinalTeam2").html(getRankingText(data.Match.Blue2, data.Rankings) + "" + data.Match.Blue2);
   $("#" + blueSide + "FinalTeam3").html(getRankingText(data.Match.Blue3, data.Rankings) + "" + data.Match.Blue3);
@@ -168,27 +181,64 @@ var handleScorePosted = function(data) {
   $("#finalSeriesStatus").text(data.SeriesStatus);
   $("#finalSeriesStatus").attr("data-leader", data.SeriesLeader);
   $("#finalMatchName").text(data.MatchType + " " + data.Match.DisplayName);
+  
+  const blueScore = data.BlueScoreSummary.Score + coopertitionBonus
+  const redScore = data.RedScoreSummary.Score + coopertitionBonus
 
-  const blueScore = data.BlueScoreSummary.Score
-  const redScore = data.RedScoreSummary.Score
+  if (blueScore === redScore) {
+    $("#finalSeriesStatus").text("Empate");
+    $("#finalSeriesStatus").attr("data-leader", "tie");
+  }
+
+  console.log("SCORE", blueScore, redScore);
+  console.log("DATA", data);
+
+  const blueFoulPoints = blueScore - data.BlueScoreSummary.AutoPoints - data.BlueScoreSummary.TeleopPoints - data.BlueScoreSummary.EndgamePoints - coopertitionBonus;
+  const redFoulPoints = redScore - data.RedScoreSummary.AutoPoints - data.RedScoreSummary.TeleopPoints - data.RedScoreSummary.EndgamePoints - coopertitionBonus;
+  
+  console.log("FOUL", blueFoulPoints, redFoulPoints);
+  
+  $("#leftFinalFoulPoints").text(blueFoulPoints);
+  $("#righFinalFoulPoints").text(redFoulPoints);
+
+  $("#cr-red-wins-winner-card-top").text("WINNER");
+  $("#cr-blue-wins-winner-card-top").text("WINNER");
 
   if (blueScore > redScore) {
     $("#cr-red-wins-winner-text").css("display", "none");
     $("#cr-blue-wins-winner-text").css("display", "flex");
 
     $("#cr-red-wins-winner-card-top").css("color", "transparent");  
-    $("#cr-red-wins-winner-card-top").css("border", "0");
+    $("#cr-red-wins-winner-card-top").css("opacity", ".8");  
+    // $("#cr-red-wins-winner-card-top").css("border", "0");
     $("#cr-blue-wins-winner-card-top").css("color", "black");
+    $("#cr-blue-wins-winner-card-top").css("opacity", "1");
   }
   
   if (redScore > blueScore) {
     $("#cr-red-wins-winner-text").css("display", "flex");
     $("#cr-blue-wins-winner-text").css("display", "none");
 
-  
     $("#cr-red-wins-winner-card-top").css("color", "black");
-    $("#cr-blue-wins-winner-card-top").css("border", "0");
+    $("#cr-red-wins-winner-card-top").css("opacity", "1");
+    // $("#cr-blue-wins-winner-card-top").css("border", "0");
     $("#cr-blue-wins-winner-card-top").css("color", "transparent");
+    $("#cr-blue-wins-winner-card-top").css("opacity", ".8");
+  }
+  
+  // ;-;
+  if (redScore === blueScore) {
+    $("#cr-red-wins-winner-text").css("display", "none");
+    $("#cr-blue-wins-winner-text").css("display", "none");
+
+    $("#cr-red-wins-winner-card-top").css("color", "black");
+    $("#cr-red-wins-winner-card-top").text("TIE");
+    // $("#cr-blue-wins-winner-card-top").css("border", "0");
+    $("#cr-blue-wins-winner-card-top").css("color", "black");
+    $("#cr-blue-wins-winner-card-top").text("TIE");
+    
+    $("#cr-red-wins-winner-card-top").css("opacity", "1");
+    $("#cr-blue-wins-winner-card-top").css("opacity", "1");
   }
 
   // Reload the bracket to reflect any changes.
