@@ -68,6 +68,22 @@
             </div>
           </div>
         </div>
+        <div style="margin-block: 16px;">
+          <div class="cr-score-action-container">
+            <span class="cr-score-action-name-text">Sair da Área Inicial</span><br>
+            <div class="cr-score-buttons-wrapper">
+              <button data-score-type="down" type="button" class="cr-btn-score cr-btn-score-auto"
+              onclick="addBluePoints('SAIU_AREA', -3, 1, document.getElementById('cr-curr-value-score-auto-SAIU_AREA'))">
+                [-3]
+              </button>
+              <input class="cr-text-input-score-points" type="text" value="0" id="cr-curr-value-score-auto-SAIU_AREA" disabled>
+              <button data-score-type="up" type="button" class="cr-btn-score cr-btn-score-auto"
+              onclick="addBluePoints('SAIU_AREA', 3, 1, document.getElementById('cr-curr-value-score-auto-SAIU_AREA'))">
+                [+3]
+              </button>
+            </div>
+          </div>
+        </div>
         <div class="cr-score-class-title">Teleop</div>
         <div style="margin-block: 16px;">
           <div class="cr-score-action-container">
@@ -174,6 +190,22 @@
               <input class="cr-text-input-score-points" type="text" value="0" id="cr-curr-value-red-score-auto-PLATAFORMA" disabled>
               <button data-score-type="up" type="button" class="cr-btn-score cr-btn-score-auto"
               onclick="addRedPoints('PLATAFORMA', 3, 1, document.getElementById('cr-curr-value-red-score-auto-PLATAFORMA'))">
+                [+3]
+              </button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-block: 16px;">
+          <div class="cr-score-action-container">
+            <span class="cr-score-action-name-text">Sair da Área Inicial</span><br>
+            <div class="cr-score-buttons-wrapper">
+              <button data-score-type="down" type="button" class="cr-btn-score cr-btn-score-auto"
+              onclick="addRedPoints('SAIU_AREA', -3, 1, document.getElementById('cr-curr-value-red-score-auto-SAIU_AREA'))">
+                [-3]
+              </button>
+              <input class="cr-text-input-score-points" type="text" value="0" id="cr-curr-value-red-score-auto-SAIU_AREA" disabled>
+              <button data-score-type="up" type="button" class="cr-btn-score cr-btn-score-auto"
+              onclick="addRedPoints('SAIU_AREA', 3, 1, document.getElementById('cr-curr-value-red-score-auto-SAIU_AREA'))">
                 [+3]
               </button>
             </div>
