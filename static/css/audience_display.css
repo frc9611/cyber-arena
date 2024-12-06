@@ -40,31 +40,34 @@ html {
 }
 .elim-alliance {
   position: relative;
-  top: 31px;
-  width: 40px;
-  height: 40px;
+  /* top: 31px; */
+  width: 48px;
+  height: 100%;
   padding: 0 5px;
-  z-index: -1;
+  /* z-index: -1; */
   display: flex;
   align-items: center;
-  background-color: #fc0;
-  color: #222;
-  border: 1px solid #222;
-  font-size: 15px;
-  font-weight: 200;
+  background-color: #F9FF43;
+  color: black;
+  /* border: 1px solid #222; */
+  font-size: 24px;
+  /* font-weight: 200; */
+  font-family: "Roboto";
+  font-weight: 900;
+  justify-content: center;
 }
 #leftElimAlliance {
-  left: 23px;
-  justify-content: start;
-  border-top-left-radius: 50%;
-  border-bottom-left-radius: 50%;
+  /* left: 23px; */
+  /* justify-content: start; */
+  /* border-top-left-radius: 50%; */
+  /* border-bottom-left-radius: 50%; */
   border-right: none;
 }
 #rightElimAlliance {
-  right: 23px;
-  justify-content: end;
-  border-top-right-radius: 50%;
-  border-bottom-right-radius: 50%;
+  /* right: 23px; */
+  /* justify-content: end; */
+  /* border-top-right-radius: 50%; */
+  /* border-bottom-right-radius: 50%; */
   border-left: none;
 }
 .teams {
@@ -193,19 +196,18 @@ html {
   color: #fff;
 }
 #elimSeriesStatus {
-  width: 40px;
-  height: 18px;
+  width: 80px;
+  height: 32px;
   display: none;
   justify-content: center;
   align-items: center;
-  background-color: #fc0;
-  color: #222;
-  border: 1px solid #222;
-  border-top: none;
-  border-bottom-left-radius: 3px;
-  border-bottom-right-radius: 3px;
-  font-size: 15px;
-  font-weight: 200;
+  background-color: #F9FF43;
+  color: black;
+  /* border: 1px solid #222; */
+  /* border-top: none; */
+  font-size: 24px;
+  font-weight: 600;
+  box-shadow: 0px 4px 8px 0px #333;
 }
 .valign-cell {
   display: table-cell;
@@ -470,6 +472,9 @@ html {
 #finalSeriesStatus {
   text-align: center;
   min-height: 1px;
+}
+#finalSeriesStatus[data-leader="tie"] {
+  color: #F9FF43;
 }
 #finalSeriesStatus[data-leader="red"] {
   color: #f66;
