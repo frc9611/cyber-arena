@@ -67,6 +67,15 @@ var commitMatch = function() {
 
 // Sends a websocket message to update the realtime score
 var updateRealtimeScore = function() {
+  console.log("SCORE_UPDATE", {
+    blueAuto: parseInt($("#blueAutoScore").val()),
+    redAuto: parseInt($("#redAutoScore").val()),
+    blueTeleop: parseInt($("#blueTeleopScore").val()),
+    redTeleop: parseInt($("#redTeleopScore").val()),
+    blueEndgame: parseInt($("#blueEndgameScore").val()),
+    redEndgame: parseInt($("#redEndgameScore").val()),
+  });
+  
   websocket.send("updateRealtimeScore", {
     blueAuto: parseInt($("#blueAutoScore").val()),
     redAuto: parseInt($("#redAutoScore").val()),
@@ -74,7 +83,7 @@ var updateRealtimeScore = function() {
     redTeleop: parseInt($("#redTeleopScore").val()),
     blueEndgame: parseInt($("#blueEndgameScore").val()),
     redEndgame: parseInt($("#redEndgameScore").val())
-  })
+  });
 };
 
 var addBluePoints = function(actionKey, points, modeId, ref) {
@@ -103,14 +112,74 @@ var addRedPoints = function(actionKey, points, modeId, ref) {
   websocket.send("CR_SCORE_CONTEXT", JSON.stringify(_cr_scoreContext));
 };
 
+const loadContext = function() {
+  // console.log($("cr-curr-value-score-auto-ZONA_BAIXA"), _cr_scoreContext.blue.auto.ZONA_BAIXA);
+  
+  $("#cr-curr-value-score-auto-ZONA_BAIXA").prop("value", _cr_scoreContext.blue.auto.ZONA_BAIXA);
+  $("#cr-curr-value-score-auto-PLATAFORMA").prop("value", _cr_scoreContext.blue.auto.PLATAFORMA);
+  $("#cr-curr-value-score-auto-SAIU_AREA").prop("value", _cr_scoreContext.blue.auto.SAIU_AREA);
+  $("#cr-curr-value-score-teleop-ZONA_BAIXA").prop("value", _cr_scoreContext.blue.teleop.ZONA_BAIXA);
+  $("#cr-curr-value-score-teleop-ZONA_ALTA").prop("value", _cr_scoreContext.blue.teleop.ZONA_ALTA);
+  $("#cr-curr-value-score-endgame-PLATAFORMA").prop("value", _cr_scoreContext.blue.endgame.PLATAFORMA);
+  $("#cr-curr-value-score-endgame-ESTACIONAR").prop("value", _cr_scoreContext.blue.endgame.ESTACIONAR);
+  $("#cr-curr-value-red-score-auto-ZONA_BAIXA").prop("value", _cr_scoreContext.red.auto.ZONA_BAIXA);
+  $("#cr-curr-value-red-score-auto-PLATAFORMA").prop("value", _cr_scoreContext.red.auto.PLATAFORMA);
+  $("#cr-curr-value-red-score-auto-SAIU_AREA").prop("value", _cr_scoreContext.red.auto.SAIU_AREA);
+  $("#cr-curr-value-red-score-teleop-ZONA_BAIXA").prop("value", _cr_scoreContext.red.teleop.ZONA_BAIXA);
+  $("#cr-curr-value-red-score-teleop-ZONA_ALTA").prop("value", _cr_scoreContext.red.teleop.ZONA_ALTA);
+  $("#cr-curr-value-red-score-endgame-PLATAFORMA").prop("value", _cr_scoreContext.red.endgame.PLATAFORMA);
+  $("#cr-curr-value-red-score-endgame-ESTACIONAR").prop("value", _cr_scoreContext.red.endgame.ESTACIONAR);
+}
+
+const resetContextDisplay = function() {
+  // console.log($("#cr-curr-value-score-auto-ZONA_BAIXA"));
+
+  _cr_scoreContext = _cr_scoreContext_DEFAULT;
+
+  websocket.send("CR_SCORE_CONTEXT", JSON.stringify(_cr_scoreContext));
+  
+  $("#cr-curr-value-score-auto-ZONA_BAIXA").prop("value", "0");
+  $("#cr-curr-value-score-auto-PLATAFORMA").prop("value", "0");
+  $("#cr-curr-value-score-auto-SAIU_AREA").prop("value", "0");
+  $("#cr-curr-value-score-teleop-ZONA_BAIXA").prop("value", "0");
+  $("#cr-curr-value-score-teleop-ZONA_ALTA").prop("value", "0");
+  $("#cr-curr-value-score-endgame-PLATAFORMA").prop("value", "0");
+  $("#cr-curr-value-score-endgame-ESTACIONAR").prop("value", "0");
+  $("#cr-curr-value-red-score-auto-ZONA_BAIXA").prop("value", "0");
+  $("#cr-curr-value-red-score-auto-PLATAFORMA").prop("value", "0");
+  $("#cr-curr-value-red-score-auto-SAIU_AREA").prop("value", "0");
+  $("#cr-curr-value-red-score-teleop-ZONA_BAIXA").prop("value", "0");
+  $("#cr-curr-value-red-score-teleop-ZONA_ALTA").prop("value", "0");
+  $("#cr-curr-value-red-score-endgame-PLATAFORMA").prop("value", "0");
+  $("#cr-curr-value-red-score-endgame-ESTACIONAR").prop("value", "0");
+}
+
 const handleContext = function(data) {
   console.log(data)
-  if(data == null) _cr_scoreContext = _cr_scoreContext_DEFAULT; 
-  else _cr_scoreContext = JSON.parse(data);
+  
+  if (data == null) {
+    return _cr_scoreContext = _cr_scoreContext_DEFAULT;
+  }
+  
+  try {
+    _cr_scoreContext = JSON.parse(data);
+    
+    loadContext();
+
+    console.log("Contexto carregado", _cr_scoreContext);
+    
+  } catch (error) {
+    console.error("Erro ao carregar o contexto", error)
+  }
 };
 
 // Handles a websocket message to update the teams for the current match.
 var handleMatchLoad = function(data) {
+  // Toda que vez que uma partida nova é carregada as pontuações vão a '0'
+  resetContextDisplay();
+
+  console.log("PARTIDA CARREGADA");
+
   $("#matchName").text(data.Match.LongName);
 };
 
@@ -169,6 +238,8 @@ const handleScoringStatus = function(data) {
   $("#redScoreStatus").attr("data-ready", data.RedScoreReady);
   $("#blueScoreStatus").text("Blue Scoring " + data.NumBlueScoringPanelsReady + "/" + data.NumBlueScoringPanels);
   $("#blueScoreStatus").attr("data-ready", data.BlueScoreReady);
+
+  // loadContext();
 }
 
 // Produces a hash code of the given object for use in equality comparisons.
