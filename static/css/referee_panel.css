@@ -19,6 +19,8 @@
 
 #cr-referee-panel-blue-foul-balls,
 #cr-referee-panel-red-foul-balls,
+#cr-referee-panel-red-foul-custom,
+#cr-referee-panel-blue-foul-custom,
 .foul-button {
   padding-block: 16px;
   width: 500px;
@@ -53,7 +55,9 @@
 }
 
 #cr-referee-panel-blue-foul-balls,
-#cr-referee-panel-red-foul-balls {
+#cr-referee-panel-red-foul-balls,
+#cr-referee-panel-blue-foul-custom,
+#cr-referee-panel-red-foul-custom {
   background-color: white;
   color: black;
   padding: 4px 8px;

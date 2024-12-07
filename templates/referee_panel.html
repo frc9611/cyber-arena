@@ -297,6 +297,10 @@
           <input style="width: 100px;" value="3" type="number" id="cr-referee-panel-red-foul-balls">
         </div>
         <button class="foul-button red-foul" data-color="red" onclick="addFoul('red', 5);">Jogador humano retendo bola</button>
+        <div style="display: flex; gap: 8px;">
+          <button style="width: auto; flex-grow: 1;" class="foul-button red-foul" data-color="red" onclick="addFoul('red', 1 * (document.getElementById('cr-referee-panel-red-foul-custom').value ));">Deliberação</button>
+          <input style="width: 100px;" value="0" type="number" id="cr-referee-panel-red-foul-custom">
+        </div>
       </div>
       
       <div>
@@ -311,6 +315,10 @@
           <input style="width: 100px;" value="3" type="number" id="cr-referee-panel-blue-foul-balls">
         </div>
         <button class="foul-button blue-foul" data-color="blue" onclick="addFoul('blue', 5);">Jogador humano retendo bola</button>
+        <div style="display: flex; gap: 8px;">
+          <button style="width: auto; flex-grow: 1;" class="foul-button blue-foul" data-color="blue" onclick="addFoul('blue', 1 * (document.getElementById('cr-referee-panel-blue-foul-custom').value));">Deliberação</button>
+          <input style="width: 100px;" value="0" type="number" id="cr-referee-panel-blue-foul-custom">
+        </div>
       </div>
     </div>
     <div id="foulList"></div>
