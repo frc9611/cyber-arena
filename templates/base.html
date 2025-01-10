@@ -41,20 +41,7 @@
         <a class="navbar-brand" href="/"><b>CyberArena Lite</b></a>
         <ul class="nav navbar-nav" style="display: flex; flex-direction: column; padding: 7px;">
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle cr-sidebar-dropdown-menu-btn" data-toggle="dropdown">Configurações</a>
-            <ul class="dropdown-menu">
-              <li><a href="/setup/settings">Configurações</a></li>
-              <li><a href="/setup/teams">Lista de Equipes</a></li>
-              <li><a href="/setup/schedule">Agendamento de Partidas</a></li>
-              <li><a href="/setup/awards">Prêmios</a></li>
-              <li><a href="/setup/lower_thirds">Terços Inferiores</a></li>
-              <li><a href="/setup/sponsor_slides">Slides de Patrocinadores</a></li>
-              <li><a href="/setup/displays">Configuração de Exibição</a></li>
-              <li><a href="/setup/field_testing">Teste de Campo</a></li>
-            </ul>
-          </li>
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle cr-sidebar-dropdown-menu-btn" data-toggle="dropdown">Execução</a>
+            <a href="#" class="dropdown-toggle cr-sidebar-dropdown-menu-btn" data-toggle="dropdown">Partida</a>
             <ul class="dropdown-menu">
               <li><a href="/match_play">Execução de Partidas</a></li>
               <li><a href="/match_review">Revisão de Partidas</a></li>
@@ -64,6 +51,30 @@
             </li>
             <li class="dropdown">
               <a href="/referee" class="cr-sidebar-dropdown-menu-btn">Arbitragem</a>
+            </li>
+            <li class="dropdown">
+            <a href="#" class="dropdown-toggle cr-sidebar-dropdown-menu-btn" data-toggle="dropdown">Exibição</a>
+            <ul class="dropdown-menu">
+              <li><a href="/display">Placeholder</a></li>
+              <li><a href="/displays/announcer">Anunciador</a></li>
+              <li><a href="/displays/audience">Público</a></li>
+              <li><a href="/displays/bracket">Chave</a></li>
+              <li><a href="/displays/field_monitor">Monitor de Campo</a></li>
+              <li><a href="/displays/field_monitor?fta=true">Monitor de Campo (FTA)</a></li>
+              <li><a href="/displays/queueing">Fila</a></li>
+              <li><a href="/displays/rankings">Classificação</a></li>
+              <li class="divider"></li>
+              <li class="dropdown-header">Estação de Aliança</li>
+              <li><a href="/displays/alliance_station?station=R1">Vermelho 1</a></li>
+              <li><a href="/displays/alliance_station?station=R2">Vermelho 2</a></li>
+              <li><a href="/displays/alliance_station?station=R3">Vermelho 3</a></li>
+              <li><a href="/displays/alliance_station?station=B1">Azul 1</a></li>
+              <li><a href="/displays/alliance_station?station=B2">Azul 2</a></li>
+              <li><a href="/displays/alliance_station?station=B3">Azul 3</a></li>
+              <li><a href="/displays/alliance_station?station=N2">Relógio</a></li>
+              <li><a href="/displays/alliance_station?station=N3">Pontuação Vermelha</a></li>
+              <li><a href="/displays/alliance_station?station=N1">Pontuação Azul</a></li>
+            </ul>
             </li>
             <li class="dropdown">
             <a href="#" class="dropdown-toggle cr-sidebar-dropdown-menu-btn" data-toggle="dropdown">Relatórios</a>
@@ -93,28 +104,17 @@
             </ul>
             </li>
             <li class="dropdown">
-            <a href="#" class="dropdown-toggle cr-sidebar-dropdown-menu-btn" data-toggle="dropdown">Exibição</a>
-            <ul class="dropdown-menu">
-              <li><a href="/display">Placeholder</a></li>
-              <li><a href="/displays/announcer">Anunciador</a></li>
-              <li><a href="/displays/audience">Público</a></li>
-              <li><a href="/displays/bracket">Chave</a></li>
-              <li><a href="/displays/field_monitor">Monitor de Campo</a></li>
-              <li><a href="/displays/field_monitor?fta=true">Monitor de Campo (FTA)</a></li>
-              <li><a href="/displays/queueing">Fila</a></li>
-              <li><a href="/displays/rankings">Classificação</a></li>
-              <li class="divider"></li>
-              <li class="dropdown-header">Estação de Aliança</li>
-              <li><a href="/displays/alliance_station?station=R1">Vermelho 1</a></li>
-              <li><a href="/displays/alliance_station?station=R2">Vermelho 2</a></li>
-              <li><a href="/displays/alliance_station?station=R3">Vermelho 3</a></li>
-              <li><a href="/displays/alliance_station?station=B1">Azul 1</a></li>
-              <li><a href="/displays/alliance_station?station=B2">Azul 2</a></li>
-              <li><a href="/displays/alliance_station?station=B3">Azul 3</a></li>
-              <li><a href="/displays/alliance_station?station=N2">Relógio</a></li>
-              <li><a href="/displays/alliance_station?station=N3">Pontuação Vermelha</a></li>
-              <li><a href="/displays/alliance_station?station=N1">Pontuação Azul</a></li>
-            </ul>
+              <a href="#" class="dropdown-toggle cr-sidebar-dropdown-menu-btn" data-toggle="dropdown">Configurações</a>
+              <ul class="dropdown-menu">
+                <li><a href="/setup/settings">Configurações</a></li>
+                <li><a href="/setup/teams">Lista de Equipes</a></li>
+                <li><a href="/setup/schedule">Agendamento de Partidas</a></li>
+                <li><a href="/setup/awards">Prêmios</a></li>
+                <li><a href="/setup/lower_thirds">Terços Inferiores</a></li>
+                <li><a href="/setup/sponsor_slides">Slides de Patrocinadores</a></li>
+                <li><a href="/setup/displays">Configuração de Exibição</a></li>
+                <li><a href="/setup/field_testing">Teste de Campo</a></li>
+              </ul>
             </li>
 
             <a href="#" class="cr-sidebar-about-btn" onclick="$('#aboutPage').modal('show');">

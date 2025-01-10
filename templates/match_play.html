@@ -79,7 +79,7 @@
         <!-- {{template "matchPlayTeam" dict "team" .Match.Blue3 "color" "B" "position" 3 "data" .}} -->
         {{if eq .Match.Type "elimination" }}
           <div>
-            <b>Alliance {{.Match.ElimBlueAlliance}}</b>
+            <b>Aliança {{.Match.ElimBlueAlliance}}</b>
             {{if .BlueOffFieldTeams}}
               (not on field: {{range $i, $team := .BlueOffFieldTeams}}{{if $i}}, {{end}}{{$team}}{{end}})
             {{end}}
@@ -99,7 +99,7 @@
         {{template "matchPlayTeam" dict "team" .Match.Red2 "color" "R" "position" 2 "data" .}}
         {{if eq .Match.Type "elimination" }}
         <div>
-          <b>Alliance {{.Match.ElimRedAlliance}}</b>
+          <b>Aliança {{.Match.ElimRedAlliance}}</b>
           {{if .RedOffFieldTeams}}
             (not on field: {{range $i, $team := .RedOffFieldTeams}}{{if $i}}, {{end}}{{$team}}{{end}})
           {{end}}
