@@ -213,6 +213,7 @@ h3 {
 }
 
 .cr-text-input-score-points {
+  text-align: center;
   background-color: white;
   padding: 8px 12px;
   width: 72px;
