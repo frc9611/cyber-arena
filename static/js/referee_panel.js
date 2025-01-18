@@ -199,7 +199,7 @@ const handleMatchTime = function(data) {
     $("#matchState").text(matchStateText);
     // minutes = Math.floor(countdownSec / 60);
     // seconds = countdownSec % 60;
-    formattedTime = new Date(countdownSec * 1000).toLocaleTimeString().slice(3);
+    formattedTime = new Date(countdownSec * 1000).toLocaleTimeString().slice(3).replace("PM", "").trim();
     $("#matchTime").text(formattedTime);
   });
   $(".control-button").attr("data-enabled", matchStates[data.MatchState] === "POST_MATCH");

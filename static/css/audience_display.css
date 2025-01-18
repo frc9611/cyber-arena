@@ -14,6 +14,31 @@ html {
   -moz-user-select: none;
   overflow: hidden;
 }
+
+.cr-container {
+  border: 1px solid #333;
+  overflow: hidden;
+  width: 50%;
+  position: static;
+}
+
+.cr-box {
+  -webkit-animation: cr-box 3.5s linear infinite;
+          animation: cr-box 3.5s linear infinite;
+}
+
+@-webkit-keyframes cr-box {
+  0% {
+    transform: translateX(750px);
+  }
+}
+
+@keyframes cr-box {
+  0% {
+    transform: translateX(750px);
+  }
+}
+
 #overlayCentering {
   bottom: -210px;
   width: 100%;
@@ -21,6 +46,9 @@ html {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-around;
+  margin-left: 1vh;
+  padding-right: 1vw;
 }
 #matchOverlayContainer {
   width: 100%;
@@ -179,7 +207,7 @@ html {
 }
 #eventMatchInfo {
   position: fixed;
-  bottom: 0;
+  top: 0;
   left: 0;
   height: 0;
   width: 100%;
@@ -189,7 +217,7 @@ html {
   z-index: 100;
   align-items: flex-end;
   padding: 0 5px;
-  background-color: #444;
+  background-color: #111;
   font-family: "IBM Plex Mono";
   font-size: 20px;
   line-height: 30px;
@@ -548,10 +576,8 @@ html {
   max-height: 400px;
 }
 #allianceSelectionCentering {
-  position: absolute;
+  position: sticky;
   height: 100%;
-  top: 3em;
-  right: 3em;
 }
 #allianceSelection {
   display: table-cell;
@@ -559,7 +585,8 @@ html {
 }
 #allianceSelectionTable {
   background-color: #fff;
-  border: 2px solid #222;
+  border-radius: 5px;
+  margin-left: 1em;
   text-align: center;
   font-family: "Roboto";
   font-size: 3.5em;

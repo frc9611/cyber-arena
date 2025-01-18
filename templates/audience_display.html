@@ -56,11 +56,14 @@
             </div>
           </div>
           <div id="eventMatchInfo">
-            <span class="cr-powered-by-us">Powered by <b>#9611</b></span>
-            <div>
-              <span>{{.EventSettings.Name}}</span>
-              -
-              <span id="matchName"></span>
+            <span class="cr-powered-by-us" style="background-color: #444; padding-left: 2vh; padding-right: 2vh;">Powered by <b>#9611</b></span>
+             <div class="cr-container">
+              <div class="cr-box">
+                <span>{{.EventSettings.Name}}</span>
+              </div>
+            </div>
+            <div style="background-color: #444; padding-left: 2vh; padding-right: 2vh;">
+              <span style="text-align: center;" id="matchName"></span>
             </div>
           </div>
         </div>
@@ -238,7 +241,9 @@
       <table id="allianceSelectionTable">
         <tr>
           <td colspan="{{"{{numColumns}}"}}">
+            <span>Seleção de Alianças</span><br>
             <img src="/static/img/alliance-selection-logo.png" alt="logo" />
+            <img src="/static/img/favicon.ico" style="position: relative; height: 15%; width: 15%;" alt="logo" />
           </td>
         </tr>
         {{"{{#each alliances}}"}}
