@@ -25,6 +25,25 @@
             </div>
           </div>
           <div class="form-group">
+            <label class="col-lg-5 control-label">Equipes por Aliança</label>
+            <div class="col-lg-7">
+              <div class="radio">
+                <label>
+                  <input type="radio" name="teamsPerAlliance value="2" onclick="updateTeamsPerAlliance(2);"
+                      {{if eq .TeamsPerAlliance 2}}checked{{end}}>
+                  2 equipes
+                </label>
+              </div>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="teamsPerAlliance" value="3" onclick="updateTeamsPerAlliance(3);"
+                      {{if eq .TeamsPerAlliance 3}}checked{{end}}>
+                  3 equipes
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
             <label class="col-lg-5 control-label">Tipo de Playoff</label>
             <div class="col-lg-7">
               <div class="radio">
@@ -362,6 +381,10 @@
     if (isDoubleElimination) {
       numElimAlliances.val(8);
     }
+  };
+
+  updateTeamsPerAlliance = function(teamsPerAlliance) {
+    $("input[name=teamsPerAlliance]").val(teamsPerAlliance);
   };
 </script>
 {{end}}

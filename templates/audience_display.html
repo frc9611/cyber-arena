@@ -26,7 +26,10 @@
                   <div id="leftTeam1"></div>
                   <span class="cr-amp-span">&</span>
                   <div id="leftTeam2"></div>
-                  <!-- <div id="leftTeam3"></div> -->
+                  {{ if eq .EventSettings.TeamsPerAlliance 3 }}
+                    <span class="cr-amp-span">&</span>
+                    <div id="leftTeam3"></div>
+                  {{ end }}
                 </div>
               </div>
               <div class="avatars">
@@ -50,7 +53,10 @@
                   <div id="rightTeam1"></div>
                   <span class="cr-amp-span">&</span>
                   <div id="rightTeam2"></div>
-                  <!-- <div id="rightTeam3"></div> -->
+                  {{ if eq .EventSettings.TeamsPerAlliance 3 }}
+                    <span class="cr-amp-span">&</span>
+                    <div id="rightTeam3"></div>
+                  {{ end }}
                 </div>
               </div>
             </div>
@@ -115,6 +121,9 @@
               <div class="cr-final-team-wrapper">
                 <div class="final-team" id="leftFinalTeam1"></div><img class="final-avatar" id="leftFinalTeam1Avatar" src="" />
                 <div class="final-team" id="leftFinalTeam2"></div><img class="final-avatar" id="leftFinalTeam2Avatar" src="" />
+                {{ if eq .EventSettings.TeamsPerAlliance 3 }}
+                  <div class="final-team" id="leftFinalTeam3"></div><img class="final-avatar" id="leftFinalTeam3Avatar" src="" />
+                {{ end }}
               </div>
               <hr class="cr-hr-final-score">
               <div class="cr-final-score-wrapper">
@@ -141,7 +150,9 @@
                   <span class="cr-score-points-span" id="leftFinalFoulPoints"></span><br />
                 </div>
               </div>
-              <!-- <div class="final-team" id="leftFinalTeam3"></div><img class="final-avatar" id="leftFinalTeam3Avatar" src="" /> -->
+              {{ if eq .EventSettings.TeamsPerAlliance 3 }}
+                <div class="final-team" id="rightFinalTeam3"></div><img class="final-avatar" id="rightFinalTeam3Avatar" src="" />
+              {{ end }}            
             </div>
             <div class="cr-red-alliance-scores">
               <span id="cr-red-wins-winner-card-top" class="cr-win-top">WINNER</span>

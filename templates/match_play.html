@@ -77,6 +77,9 @@
         {{template "matchPlayTeam" dict "team" .Match.Blue1 "color" "B" "position" 1 "data" .}}
         {{template "matchPlayTeam" dict "team" .Match.Blue2 "color" "B" "position" 2 "data" .}}
         <!-- {{template "matchPlayTeam" dict "team" .Match.Blue3 "color" "B" "position" 3 "data" .}} -->
+        {{if eq .EventSettings.TeamsPerAlliance 3 }}
+          {{template "matchPlayTeam" dict "team" .Match.Blue3 "color" "B" "position" 3 "data" .}}
+        {{end}}
         {{if eq .Match.Type "elimination" }}
           <div>
             <b>Aliança {{.Match.ElimBlueAlliance}}</b>
@@ -97,6 +100,9 @@
         <!-- {{template "matchPlayTeam" dict "team" .Match.Red3 "color" "R" "position" 3 "data" .}} -->
         {{template "matchPlayTeam" dict "team" .Match.Red1 "color" "R" "position" 1 "data" .}}
         {{template "matchPlayTeam" dict "team" .Match.Red2 "color" "R" "position" 2 "data" .}}
+        {{if eq .EventSettings.TeamsPerAlliance 3 }}
+          {{template "matchPlayTeam" dict "team" .Match.Red3 "color" "R" "position" 3 "data" .}}
+        {{end}}
         {{if eq .Match.Type "elimination" }}
         <div>
           <b>Aliança {{.Match.ElimRedAlliance}}</b>
