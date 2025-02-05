@@ -54,8 +54,8 @@
               <th style="color: white !important;">Alliança #</th>
               <th style="color: white !important;">Capitão</th>
               <th style="color: white !important;">1ª Escolha</th>
-              {{if (index .Alliances 0).TeamIds | len | eq 3}}
-                <th>2ª Escolha</th>
+              {{if eq .EventSettings.TeamsPerAlliance 3}}
+                <th style="color: white !important;">2ª Escolha</th>
               {{end}}
             </tr>
           </thead>
@@ -111,7 +111,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h4 class="modal-title">Confirm</h4>
+        <h4 class="modal-title">Confirmar</h4>
       </div>
       <div class="modal-body">
         <p>Você tem certeza que deseja reiniciar a seleção de alianças?</p>

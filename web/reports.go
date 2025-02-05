@@ -9,14 +9,14 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/Team254/cheesy-arena-lite/bracket"
 	"github.com/Team254/cheesy-arena-lite/game"
 	"github.com/Team254/cheesy-arena-lite/model"
-	"github.com/Team254/cheesy-arena-lite/tournament"
 	"github.com/gorilla/mux"
 	"github.com/jung-kurt/gofpdf"
-	"net/http"
-	"strconv"
 )
 
 // Generates a CSV-formatted report of the qualification rankings.
@@ -386,7 +386,7 @@ func (web *Web) schedulePdfReportHandler(w http.ResponseWriter, r *http.Request)
 	}
 	matchesPerTeam := 0
 	if len(teams) > 0 {
-		matchesPerTeam = len(matches) * tournament.TeamsPerMatch / len(teams)
+		matchesPerTeam = len(matches) * web.arena.EventSettings.TeamsPerAlliance * 2 / len(teams)
 	}
 
 	// The widths of the table columns in mm, stored here so that they can be referenced for each row.

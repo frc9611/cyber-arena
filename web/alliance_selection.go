@@ -112,9 +112,9 @@ func (web *Web) allianceSelectionStartHandler(w http.ResponseWriter, r *http.Req
 
 	// Create a blank alliance set matching the event configuration.
 	web.arena.AllianceSelectionAlliances = make([]model.Alliance, web.arena.EventSettings.NumElimAlliances)
-	teamsPerAlliance := 2
+	teamsPerAlliance := web.arena.EventSettings.TeamsPerAlliance * 2
 	if web.arena.EventSettings.SelectionRound2Order != "" {
-		teamsPerAlliance = 3
+		teamsPerAlliance = 4
 	}
 	for i := 0; i < web.arena.EventSettings.NumElimAlliances; i++ {
 		web.arena.AllianceSelectionAlliances[i].Id = i + 1
@@ -198,14 +198,14 @@ func (web *Web) allianceSelectionFinalizeHandler(w http.ResponseWriter, r *http.
 
 	// Check that all spots are filled.
 	for _, alliance := range web.arena.AllianceSelectionAlliances {
-		fmt.Println(alliance);
+		fmt.Println(alliance)
 		for _, allianceTeamId := range alliance.TeamIds {
 			if allianceTeamId <= 0 {
 				web.renderAllianceSelection(w, r, "Can't finalize alliance selection until all spots have been filled.")
 				return
 			}
 		}
-		fmt.Println("");
+		fmt.Println("")
 	}
 
 	// Save alliances to the database.
