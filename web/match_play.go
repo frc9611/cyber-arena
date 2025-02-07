@@ -495,15 +495,29 @@ func (web *Web) commitMatchScore(match *model.Match, matchResult *model.MatchRes
 		}
 
 		if match.ShouldUpdateEliminationMatches() {
-			if err = web.arena.Database.UpdateAllianceFromMatch(
-				match.ElimRedAlliance, [2]int{match.Red1, match.Red2},
-			); err != nil {
-				return err
-			}
-			if err = web.arena.Database.UpdateAllianceFromMatch(
-				match.ElimBlueAlliance, [2]int{match.Blue1, match.Blue2},
-			); err != nil {
-				return err
+
+			if web.arena.EventSettings.TeamsPerAlliance == 2 {
+				if err = web.arena.Database.UpdateAllianceFromMatch(
+					match.ElimRedAlliance, [2]int{match.Red1, match.Red2},
+				); err != nil {
+					return err
+				}
+				if err = web.arena.Database.UpdateAllianceFromMatch(
+					match.ElimBlueAlliance, [2]int{match.Blue1, match.Blue2},
+				); err != nil {
+					return err
+				}
+			} else if web.arena.EventSettings.TeamsPerAlliance == 3 {
+				if err = web.arena.Database.UpdateAllianceFromMatch(
+					match.ElimRedAlliance, [2]int{match.Red1, match.Red2},
+				); err != nil {
+					return err
+				}
+				if err = web.arena.Database.UpdateAllianceFromMatch(
+					match.ElimBlueAlliance, [2]int{match.Blue1, match.Blue2},
+				); err != nil {
+					return err
+				}
 			}
 
 			// Generate any subsequent elimination matches.
@@ -584,6 +598,8 @@ func (list MatchPlayList) Swap(i, j int) {
 
 // Constructs the list of matches to display on the side of the match play interface.
 func (web *Web) buildMatchPlayList(matchType string) (MatchPlayList, error) {
+
+	fmt.Println("TeamsPerAlliance: ", web.arena.EventSettings.TeamsPerAlliance)
 
 	if web.arena.EventSettings.TeamsPerAlliance == 2 {
 		web.arena.AllianceStations["R3"].Bypass = true

@@ -6,10 +6,11 @@
 package bracket
 
 import (
+	"testing"
+
 	"github.com/Team254/cheesy-arena-lite/game"
 	"github.com/Team254/cheesy-arena-lite/model"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func setupTestDb(t *testing.T) *model.Database {

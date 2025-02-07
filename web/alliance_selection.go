@@ -199,10 +199,18 @@ func (web *Web) allianceSelectionFinalizeHandler(w http.ResponseWriter, r *http.
 	// Check that all spots are filled.
 	for _, alliance := range web.arena.AllianceSelectionAlliances {
 		fmt.Println(alliance)
-		for _, allianceTeamId := range alliance.TeamIds {
-			if allianceTeamId <= 0 {
-				web.renderAllianceSelection(w, r, "Can't finalize alliance selection until all spots have been filled.")
-				return
+		for index, allianceTeamId := range alliance.TeamIds {
+			index += 1
+			if web.arena.EventSettings.TeamsPerAlliance == 2 {
+				if index < 3 && allianceTeamId <= 0 {
+					web.renderAllianceSelection(w, r, "Can't finalize alliance selection until all spots have been filled.")
+					return
+				}
+			} else if web.arena.EventSettings.TeamsPerAlliance == 3 {
+				if allianceTeamId <= 0 {
+					web.renderAllianceSelection(w, r, "Can't finalize alliance selection until all spots have been filled.")
+					return
+				}
 			}
 		}
 		fmt.Println("")

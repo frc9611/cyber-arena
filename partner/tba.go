@@ -11,11 +11,12 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/Team254/cheesy-arena-lite/model"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/Team254/cheesy-arena-lite/model"
 )
 
 const (
@@ -473,6 +474,9 @@ func (client *TbaClient) getEventName(eventCode string) (string, error) {
 
 // Converts an integer team number into the "frcXXXX" format TBA expects.
 func getTbaTeam(team int) string {
+	if team == 0 {
+		return fmt.Sprintf("frc%d", 9999)
+	}
 	return fmt.Sprintf("frc%d", team)
 }
 

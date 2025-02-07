@@ -38,7 +38,7 @@ type Match struct {
 	StartedAt        time.Time
 	ScoreCommittedAt time.Time
 	Status           game.MatchStatus
-	ScoreContext	 string
+	ScoreContext     string
 }
 
 func (database *Database) CreateMatch(match *Match) error {

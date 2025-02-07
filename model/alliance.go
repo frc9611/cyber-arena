@@ -109,7 +109,7 @@ func (database *Database) getOffFieldTeamIdsForAlliance(allianceId int, teamId1,
 	}
 	offFieldTeamIds := []int{}
 	for _, allianceTeamId := range alliance.TeamIds {
-		if allianceTeamId != teamId1 && allianceTeamId != teamId2 {
+		if allianceTeamId != teamId1 && allianceTeamId != teamId2 && allianceTeamId != teamId3 {
 			offFieldTeamIds = append(offFieldTeamIds, allianceTeamId)
 		}
 	}

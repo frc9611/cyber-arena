@@ -7,13 +7,14 @@
 package main
 
 import (
+	"log"
+
 	"github.com/Team254/cheesy-arena-lite/field"
 	"github.com/Team254/cheesy-arena-lite/web"
-	"log"
 )
 
 const eventDbPath = "./event.db"
-const httpPort = 8080
+const httpPort = 9080
 
 // Main entry point for the application.
 func main() {
