@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Team254/cheesy-arena-lite/field"
 	"github.com/Team254/cheesy-arena-lite/model"
 )
 
@@ -19,12 +20,12 @@ const (
 )
 
 // Creates a random schedule for the given parameters and returns it as a list of matches.
-func BuildRandomSchedule(teams []model.Team, scheduleBlocks []model.ScheduleBlock,
+func BuildRandomSchedule(arena *field.Arena, teams []model.Team, scheduleBlocks []model.ScheduleBlock,
 	matchType string) ([]model.Match, error) {
 	// Load the anonymized, pre-randomized match schedule for the given number of teams and matches per team.
 	numTeams := len(teams)
 	numMatches := countMatches(scheduleBlocks)
-	TeamsPerMatch := 2 * 2
+	TeamsPerMatch := arena.EventSettings.TeamsPerAlliance * 2
 	matchesPerTeam := int(float32(numMatches*TeamsPerMatch) / float32(numTeams))
 
 	// Adjust the number of matches to remove any excess from non-perfect block scheduling.
@@ -41,11 +42,12 @@ func BuildRandomSchedule(teams []model.Team, scheduleBlocks []model.ScheduleBloc
 			teamIndex := teamIndices[(i*TeamsPerMatch+j)%numTeams]
 			matchTeams = append(matchTeams, teams[teamIndex])
 		}
-		//if arena.EventSettings.TeamsPerAlliance == 2 {
-		matches = append(matches, model.Match{Blue1: matchTeams[0].Id, Blue2: matchTeams[1].Id, Red1: matchTeams[2].Id, Red2: matchTeams[3].Id, DisplayName: strconv.Itoa(i + 1), Type: matchType})
-		//} else if arena.EventSettings.TeamsPerAlliance == 3 {
-		//	matches = append(matches, model.Match{Blue1: matchTeams[0].Id, Blue2: matchTeams[1].Id, Blue3: matchTeams[2].Id, Red1: matchTeams[3].Id, Red2: matchTeams[4].Id, Red3: matchTeams[5].Id, DisplayName: strconv.Itoa(i + 1), Type: matchType})
-		//}
+
+		if TeamsPerMatch == 4 {
+			matches = append(matches, model.Match{Blue1: matchTeams[0].Id, Blue2: matchTeams[1].Id, Red1: matchTeams[2].Id, Red2: matchTeams[3].Id, DisplayName: strconv.Itoa(i + 1), Type: matchType})
+		} else if TeamsPerMatch == 6 {
+			matches = append(matches, model.Match{Blue1: matchTeams[0].Id, Blue2: matchTeams[1].Id, Blue3: matchTeams[2].Id, Red1: matchTeams[3].Id, Red2: matchTeams[4].Id, Red3: matchTeams[5].Id, DisplayName: strconv.Itoa(i + 1), Type: matchType})
+		}
 	}
 
 	matchIndex := 0

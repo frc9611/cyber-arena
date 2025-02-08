@@ -207,7 +207,7 @@ func (web *Web) allianceSelectionFinalizeHandler(w http.ResponseWriter, r *http.
 					return
 				}
 			} else if web.arena.EventSettings.TeamsPerAlliance == 3 {
-				if allianceTeamId <= 0 {
+				if index < 4 && allianceTeamId <= 0 {
 					web.renderAllianceSelection(w, r, "Can't finalize alliance selection until all spots have been filled.")
 					return
 				}
