@@ -53,11 +53,10 @@ func (web *Web) settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-
 	eventSettings.NumElimAlliances = numAlliances
 	eventSettings.SelectionRound1Order = r.PostFormValue("SelectionRound1Order")
 	eventSettings.SelectionRound2Order = r.PostFormValue("SelectionRound2Order")
-	eventSettings.TBADownloadEnabled = r.PostFormValue("TBADownloadEnabled") == "on"
+	eventSettings.TeamDownloadOrigin = r.PostFormValue("downloadOrigin")
 	eventSettings.TbaPublishingEnabled = r.PostFormValue("tbaPublishingEnabled") == "on"
 	eventSettings.TbaEventCode = r.PostFormValue("tbaEventCode")
 	eventSettings.TbaSecretId = r.PostFormValue("tbaSecretId")

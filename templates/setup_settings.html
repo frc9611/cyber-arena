@@ -118,12 +118,16 @@
         <fieldset>
           <legend>Download Automático de Informações da Equipe</legend>
           <div class="form-group">
-            <label class="col-lg-9 control-label">Habilitar Download Automático de Informações da Equipe (Do TBA)</label>
-            <div class="col-lg-1 checkbox">
-              <input type="checkbox" name="TBADownloadEnabled"{{if .TBADownloadEnabled}} checked{{end}}>
+            <label class="col-lg-5 control-label">Origem do Download de Informações da Equipe</label>
+            <div class="col-lg-7">
+              <select class="form-control" name="downloadOrigin">
+                <option value="none"{{if eq .TeamDownloadOrigin "none"}} selected{{end}}>Nenhum</option>
+                <option value="tba"{{if eq .TeamDownloadOrigin "tba"}} selected{{end}}>The Blue Alliance (TBA)</option>
+                <option value="ftcscout"{{if eq .TeamDownloadOrigin "ftcscout"}} selected{{end}}>FTCScout</option>
+              </select>
             </div>
           </div>
-        </fieldset>
+        </fieldset></div>
         <fieldset>
           <legend>Publicação</legend>
           <p>Entre em contato com The Blue Alliance para obter um código de evento e credenciais.</p>

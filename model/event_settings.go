@@ -14,7 +14,7 @@ type EventSettings struct {
 	NumElimAlliances            int
 	SelectionRound1Order        string
 	SelectionRound2Order        string
-	TBADownloadEnabled          bool
+	TeamDownloadOrigin          string // TBA, FTCScout, 'none'
 	TbaPublishingEnabled        bool
 	TbaEventCode                string
 	TbaSecretId                 string
@@ -58,7 +58,7 @@ func (database *Database) GetEventSettings() (*EventSettings, error) {
 		NumElimAlliances:            8,
 		SelectionRound1Order:        "L",
 		SelectionRound2Order:        "",
-		TBADownloadEnabled:          true,
+		TeamDownloadOrigin:			 "none",
 		ApTeamChannel:               157,
 		ApAdminChannel:              0,
 		ApAdminWpaKey:               "1234Five",

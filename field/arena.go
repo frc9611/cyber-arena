@@ -52,6 +52,7 @@ type Arena struct {
 	networkSwitch    *network.Switch
 	Plc              plc.Plc
 	TbaClient        *partner.TbaClient
+	FTCScoutClient   *partner.FTCScoutClient
 	AllianceStations map[string]*AllianceStation
 	Displays         map[string]*Display
 	ArenaNotifiers
@@ -146,6 +147,7 @@ func (arena *Arena) LoadSettings() error {
 	arena.networkSwitch = network.NewSwitch(settings.SwitchAddress, settings.SwitchPassword)
 	arena.Plc.SetAddress(settings.PlcAddress)
 	arena.TbaClient = partner.NewTbaClient(settings.TbaEventCode, settings.TbaSecretId, settings.TbaSecret)
+	arena.FTCScoutClient = partner.NewFtcScoutClient()
 
 	if arena.EventSettings.NetworkSecurityEnabled && arena.MatchState == PreMatch {
 		if err = arena.accessPoint.ConfigureAdminWifi(); err != nil {

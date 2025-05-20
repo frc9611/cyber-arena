@@ -17,7 +17,7 @@
     <form class="form-horizontal" action="/setup/teams" method="POST">
       <fieldset>
         <legend style="color: white !important;">Importar Equipes</legend>
-        {{if not .EventSettings.TBADownloadEnabled}}<p>Para baixar automaticamente dados sobre as equipes, habilite o Download de Informações da TBA na página de configurações</p>{{end}}
+        {{if eq .EventSettings.TeamDownloadOrigin "none"}}<p>Para baixar automaticamente dados sobre as equipes, habilite o Download de Informações da TBA na página de configurações</p>{{end}}
         <div class="form-group">
           <textarea style="background-color: black !important; opacity: 50% !important;" class="form-control" rows="10" name="teamNumbers"
               placeholder="Um número de equipe por linha"></textarea>
@@ -25,9 +25,14 @@
         <div class="form-group">
           <button type="submit" class="btn btn-info">Adicionar Equipes</button>
         </div>
-        {{if .EventSettings.TBADownloadEnabled}}
+        {{if eq .EventSettings.TeamDownloadOrigin "tba"}}
           <div class="form-group">
             <a href="/setup/teams/refresh" class="btn btn-info">Atualizar Dados pelo TBA</a>
+          </div>
+        {{end}}
+        {{if eq .EventSettings.TeamDownloadOrigin "ftcscout"}}
+          <div class="form-group">
+            <a href="/setup/teams/refresh" class="btn btn-info">Atualizar Dados pelo FTCScout</a>
           </div>
         {{end}}
         <div class="form-group">

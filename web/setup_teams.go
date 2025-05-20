@@ -50,7 +50,7 @@ func (web *Web) teamsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, teamNumber := range teamNumbers {
 		team := model.Team{Id: teamNumber}
-		if web.arena.EventSettings.TBADownloadEnabled {
+		if web.arena.EventSettings.TeamDownloadOrigin == "tba" || web.arena.EventSettings.TeamDownloadOrigin == "ftcscout" {
 			if err := web.populateOfficialTeamInfo(&team); err != nil {
 				handleWebErr(w, err)
 				return
@@ -291,45 +291,74 @@ func (web *Web) canModifyTeamList() bool {
 
 // Returns the data for the given team number.
 func (web *Web) populateOfficialTeamInfo(team *model.Team) error {
-	tbaTeam, err := web.arena.TbaClient.GetTeam(team.Id)
-	if err != nil {
-		return err
-	}
-
-	// Check if the result is valid. If a team is not found, it will just not have its detail fields filled out.
-	if tbaTeam.TeamNumber == 0 {
-		return nil
-	}
-
-	team.Name = tbaTeam.Name
-	team.Nickname = tbaTeam.Nickname
-	team.City = tbaTeam.City
-	team.StateProv = tbaTeam.StateProv
-	team.Country = tbaTeam.Country
-	team.RookieYear = tbaTeam.RookieYear
-	team.PassedInspection = false
-	team.RobotName, err = web.arena.TbaClient.GetRobotName(team.Id, time.Now().Year())
-	if err != nil {
-		return err
-	}
-
-	// Generate string of recent awards in reverse chronological order.
-	recentAwards, err := web.arena.TbaClient.GetTeamAwards(team.Id)
-	if err != nil {
-		return err
-	}
-	var accomplishmentsBuffer bytes.Buffer
-	for i := len(recentAwards) - 1; i >= 0; i-- {
-		award := recentAwards[i]
-		if time.Now().Year()-award.Year <= 2 {
-			accomplishmentsBuffer.WriteString(fmt.Sprintf("<p>%d %s - %s</p>", award.Year, award.EventName,
-				award.Name))
+	if web.arena.EventSettings.TeamDownloadOrigin == "tba" {
+		tbaTeam, err := web.arena.TbaClient.GetTeam(team.Id)
+		if err != nil {
+			return err
 		}
-	}
-	team.Accomplishments = accomplishmentsBuffer.String()
 
-	// Download and store the team's avatar; if there isn't one, ignore the error.
-	web.arena.TbaClient.DownloadTeamAvatar(team.Id, time.Now().Year())
+		// Check if the result is valid. If a team is not found, it will just not have its detail fields filled out.
+		if tbaTeam.TeamNumber == 0 {
+			return nil
+		}
+
+		team.Name = tbaTeam.Name
+		team.Nickname = tbaTeam.Nickname
+		team.City = tbaTeam.City
+		team.StateProv = tbaTeam.StateProv
+		team.Country = tbaTeam.Country
+		team.RookieYear = tbaTeam.RookieYear
+		team.PassedInspection = false
+		team.RobotName, err = web.arena.TbaClient.GetRobotName(team.Id, time.Now().Year())
+		if err != nil {
+			return err
+		}
+
+		// Generate string of recent awards in reverse chronological order.
+		recentAwards, err := web.arena.TbaClient.GetTeamAwards(team.Id)
+		if err != nil {
+			return err
+		}
+		var accomplishmentsBuffer bytes.Buffer
+		for i := len(recentAwards) - 1; i >= 0; i-- {
+			award := recentAwards[i]
+			if time.Now().Year()-award.Year <= 2 {
+				accomplishmentsBuffer.WriteString(fmt.Sprintf("<p>%d %s - %s</p>", award.Year, award.EventName,
+					award.Name))
+			}
+		}
+		team.Accomplishments = accomplishmentsBuffer.String()
+
+		// Download and store the team's avatar; if there isn't one, ignore the error.
+		web.arena.TbaClient.DownloadTeamAvatar(team.Id, time.Now().Year())
+	}
+
+	if web.arena.EventSettings.TeamDownloadOrigin == "ftcscout" {
+		ftcScoutTeam, err := web.arena.FTCScoutClient.GetTeam(team.Id)
+		if err != nil {
+			return err
+		}
+
+		// Check if the result is valid. If a team is not found, it will just not have its detail fields filled out.
+		if ftcScoutTeam.TeamNumber == 0 {
+			return nil
+		}
+
+		team.Name = ftcScoutTeam.Name
+		team.Nickname = ftcScoutTeam.Nickname
+		team.City = ftcScoutTeam.City
+		team.StateProv = ftcScoutTeam.StateProv
+		team.Country = ftcScoutTeam.Country
+		team.RookieYear = ftcScoutTeam.RookieYear
+		team.PassedInspection = false
+		team.RobotName = "N/A"
+		if err != nil {
+			return err
+		}
+
+		// Download and store the team's avatar; if there isn't one, ignore the error.
+		//web.arena.FTCScoutClient.DownloadTeamAvatar(team.Id, time.Now().Year())
+	}
 
 	return nil
 }
