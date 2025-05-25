@@ -1,26 +1,30 @@
-Cheesy Arena To-Do List
+CyberArena To-Do List
 =======================
 
-### Features for FRC parity
-* Event wizard to guide scorekeeper through running an event
+### Localization
+* Make a language selector at the sidebar
 * Elimination bracket report and audience screen
 * Interface for viewing logs (right now it's CSV files in Excel)
+* Add support for RTL languages
+* Implement translation memory to reuse common phrases
 
-### Public-facing features
-* Fancier graphics and animations for alliance station display
-* Ability to yank the match data from the Internet for an existing event, for use just in webcast overlays
-* GameSense-style next match screen with robot photos
+### Custom Games
+* Add custom scoring per event
+* Create templates for common game types
+* Allow for custom team icons and colors
 
-### Scorekeeper-facing features
-* Ability to unscore a match and reset it to non-played status
+### Multievent
+* Add an option to create multiple events per CyberArena instance (just like at the FTC scorekeeper)
 
-### Features for other volunteers
-* Referee interface: add timer starting at field reset to track time limit for calling timeouts/backups
-* Mobile compatibility for announcer display
+### Authentication
+* Integration with VernumCloud SSO
+* Add role-based access control
+* Implement 2FA for admin accounts
 
-### Development tasks
-* Generate more schedules and find an automated way to evaluate them
-* Switch to a more modern JavaScript paradigm than jQuery, such as ES6
-* JavaScript unit testing
-* Fix Handlebars and golang html/template confict
-* [Selenium](http://www.seleniumhq.org) testing
+### Style
+* Update the README.md
+
+### Deployment
+* Create Docker container for easy deployment
+* Add CI/CD pipeline
+* Document deployment process
