@@ -8,15 +8,16 @@ package web
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"strconv"
+
 	"github.com/Team254/cheesy-arena-lite/game"
 	"github.com/Team254/cheesy-arena-lite/model"
 	"github.com/Team254/cheesy-arena-lite/partner"
 	"github.com/Team254/cheesy-arena-lite/websocket"
 	"github.com/gorilla/mux"
-	"io"
-	"net/http"
-	"os"
-	"strconv"
 )
 
 type MatchResultWithSummary struct {
@@ -225,6 +226,13 @@ func (web *Web) teamAvatarsApiHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.ServeFile(w, r, avatarPath)
+}
+
+func (web *Web) estopHandler(w http.ResponseWriter, r *http.Request) {
+	web.arena.ResetFieldEstop()
+	web.arena.SetAudienceDisplayMode("logo")
+	w.WriteHeader(http.StatusOK)
+	fmt.Println("Field estop reset via web API")
 }
 
 func (web *Web) bracketSvgApiHandler(w http.ResponseWriter, r *http.Request) {

@@ -80,6 +80,7 @@ type Arena struct {
 	MuteMatchSounds            bool
 	matchAborted               bool
 	soundsPlayed               map[*game.MatchSound]struct{}
+	restFieldEstop             bool
 }
 
 type AllianceStation struct {
@@ -113,7 +114,6 @@ func NewArena(dbPath string) (*Arena, error) {
 	arena.AllianceStations["B1"] = new(AllianceStation)
 	arena.AllianceStations["B2"] = new(AllianceStation)
 	arena.AllianceStations["B3"] = new(AllianceStation)
-
 	arena.Displays = make(map[string]*Display)
 
 	// Load empty match as current.
@@ -127,6 +127,8 @@ func NewArena(dbPath string) (*Arena, error) {
 	arena.SavedMatch = &model.Match{}
 	arena.SavedMatchResult = model.NewMatchResult()
 	arena.AllianceStationDisplayMode = "match"
+
+	arena.restFieldEstop = false
 
 	return arena, nil
 }
@@ -247,6 +249,7 @@ func (arena *Arena) LoadMatch(match *model.Match) error {
 	arena.FieldVolunteers = false
 	arena.FieldReset = false
 	arena.Plc.ResetMatch()
+	arena.restFieldEstop = false
 
 	// Notify any listeners about the new match.
 	arena.MatchLoadNotifier.Notify()
@@ -771,7 +774,7 @@ func (arena *Arena) getAssignedAllianceStation(teamId int) string {
 // Updates the score given new input information from the field PLC.
 func (arena *Arena) handlePlcInput() {
 	// Handle emergency stops.
-	if arena.Plc.GetFieldEstop() && arena.MatchTimeSec() > 0 && !arena.matchAborted {
+	if (arena.Plc.GetFieldEstop() || arena.restFieldEstop) && arena.MatchTimeSec() > 0 && !arena.matchAborted {
 		arena.AbortMatch()
 	}
 	redEstops, blueEstops := arena.Plc.GetTeamEstops()
@@ -855,6 +858,13 @@ func (arena *Arena) handleEstop(station string, state bool) {
 			allianceStation.Estop = false
 		}
 	}
+}
+
+func (arena *Arena) ResetFieldEstop() {
+	// Reset the field emergency stop, but only if it is not currently active.
+	arena.restFieldEstop = true
+	arena.Plc.SetFieldResetLight(true)
+	arena.AbortMatch()
 }
 
 func (arena *Arena) handleSounds(matchTimeSec float64) {

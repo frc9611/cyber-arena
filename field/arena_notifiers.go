@@ -6,12 +6,13 @@
 package field
 
 import (
+	"strconv"
+
 	"github.com/Team254/cheesy-arena-lite/bracket"
 	"github.com/Team254/cheesy-arena-lite/game"
 	"github.com/Team254/cheesy-arena-lite/model"
 	"github.com/Team254/cheesy-arena-lite/network"
 	"github.com/Team254/cheesy-arena-lite/websocket"
-	"strconv"
 )
 
 type ArenaNotifiers struct {
@@ -29,7 +30,7 @@ type ArenaNotifiers struct {
 	RealtimeScoreNotifier              *websocket.Notifier
 	ReloadDisplaysNotifier             *websocket.Notifier
 	ScorePostedNotifier                *websocket.Notifier
-	PointsContextNotifier			   *websocket.Notifier
+	PointsContextNotifier              *websocket.Notifier
 }
 
 type MatchTimeMessage struct {
@@ -93,7 +94,7 @@ func (arena *Arena) generateArenaStatusMessage() interface{} {
 		FieldEstop            bool
 		PlcArmorBlockStatuses map[string]bool
 	}{arena.CurrentMatch.Id, arena.AllianceStations, teamWifiStatuses, arena.MatchState,
-		arena.checkCanStartMatch() == nil, arena.Plc.IsHealthy, arena.Plc.GetFieldEstop(),
+		arena.checkCanStartMatch() == nil, arena.Plc.IsHealthy, arena.Plc.GetFieldEstop() || arena.restFieldEstop,
 		arena.Plc.GetArmorBlockStatuses()}
 }
 
