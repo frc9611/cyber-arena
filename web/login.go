@@ -28,23 +28,23 @@ func (web *Web) loginHandler(w http.ResponseWriter, r *http.Request) {
 func (web *Web) loginPostHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.PostFormValue("username")
 	scope, err := web.checkAuthPassword(username, r.PostFormValue("password"))
-	if err != nil{
+	if err != nil {
 		web.renderLogin(w, r, err.Error())
 		return
 	}
-	
+
 	if scope == "INVALID" {
 		web.renderLogin(w, r, fmt.Errorf("[VERNUMSERVER] Você não tem permissão para acessar o sistema").Error())
-	 	return
+		return
 	}
-	
+
 	session := model.UserSession{
-		Token: uuid.New().String(),
-		Username: username,
+		Token:     uuid.New().String(),
+		Username:  username,
 		CreatedAt: time.Now(),
-		Role: scope,
+		Role:      scope,
 	}
-	
+
 	if err := web.arena.Database.CreateUserSession(&session); err != nil {
 		handleWebErr(w, err)
 		return
@@ -174,18 +174,15 @@ func vernumLogin(user, password string) (string, bool) {
 	scope := claims["scope"].(string)
 	fmt.Println(scope)
 
-	// if scope == nil {
-	// 	fmt.Println("O escopo do token é vazio")
-	// 	ok = false
-	// 	return scope, ok
-	// }
-
 	return scope, ok
 }
 
 func (web *Web) checkAuthPassword(user, password string) (string, error) {
+	if user == adminUser && password == web.arena.EventSettings.AdminPassword {
+		return "ADMIN", nil
+	}
 	scope, vernumOk := vernumLogin(user, password)
-	if (user == adminUser && password == web.arena.EventSettings.AdminPassword) || vernumOk {
+	if vernumOk {
 		return scope, nil
 	} else {
 		return "INVALID", fmt.Errorf("[VERNUM_SERVER] Invalid login credentials")
