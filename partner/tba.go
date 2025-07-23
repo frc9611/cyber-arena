@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	tbaBaseUrl = "https://www.thebluealliance.com"
+	tbaBaseUrl = "http://localhost:8080"
 	tbaAuthKey = "MAApv9MCuKY9MSFkXLuzTSYBCdosboxDq8Q3ujUE2Mn8PD3Nmv64uczu5Lvy0NQ3"
 	AvatarsDir = "static/img/avatars"
 )
@@ -329,10 +329,21 @@ func (client *TbaClient) PublishMatches(database *model.Database) error {
 			}
 		}
 		alliances := make(map[string]*TbaAlliance)
-		alliances["red"] = createTbaAlliance([3]int{match.Red1, match.Red2, match.Red3}, [3]bool{match.Red1IsSurrogate,
-			match.Red2IsSurrogate, match.Red3IsSurrogate}, redScore)
-		alliances["blue"] = createTbaAlliance([3]int{match.Blue1, match.Blue2, match.Blue3},
-			[3]bool{match.Blue1IsSurrogate, match.Blue2IsSurrogate, match.Blue3IsSurrogate}, blueScore)
+		if eventSettings.TeamsPerAlliance == 1 {
+			alliances["red"] = createTbaAlliance([]int{match.Red1}, []bool{match.Red1IsSurrogate}, redScore)
+			alliances["blue"] = createTbaAlliance([]int{match.Blue1},
+				[]bool{match.Blue1IsSurrogate}, blueScore)
+		} else if eventSettings.TeamsPerAlliance == 2 {
+			alliances["red"] = createTbaAlliance([]int{match.Red1, match.Red2}, []bool{match.Red1IsSurrogate,
+				match.Red2IsSurrogate}, redScore)
+			alliances["blue"] = createTbaAlliance([]int{match.Blue1, match.Blue2},
+				[]bool{match.Blue1IsSurrogate, match.Blue2IsSurrogate}, blueScore)
+		} else if eventSettings.TeamsPerAlliance == 3 {
+			alliances["red"] = createTbaAlliance([]int{match.Red1, match.Red2, match.Red3}, []bool{match.Red1IsSurrogate,
+				match.Red2IsSurrogate, match.Red3IsSurrogate}, redScore)
+			alliances["blue"] = createTbaAlliance([]int{match.Blue1, match.Blue2, match.Blue3},
+				[]bool{match.Blue1IsSurrogate, match.Blue2IsSurrogate, match.Blue3IsSurrogate}, blueScore)
+		}
 
 		tbaMatches[i] = TbaMatch{
 			CompLevel:   "qm",
@@ -509,7 +520,7 @@ func (client *TbaClient) postRequest(resource string, action string, body []byte
 	return httpClient.Do(request)
 }
 
-func createTbaAlliance(teamIds [3]int, surrogates [3]bool, score *int) *TbaAlliance {
+func createTbaAlliance(teamIds []int, surrogates []bool, score *int) *TbaAlliance {
 	alliance := TbaAlliance{Surrogates: []string{}, Dqs: []string{}, Score: score}
 	for i, teamId := range teamIds {
 		teamKey := getTbaTeam(teamId)
