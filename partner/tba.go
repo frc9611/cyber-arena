@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	tbaBaseUrl = "http://localhost:8080"
+	tbaBaseUrl = "https://www.thebluealliance.com"
 	tbaAuthKey = "MAApv9MCuKY9MSFkXLuzTSYBCdosboxDq8Q3ujUE2Mn8PD3Nmv64uczu5Lvy0NQ3"
 	AvatarsDir = "static/img/avatars"
 )
