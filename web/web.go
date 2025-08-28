@@ -123,7 +123,7 @@ func (web *Web) newHandler() http.Handler {
 	router.HandleFunc("/api/scores", web.setScoresHandler).Methods("PATCH", "PUT")
 	router.HandleFunc("/api/sponsor_slides", web.sponsorSlidesApiHandler).Methods("GET")
 	router.HandleFunc("/api/teams/{teamId}/avatar", web.teamAvatarsApiHandler).Methods("GET")
-	router.HandleFunc("/api/match/estop", web.estopHandler).Methods("GET")
+	//router.HandleFunc("/api/match/estop", web.estopHandler).Methods("GET")
 	router.HandleFunc("/display", web.placeholderDisplayHandler).Methods("GET")
 	router.HandleFunc("/display/websocket", web.placeholderDisplayWebsocketHandler).Methods("GET")
 	router.HandleFunc("/displays/alliance_station", web.allianceStationDisplayHandler).Methods("GET")

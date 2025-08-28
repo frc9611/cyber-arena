@@ -16,6 +16,7 @@ import (
 	"github.com/Team254/cheesy-arena-lite/network"
 	"github.com/Team254/cheesy-arena-lite/partner"
 	"github.com/Team254/cheesy-arena-lite/plc"
+	"github.com/Team254/cheesy-arena-lite/serial"
 )
 
 const (
@@ -51,6 +52,7 @@ type Arena struct {
 	accessPoint2     network.AccessPoint
 	networkSwitch    *network.Switch
 	Plc              plc.Plc
+	Arduino          serial.Arduino
 	TbaClient        *partner.TbaClient
 	FTCScoutClient   *partner.FTCScoutClient
 	AllianceStations map[string]*AllianceStation
@@ -566,6 +568,7 @@ func (arena *Arena) Run() {
 	go arena.accessPoint.Run()
 	go arena.accessPoint2.Run()
 	go arena.Plc.Run()
+	go arena.Arduino.Run()
 
 	for {
 		arena.Update()
@@ -717,6 +720,9 @@ func (arena *Arena) checkCanStartMatch() error {
 		if arena.Plc.GetFieldEstop() {
 			return fmt.Errorf("Cannot start match while field emergency stop is active.")
 		}
+		if arena.Arduino.GetFieldEstop() {
+			return fmt.Errorf("Cannot start match while field emergency stop is active.")
+		}
 		for name, status := range arena.Plc.GetArmorBlockStatuses() {
 			if !status {
 				return fmt.Errorf("Cannot start match while PLC ArmorBlock '%s' is not connected.", name)
@@ -774,7 +780,7 @@ func (arena *Arena) getAssignedAllianceStation(teamId int) string {
 // Updates the score given new input information from the field PLC.
 func (arena *Arena) handlePlcInput() {
 	// Handle emergency stops.
-	if (arena.Plc.GetFieldEstop() || arena.restFieldEstop) && arena.MatchTimeSec() > 0 && !arena.matchAborted {
+	if (arena.Plc.GetFieldEstop() || arena.restFieldEstop || arena.Arduino.GetFieldEstop()) && arena.MatchTimeSec() > 0 && !arena.matchAborted {
 		arena.AbortMatch()
 	}
 	redEstops, blueEstops := arena.Plc.GetTeamEstops()

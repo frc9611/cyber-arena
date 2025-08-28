@@ -94,7 +94,7 @@ func (arena *Arena) generateArenaStatusMessage() interface{} {
 		FieldEstop            bool
 		PlcArmorBlockStatuses map[string]bool
 	}{arena.CurrentMatch.Id, arena.AllianceStations, teamWifiStatuses, arena.MatchState,
-		arena.checkCanStartMatch() == nil, arena.Plc.IsHealthy, arena.Plc.GetFieldEstop() || arena.restFieldEstop,
+		arena.checkCanStartMatch() == nil, arena.Plc.IsHealthy, arena.Plc.GetFieldEstop() || arena.restFieldEstop || arena.Arduino.GetFieldEstop(),
 		arena.Plc.GetArmorBlockStatuses()}
 }
 
