@@ -27,7 +27,6 @@ func (arduino *Arduino) IsEnabled() bool {
 
 func (arduino *Arduino) Run() {
 	arduino.fieldEstop = false
-	fmt.Println("Arduino running")
 
 	mode := &serial.Mode{
 		BaudRate: 9600,
