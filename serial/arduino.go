@@ -88,8 +88,6 @@ func (arduino *Arduino) Run() {
 			}
 			arduino.fieldEstop = true
 		}
-
-		// Log the status of receivedPong
 	}
 }
 
