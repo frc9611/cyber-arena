@@ -83,6 +83,9 @@ func (web *Web) settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	eventSettings.WarningRemainingDurationSec, _ = strconv.Atoi(r.PostFormValue("warningRemainingDurationSec"))
 	eventSettings.TeamsPerAlliance, _ = strconv.Atoi(r.PostFormValue("teamsPerAlliance"))
 	eventSettings.IsFll = r.PostFormValue("IsFll") == "on"
+	// New remote sync fields
+	eventSettings.RemoteSyncUrl = r.PostFormValue("remoteSyncUrl")
+	eventSettings.RemoteSyncApiKey = r.PostFormValue("remoteSyncApiKey")
 
 	if eventSettings.Ap2TeamChannel != 0 && eventSettings.Ap2TeamChannel == eventSettings.ApTeamChannel {
 		web.renderSettings(w, r, "Cannot use same channel for both access points.")

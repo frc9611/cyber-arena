@@ -8,16 +8,68 @@ var websocket;
 var initialDwellMs = 3000;  // How long the display waits upon initial load before scrolling.
 var scrollMsPerRow;  // How long in milliseconds it takes to scroll a height of one row.
 var staticUpdateIntervalMs = 10000;  // How long between updates if not scrolling.
-var standingsTemplate = Handlebars.compile($("#standingsTemplate").html());
+var standingsTemplate; // assigned at runtime based on mode
+var fllStandingsTemplate; // only in FLL mode
 var rankingsData;
 var prevHighestPlayedMatch;
+
+function getIsFLL() {
+  var body = document.body;
+  if (!body) return false;
+  var attr = body.getAttribute('data-is-fll');
+  // Go boolean truthy check against "true" string.
+  return String(attr).toLowerCase() === 'true';
+}
 
 // Loads the JSON rankings data from the event server.
 var getRankingsData = function(callback) {
   $.getJSON("/api/rankings", function(data) {
-    rankingsData = data;
+    // In FLL mode, transform the rankings to show per-match results and Best.
+    if (getIsFLL()) {
+      var teams = (data && data.Rankings) ? data.Rankings : [];
+      // Attempt to fetch per-team FLL rounds from remote sync endpoint (local proxy)
+      $.getJSON("/api/fll/scores").done(function(scoreData) {
+        var byId = {};
+        (scoreData || []).forEach(function(s) { byId[s.TeamId] = s; });
+        var fllRankings = teams.map(function(t) {
+          var s = byId[t.TeamId] || { Rounds: [0,0,0], Best: 0 };
+          return {
+            TeamId: t.TeamId,
+            Nickname: t.Nickname,
+            FLLRounds: (s.Rounds && s.Rounds.length ? s.Rounds : [0,0,0]),
+            FLLBest: (typeof s.Best === 'number' ? s.Best : 0)
+          };
+        });
+        fllRankings.sort(function(a, b) {
+          if (b.FLLBest !== a.FLLBest) return b.FLLBest - a.FLLBest;
+          return (a.TeamId || 0) - (b.TeamId || 0);
+        });
+        fllRankings.forEach(function(entry, idx) { entry.Rank = idx + 1; });
+        rankingsData = {
+          Rankings: fllRankings,
+          Iteration: data.Iteration || "",
+          HighestPlayedMatch: ""
+        };
+        if (callback) callback(rankingsData);
+      }).fail(function() {
+        // Fallback to zeros if remote not available
+        var fllRankings = teams.map(function(t) {
+          return { TeamId: t.TeamId, Nickname: t.Nickname, FLLRounds: [0,0,0], FLLBest: 0 };
+        });
+        fllRankings.sort(function(a, b) {
+          if (b.FLLBest !== a.FLLBest) return b.FLLBest - a.FLLBest;
+          return (a.TeamId || 0) - (b.TeamId || 0);
+        });
+        fllRankings.forEach(function(entry, idx) { entry.Rank = idx + 1; });
+        rankingsData = { Rankings: fllRankings, Iteration: data.Iteration || "", HighestPlayedMatch: "" };
+        if (callback) callback(rankingsData);
+      });
+      return; // prevent calling callback twice
+    } else {
+      rankingsData = data;
+    }
     if (callback) {
-      callback(data);
+      callback(rankingsData);
     }
   });
 };
@@ -25,7 +77,8 @@ var getRankingsData = function(callback) {
 // Updates the rankings in place and initiates scrolling if they are long enough to require it.
 var updateStaticRankings = function() {
   getRankingsData(function() {
-    var rankingsHtml = standingsTemplate(rankingsData);
+    var template = getIsFLL() ? fllStandingsTemplate : standingsTemplate;
+    var rankingsHtml = template(rankingsData);
     $("#rankings2").html(rankingsHtml);
     $("#scroller").css("transform", "translate(0px, -2px);");
     prevHighestPlayedMatch = rankingsData.HighestPlayedMatch;
@@ -47,7 +100,8 @@ var cycleRankings = function() {
   $("#scroller").css({ transform: "translate(0px, -1px);" });
 
   // Load new data into the now out-of-sight bottom table.
-  var rankingsHtml = standingsTemplate(rankingsData);
+  var template = getIsFLL() ? fllStandingsTemplate : standingsTemplate;
+  var rankingsHtml = template(rankingsData);
   $("#rankings2").html(rankingsHtml);
 
   // Delay updating the "Standings as of" message by one cycle because the tables are always one cycle behind
@@ -72,6 +126,11 @@ var cycleRankings = function() {
 
 // Updates the "Standings as of" message with the given value, or blanks it out if there is no data yet.
 var setHighestPlayedMatch = function(highestPlayedMatch) {
+  if (getIsFLL()) {
+    // Hide for FLL mode.
+    $("#highestPlayedMatch").text("");
+    return;
+  }
   if (highestPlayedMatch === "") {
     $("#highestPlayedMatch").text("");
   } else {
@@ -88,6 +147,16 @@ $(function() {
   // Read the configuration for this display from the URL query string.
   var urlParams = new URLSearchParams(window.location.search);
   scrollMsPerRow = urlParams.get("scrollMsPerRow");
+
+  // Pick templates based on mode.
+  if (getIsFLL()) {
+    fllStandingsTemplate = Handlebars.compile($("#fllStandingsTemplate").html());
+  }
+  // Always compile default in case non-FLL.
+  var defaultTemplateEl = $("#standingsTemplate");
+  if (defaultTemplateEl.length) {
+    standingsTemplate = Handlebars.compile(defaultTemplateEl.html());
+  }
 
   // Set up the websocket back to the server. Used only for remote forcing of reloads.
   websocket = new CheesyWebsocket("/displays/rankings/websocket", {

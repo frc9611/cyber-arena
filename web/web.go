@@ -26,6 +26,8 @@ const (
 type Web struct {
 	arena           *field.Arena
 	templateHelpers template.FuncMap
+	// When true, the next commitMatchScore call will skip ranking updates.
+	suppressRankingOnCommit bool
 }
 
 func NewWeb(arena *field.Arena) *Web {
@@ -123,6 +125,9 @@ func (web *Web) newHandler() http.Handler {
 	router.HandleFunc("/api/scores", web.setScoresHandler).Methods("PATCH", "PUT")
 	router.HandleFunc("/api/sponsor_slides", web.sponsorSlidesApiHandler).Methods("GET")
 	router.HandleFunc("/api/teams/{teamId}/avatar", web.teamAvatarsApiHandler).Methods("GET")
+	// New: remote sync endpoints for FLL per-team scores
+	router.HandleFunc("/api/fll/scores", web.fllScoresApiGetHandler).Methods("GET")
+	router.HandleFunc("/api/fll/scores", web.fllScoresApiPostHandler).Methods("POST")
 	//router.HandleFunc("/api/match/estop", web.estopHandler).Methods("GET")
 	router.HandleFunc("/display", web.placeholderDisplayHandler).Methods("GET")
 	router.HandleFunc("/display/websocket", web.placeholderDisplayWebsocketHandler).Methods("GET")

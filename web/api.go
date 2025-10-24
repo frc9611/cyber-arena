@@ -6,12 +6,14 @@
 package web
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/Team254/cheesy-arena-lite/game"
 	"github.com/Team254/cheesy-arena-lite/model"
@@ -318,4 +320,140 @@ func (web *Web) generateBracketSvg(w io.Writer, activeMatch *model.Match, showTe
 		ShowTemporaryConnectors bool
 	}{bracketType, matchups, showTemporaryConnectors}
 	return template.ExecuteTemplate(w, "bracket", data)
+}
+
+// Minimal structs for remote sync
+type fllSyncUpsert struct {
+	TeamId int   `json:"teamId"`
+	Rounds []int `json:"rounds"`
+}
+
+// GET /api/fll/scores — returns all per-team scores (Rounds, Best)
+func (web *Web) fllScoresApiGetHandler(w http.ResponseWriter, r *http.Request) {
+	// Only active in FLL mode
+	if !web.arena.EventSettings.IsFll {
+		http.NotFound(w, r)
+		return
+	}
+	// If configured, pull latest from remote hub into local before serving.
+	remoteUrl := web.arena.EventSettings.RemoteSyncUrl
+	if remoteUrl != "" && r.Header.Get("X-From-Remote") != "1" {
+		req, _ := http.NewRequest("GET", remoteUrl, nil)
+		// Optional key for reads; not required by our handler.
+		resp, err := http.DefaultClient.Do(req)
+		if err == nil && resp.StatusCode == http.StatusOK {
+			defer resp.Body.Close()
+			var remoteScores []model.FllScore
+			if err := json.NewDecoder(resp.Body).Decode(&remoteScores); err == nil {
+				// Merge into local Bolt (upsert)
+				for _, s := range remoteScores {
+					existing, _ := web.arena.Database.GetFllScoreByTeamId(s.TeamId)
+					if existing == nil {
+						_ = web.arena.Database.CreateFllScore(&model.FllScore{TeamId: s.TeamId, Rounds: s.Rounds, Best: s.Best, UpdatedAt: s.UpdatedAt})
+					} else {
+						existing.Rounds = s.Rounds
+						existing.Best = s.Best
+						existing.UpdatedAt = s.UpdatedAt
+						_ = web.arena.Database.UpdateFllScore(existing)
+					}
+				}
+			}
+		}
+	}
+
+	scores, err := web.arena.Database.GetAllFllScores()
+	if err != nil {
+		handleWebErr(w, err)
+		return
+	}
+	if scores == nil {
+		scores = make([]model.FllScore, 0)
+	}
+	jsonData, err := json.MarshalIndent(scores, "", "  ")
+	if err != nil {
+		handleWebErr(w, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_, err = w.Write(jsonData)
+	if err != nil {
+		handleWebErr(w, err)
+		return
+	}
+}
+
+// POST /api/fll/scores — upsert a single team’s rounds; auth via EventSettings.RemoteSyncApiKey
+func (web *Web) fllScoresApiPostHandler(w http.ResponseWriter, r *http.Request) {
+	// Only active in FLL mode
+	if !web.arena.EventSettings.IsFll {
+		http.NotFound(w, r)
+		return
+	}
+	if web.arena.EventSettings.RemoteSyncApiKey != "" {
+		if r.Header.Get("X-API-Key") != web.arena.EventSettings.RemoteSyncApiKey {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+	}
+	var body fllSyncUpsert
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+	if body.TeamId <= 0 {
+		http.Error(w, "teamId required", http.StatusBadRequest)
+		return
+	}
+	// Normalize to 3 rounds for now (pad / trim)
+	rounds := make([]int, 0, 3)
+	for i := 0; i < len(body.Rounds) && i < 3; i++ {
+		rounds = append(rounds, body.Rounds[i])
+	}
+	for len(rounds) < 3 {
+		rounds = append(rounds, 0)
+	}
+	best := 0
+	for _, v := range rounds {
+		if v > best {
+			best = v
+		}
+	}
+
+	existing, err := web.arena.Database.GetFllScoreByTeamId(body.TeamId)
+	if err != nil {
+		handleWebErr(w, err)
+		return
+	}
+	if existing == nil {
+		s := &model.FllScore{TeamId: body.TeamId, Rounds: rounds, Best: best, UpdatedAt: time.Now().UTC()}
+		if err := web.arena.Database.CreateFllScore(s); err != nil {
+			handleWebErr(w, err)
+			return
+		}
+	} else {
+		existing.Rounds = rounds
+		existing.Best = best
+		existing.UpdatedAt = time.Now().UTC()
+		if err := web.arena.Database.UpdateFllScore(existing); err != nil {
+			handleWebErr(w, err)
+			return
+		}
+	}
+
+	// Forward to remote hub if configured and not already forwarded.
+	if r.Header.Get("X-From-Remote") != "1" {
+		remoteUrl := web.arena.EventSettings.RemoteSyncUrl
+		if remoteUrl != "" {
+			payload, _ := json.Marshal(body)
+			req, _ := http.NewRequest("POST", remoteUrl, bytes.NewReader(payload))
+			req.Header.Set("Content-Type", "application/json")
+			if web.arena.EventSettings.RemoteSyncApiKey != "" {
+				req.Header.Set("X-API-Key", web.arena.EventSettings.RemoteSyncApiKey)
+			}
+			req.Header.Set("X-From-Remote", "1")
+			_, _ = http.DefaultClient.Do(req)
+		}
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

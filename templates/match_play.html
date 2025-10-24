@@ -138,9 +138,19 @@
         Sinal de Reset
       </button>
     </div>
-    <div id="buttonBottomRow" class="row text-center">
+    <div class="row" style="margin-top: 10px; margin-bottom: 5px;">
+      {{if .EventSettings.IsFll}}
+      <div class="col-lg-12 text-center">
+        <label style="font-weight: normal;">
+          <input type="checkbox" id="isOfficialMatch" checked />
+          Partida oficial (contabiliza no ranking)
+        </label>
+      </div>
+      {{end}}
+    </div>
+    <div id="buttonBottomRow" class="row text-center" data-is-replay="{{.IsReplay}}">
       <button type="button" id="commitResults" class="btn btn-info btn-lg btn-match-play"
-          onclick="confirmCommit({{.IsReplay}});" disabled>
+          onclick="confirmCommit($(this).closest('#buttonBottomRow').data('is-replay'))" disabled>
         Enviar Resultados
       </button>
       <button type="button" id="discardResults" class="btn btn-danger btn-lg btn-match-play"

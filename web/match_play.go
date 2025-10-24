@@ -6,6 +6,8 @@
 package web
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -299,7 +301,16 @@ func (web *Web) matchPlayWebsocketHandler(w http.ResponseWriter, r *http.Request
 			web.arena.AllianceStationDisplayModeNotifier.Notify()
 			continue // Don't reload.
 		case "commitResults":
-			err = web.commitCurrentMatchScore()
+			// Optional payload: { official: boolean }
+			official := false
+			if data != nil {
+				args := struct {
+					Official bool `mapstructure:"official"`
+				}{}
+				_ = mapstructure.Decode(data, &args)
+				official = args.Official
+			}
+			err = web.commitCurrentMatchScoreWithOfficial(official)
 			if err != nil {
 				ws.WriteError(err.Error())
 				continue
@@ -485,7 +496,8 @@ func (web *Web) commitMatchScore(match *model.Match, matchResult *model.MatchRes
 			return err
 		}
 
-		if match.ShouldUpdateRankings() {
+		// Update rankings only if not suppressed and match says to update.
+		if !web.suppressRankingOnCommit && match.ShouldUpdateRankings() {
 			// Recalculate all the rankings.
 			rankings, err := tournament.CalculateRankings(web.arena.Database, isMatchReviewEdit)
 			if err != nil {
@@ -579,6 +591,105 @@ func (web *Web) getCurrentMatchResult() *model.MatchResult {
 // Saves the realtime result as the final score for the match currently loaded into the arena.
 func (web *Web) commitCurrentMatchScore() error {
 	return web.commitMatchScore(web.arena.CurrentMatch, web.getCurrentMatchResult(), false)
+}
+
+// New: commit and optionally sync to FLL remote when marked official.
+func (web *Web) commitCurrentMatchScoreWithOfficial(official bool) error {
+	result := web.getCurrentMatchResult()
+	// Suppress ranking update for non-official matches
+	if !official {
+		web.suppressRankingOnCommit = true
+	}
+	err := web.commitMatchScore(web.arena.CurrentMatch, result, false)
+	// Always clear the flag after commit
+	web.suppressRankingOnCommit = false
+	if err != nil {
+		return err
+	}
+	// Auto-sync for FLL events only when flagged official.
+	if web.arena.EventSettings.IsFll && official {
+		if err := web.syncFllFromMatchResult(web.arena.CurrentMatch, result); err != nil {
+			log.Printf("FLL sync failed: %v", err)
+		}
+	}
+	return nil
+}
+
+// Compute and upsert the FLL rounds for the Blue1 team and forward to remote hub if configured.
+func (web *Web) syncFllFromMatchResult(match *model.Match, result *model.MatchResult) error {
+	teamId := match.Blue1
+	if teamId <= 0 {
+		return nil
+	}
+	score := result.BlueScoreSummary().Score
+	// Load existing rounds
+	existing, err := web.arena.Database.GetFllScoreByTeamId(teamId)
+	if err != nil {
+		return err
+	}
+	rounds := make([]int, 0, 3)
+	if existing != nil && len(existing.Rounds) > 0 {
+		rounds = append(rounds, existing.Rounds...)
+	}
+	// Normalize to length 3 (pad zeros)
+	for len(rounds) < 3 {
+		rounds = append(rounds, 0)
+	}
+	// Place new score: fill first zero; else replace smallest if new is higher.
+	replaced := false
+	for i := 0; i < 3; i++ {
+		if rounds[i] == 0 {
+			rounds[i] = score
+			replaced = true
+			break
+		}
+	}
+	if !replaced {
+		minIdx := 0
+		for i := 1; i < 3; i++ {
+			if rounds[i] < rounds[minIdx] {
+				minIdx = i
+			}
+		}
+		if score > rounds[minIdx] {
+			rounds[minIdx] = score
+		}
+	}
+	// Upsert locally
+	best := 0
+	for _, v := range rounds {
+		if v > best {
+			best = v
+		}
+	}
+	if existing == nil {
+		fs := &model.FllScore{TeamId: teamId, Rounds: rounds, Best: best, UpdatedAt: time.Now().UTC()}
+		if err := web.arena.Database.CreateFllScore(fs); err != nil {
+			return err
+		}
+	} else {
+		existing.Rounds = rounds
+		existing.Best = best
+		existing.UpdatedAt = time.Now().UTC()
+		if err := web.arena.Database.UpdateFllScore(existing); err != nil {
+			return err
+		}
+	}
+	// Forward to remote hub
+	remoteUrl := web.arena.EventSettings.RemoteSyncUrl
+	if remoteUrl != "" {
+		payload := fllSyncUpsert{TeamId: teamId, Rounds: rounds}
+		b, _ := json.Marshal(payload)
+		req, _ := http.NewRequest("POST", remoteUrl, bytes.NewReader(b))
+		req.Header.Set("Content-Type", "application/json")
+		if web.arena.EventSettings.RemoteSyncApiKey != "" {
+			req.Header.Set("X-API-Key", web.arena.EventSettings.RemoteSyncApiKey)
+		}
+		// Avoid loops if hub posts back to us.
+		req.Header.Set("X-From-Remote", "1")
+		_, _ = http.DefaultClient.Do(req)
+	}
+	return nil
 }
 
 // Helper function to implement the required interface for Sort.

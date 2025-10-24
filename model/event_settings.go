@@ -41,6 +41,9 @@ type EventSettings struct {
 	WarningRemainingDurationSec int
 	TeamsPerAlliance            int
 	IsFll                       bool
+	// Remote sync for multi-table tournaments (optional)
+	RemoteSyncUrl    string
+	RemoteSyncApiKey string
 }
 
 func (database *Database) GetEventSettings() (*EventSettings, error) {
@@ -71,6 +74,8 @@ func (database *Database) GetEventSettings() (*EventSettings, error) {
 		WarningRemainingDurationSec: game.MatchTiming.WarningRemainingDurationSec,
 		TeamsPerAlliance:            2,
 		IsFll:                       false,
+		RemoteSyncUrl:               "",
+		RemoteSyncApiKey:            "",
 	}
 
 	if err := database.eventSettingsTable.create(&eventSettings); err != nil {

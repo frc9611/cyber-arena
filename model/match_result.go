@@ -16,6 +16,7 @@ type MatchResult struct {
 	MatchType  string
 	RedScore   *game.Score
 	BlueScore  *game.Score
+	Official   bool // true if this result counts toward rankings
 }
 
 // Returns a new match result object with empty slices instead of nil.
@@ -23,6 +24,7 @@ func NewMatchResult() *MatchResult {
 	matchResult := new(MatchResult)
 	matchResult.RedScore = new(game.Score)
 	matchResult.BlueScore = new(game.Score)
+	matchResult.Official = true
 	return matchResult
 }
 

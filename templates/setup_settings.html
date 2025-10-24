@@ -122,6 +122,22 @@
               </div>
             </div>
           </div>
+
+          <!-- Remote Sync (FLL multi-table) -->
+          {{if .IsFll}}
+          <div class="form-group">
+            <label class="col-lg-5 control-label">Remote Sync URL</label>
+            <div class="col-lg-7">
+              <input type="text" class="form-control" name="remoteSyncUrl" placeholder="https://example.com/fll-sync" value="{{.RemoteSyncUrl}}" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-5 control-label">Remote Sync API Key</label>
+            <div class="col-lg-7">
+              <input type="password" class="form-control" name="remoteSyncApiKey" value="{{.RemoteSyncApiKey}}" />
+            </div>
+          </div>
+          {{end}}
         </fieldset>
         <fieldset>
           <legend>Download Automático de Informações da Equipe</legend>
