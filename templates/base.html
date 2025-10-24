@@ -44,12 +44,15 @@
             <a href="#" class="dropdown-toggle cr-sidebar-dropdown-menu-btn" data-toggle="dropdown">Partida</a>
             <ul class="dropdown-menu">
               <li><a href="/match_play">Execução de Partidas</a></li>
-              <li><a href="/match_review">Revisão de Partidas</a></li>
               {{if .EventSettings.IsFll}}
-              <li><a href="/fll/review">Revisão FLL (Oficial)</a></li>
+                {{if eq .EventSettings.RemoteSyncUrl ""}}
+                  <li><a href="/fll/review">Revisão FLL (Oficial)</a></li>
+                {{end}}
+              {{else}}
+                  <li><a href="/match_review">Revisão de Partidas</a></li>
+                  <li><a href="/static/logs">Logs de Partidas</a></li>
+                  <li><a href="/alliance_selection">Seleção de Alianças</a></li>
               {{end}}
-              <li><a href="/static/logs">Logs de Partidas</a></li>
-              <li><a href="/alliance_selection">Seleção de Alianças</a></li>
             </ul>
             </li>
             <li class="dropdown">
@@ -61,22 +64,29 @@
               <li><a href="/display">Placeholder</a></li>
               <li><a href="/displays/announcer">Anunciador</a></li>
               <li><a href="/displays/audience">Público</a></li>
-              <li><a href="/displays/bracket">Chave</a></li>
-              <li><a href="/displays/field_monitor">Monitor de Campo</a></li>
-              <li><a href="/displays/field_monitor?fta=true">Monitor de Campo (FTA)</a></li>
-              <li><a href="/displays/queueing">Fila</a></li>
+              {{if eq .EventSettings.IsFll false}}
+                <li><a href="/displays/bracket">Chave</a></li>
+                <li><a href="/displays/field_monitor">Monitor de Campo</a></li>
+                <li><a href="/displays/field_monitor?fta=true">Monitor de Campo (FTA)</a></li>
+                <li><a href="/displays/queueing">Fila</a></li>
+              {{end}}
               <li><a href="/displays/rankings">Classificação</a></li>
               <li class="divider"></li>
               <li class="dropdown-header">Estação de Aliança</li>
-              <li><a href="/displays/alliance_station?station=R1">Vermelho 1</a></li>
-              <li><a href="/displays/alliance_station?station=R2">Vermelho 2</a></li>
-              <li><a href="/displays/alliance_station?station=R3">Vermelho 3</a></li>
-              <li><a href="/displays/alliance_station?station=B1">Azul 1</a></li>
-              <li><a href="/displays/alliance_station?station=B2">Azul 2</a></li>
-              <li><a href="/displays/alliance_station?station=B3">Azul 3</a></li>
-              <li><a href="/displays/alliance_station?station=N2">Relógio</a></li>
-              <li><a href="/displays/alliance_station?station=N3">Pontuação Vermelha</a></li>
-              <li><a href="/displays/alliance_station?station=N1">Pontuação Azul</a></li>
+              {{if .EventSettings.IsFll}}
+                <li><a href="/displays/alliance_station?station=B1">Equipe da Mesa</a></li>
+              {{else}}
+                <li><a href="/displays/alliance_station?station=R1">Vermelho 1</a></li>
+                <li><a href="/displays/alliance_station?station=R2">Vermelho 2</a></li>
+                <li><a href="/displays/alliance_station?station=R3">Vermelho 3</a></li>
+                <li><a href="/displays/alliance_station?station=B1">Azul 1</a></li>
+                <li><a href="/displays/alliance_station?station=B2">Azul 2</a></li>
+                <li><a href="/displays/alliance_station?station=B3">Azul 3</a></li>
+                <li><a href="/displays/alliance_station?station=N2">Relógio</a></li>
+                <li><a href="/displays/alliance_station?station=N3">Pontuação Vermelha</a></li>
+                <li><a href="/displays/alliance_station?station=N1">Pontuação Azul</a></li>
+              {{end}}
+
             </ul>
             </li>
             <li class="dropdown">
