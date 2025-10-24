@@ -7,6 +7,7 @@ var station = "";
 var blinkInterval;
 var currentScreen = "blank";
 var websocket;
+var isFll = false;
 
 // Handles a websocket message to change which screen is displayed.
 var handleAllianceStationDisplayMode = function(targetScreen) {
@@ -37,6 +38,15 @@ var handleAllianceStationDisplayMode = function(targetScreen) {
 // Handles a websocket message to update the team to display.
 var handleMatchLoad = function(data) {
   if (station !== "") {
+    // Initialize FLL mode flag once
+    if (typeof data.IsFll !== 'undefined') {
+      isFll = !!data.IsFll;
+    } else {
+      // Fallback: read from body attribute set by template
+      var attr = document.body.getAttribute('data-is-fll');
+      isFll = String(attr).toLowerCase() === 'true';
+    }
+
     var team = data.Teams[station];
     if (team) {
       $("#teamNumber").text(team.Id);
@@ -79,7 +89,15 @@ var handleArenaStatus = function(data) {
   stationStatus = data.AllianceStations[station];
   var blink = false;
   if (stationStatus && stationStatus.Bypass) {
-    $("#match").attr("data-status", "bypass");
+    if (isFll && station[0] === 'B') {
+      // In FLL mode, keep showing blue team banner even if bypassed.
+      $("#match").attr("data-status", "");
+      $("#teamName").show();
+      $("#disabled").hide();
+      $("#teamNameText").attr("data-alliance-bg", 'B');
+    } else {
+      $("#match").attr("data-status", "bypass");
+    }
   } else if (stationStatus) {
     if (!stationStatus.DsConn || !stationStatus.DsConn.DsLinked) {
       $("#match").attr("data-status", station[0]);
