@@ -366,10 +366,39 @@ func (web *Web) fllScoresApiGetHandler(w http.ResponseWriter, r *http.Request) {
 		handleWebErr(w, err)
 		return
 	}
-	if scores == nil {
-		scores = make([]model.FllScore, 0)
+	// Build Nickname and Name maps
+	teams, err := web.arena.Database.GetAllTeams()
+	if err != nil {
+		handleWebErr(w, err)
+		return
 	}
-	jsonData, err := json.MarshalIndent(scores, "", "  ")
+	teamNick := make(map[int]string, len(teams))
+	teamName := make(map[int]string, len(teams))
+	for _, t := range teams {
+		teamNick[t.Id] = t.Nickname
+		teamName[t.Id] = t.Name
+	}
+	// Create response with Nickname and Name
+	type fllScoreWithName struct {
+		TeamId    int       `json:"TeamId"`
+		Rounds    []int     `json:"Rounds"`
+		Best      int       `json:"Best"`
+		UpdatedAt time.Time `json:"UpdatedAt"`
+		Nickname  string    `json:"Nickname"`
+		Name      string    `json:"Name"`
+	}
+	resp := make([]fllScoreWithName, 0, len(scores))
+	for _, s := range scores {
+		resp = append(resp, fllScoreWithName{
+			TeamId:    s.TeamId,
+			Rounds:    s.Rounds,
+			Best:      s.Best,
+			UpdatedAt: s.UpdatedAt,
+			Nickname:  teamNick[s.TeamId],
+			Name:      teamName[s.TeamId],
+		})
+	}
+	jsonData, err := json.MarshalIndent(resp, "", "  ")
 	if err != nil {
 		handleWebErr(w, err)
 		return

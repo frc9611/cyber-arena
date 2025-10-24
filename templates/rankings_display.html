@@ -17,7 +17,7 @@
   <body data-is-fll="{{.EventSettings.IsFll}}">
     <div id="column">
       <div id="titlebar">
-        <div class="pull-left">Team Standings<br/></div>
+        <div class="pull-left">COLOCAÇÃO GERAL<br/></div>
         <div class="pull-right">{{.EventSettings.Name}}</div>
         <div>&nbsp;</div>
       </div>
@@ -26,11 +26,11 @@
           {{if .EventSettings.IsFll}}
           <tr>
             <td class="team-field">Rank</td>
-            <td class="team-nickname">Team - Name</td>
-            <td class="team-field">Best</td>
-            <td class="team-field">R1</td>
-            <td class="team-field">R2</td>
-            <td class="team-field">R3</td>
+            <td class="team-nickname">Equipe</td>
+            <td class="team-field">Melhor</td>
+            <td class="team-field">Rodada 1</td>
+            <td class="team-field">Rodada 2</td>
+            <td class="team-field">Rodada 3</td>
           </tr>
           {{else}}
           <tr>
@@ -70,9 +70,9 @@
             <td class="team-field">{{"{{../Iteration}}"}} {{"{{this.Rank}}"}}</td>
             <td class="team-nickname">{{"{{this.TeamId}}"}} - {{"{{this.Nickname}}"}}</td>
             <td class="team-field">{{"{{this.FLLBest}}"}}</td>
-            <td class="team-field">{{"{{lookup this.FLLRounds 0}}"}}</td>
-            <td class="team-field">{{"{{lookup this.FLLRounds 1}}"}}</td>
-            <td class="team-field">{{"{{lookup this.FLLRounds 2}}"}}</td>
+            <td class="team-field">{{"{{this.R1}}"}}</td>
+            <td class="team-field">{{"{{this.R2}}"}}</td>
+            <td class="team-field">{{"{{this.R3}}"}}</td>
           </tr>
         {{"{{/each}}"}}
       </tbody>

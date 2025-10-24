@@ -23,63 +23,64 @@ function getIsFLL() {
 
 // Loads the JSON rankings data from the event server.
 var getRankingsData = function(callback) {
-  $.getJSON("/api/rankings", function(data) {
-    // In FLL mode, transform the rankings to show per-match results and Best.
-    if (getIsFLL()) {
-      var teams = (data && data.Rankings) ? data.Rankings : [];
-      // Attempt to fetch per-team FLL rounds from remote sync endpoint (local proxy)
-      $.getJSON("/api/fll/scores").done(function(scoreData) {
-        var byId = {};
-        (scoreData || []).forEach(function(s) { byId[s.TeamId] = s; });
-        var fllRankings = teams.map(function(t) {
-          var s = byId[t.TeamId] || { Rounds: [0,0,0], Best: 0 };
-          return {
-            TeamId: t.TeamId,
-            Nickname: t.Nickname,
-            FLLRounds: (s.Rounds && s.Rounds.length ? s.Rounds : [0,0,0]),
-            FLLBest: (typeof s.Best === 'number' ? s.Best : 0)
-          };
-        });
-        fllRankings.sort(function(a, b) {
-          if (b.FLLBest !== a.FLLBest) return b.FLLBest - a.FLLBest;
-          return (a.TeamId || 0) - (b.TeamId || 0);
-        });
-        fllRankings.forEach(function(entry, idx) { entry.Rank = idx + 1; });
-        rankingsData = {
-          Rankings: fllRankings,
-          Iteration: data.Iteration || "",
-          HighestPlayedMatch: ""
+  if (getIsFLL()) {
+    $.getJSON("/api/fll/scores").done(function(scoreData) {
+      var list = (scoreData || []).map(function(s) {
+        var rounds = (s.Rounds && s.Rounds.length ? s.Rounds : [0,0,0]);
+        var nick = s.Nickname || "";
+        var name = s.Name || "";
+        return {
+          TeamId: s.TeamId,
+          Nickname: nick || name, // prefer Nickname, fall back to Name
+          FLLRounds: rounds,
+          FLLBest: (typeof s.Best === 'number' ? s.Best : 0),
+          R1: rounds[0] || 0,
+          R2: rounds[1] || 0,
+          R3: rounds[2] || 0
         };
-        if (callback) callback(rankingsData);
-      }).fail(function() {
-        // Fallback to zeros if remote not available
-        var fllRankings = teams.map(function(t) {
-          return { TeamId: t.TeamId, Nickname: t.Nickname, FLLRounds: [0,0,0], FLLBest: 0 };
-        });
-        fllRankings.sort(function(a, b) {
-          if (b.FLLBest !== a.FLLBest) return b.FLLBest - a.FLLBest;
-          return (a.TeamId || 0) - (b.TeamId || 0);
-        });
-        fllRankings.forEach(function(entry, idx) { entry.Rank = idx + 1; });
-        rankingsData = { Rankings: fllRankings, Iteration: data.Iteration || "", HighestPlayedMatch: "" };
-        if (callback) callback(rankingsData);
       });
-      return; // prevent calling callback twice
-    } else {
-      rankingsData = data;
-    }
+      list.sort(function(a, b) {
+        if (b.FLLBest !== a.FLLBest) return b.FLLBest - a.FLLBest;
+        return (a.TeamId || 0) - (b.TeamId || 0);
+      });
+      list.forEach(function(entry, idx) { entry.Rank = idx + 1; });
+      rankingsData = { Rankings: list, Iteration: "", HighestPlayedMatch: "" };
+      if (callback) callback(rankingsData);
+    }).fail(function() {
+      // On failure, return empty list
+      rankingsData = { Rankings: [], Iteration: "", HighestPlayedMatch: "" };
+      if (callback) callback(rankingsData);
+    });
+    return; // prevent non-FLL path
+  }
+
+  $.getJSON("/api/rankings", function(data) {
+    rankingsData = data;
     if (callback) {
       callback(rankingsData);
     }
   });
 };
 
+function finishFll(list) {
+  list.sort(function(a, b) {
+    if (b.FLLBest !== a.FLLBest) return b.FLLBest - a.FLLBest;
+    return (a.TeamId || 0) - (b.TeamId || 0);
+  });
+  list.forEach(function(entry, idx) { entry.Rank = idx + 1; });
+  rankingsData = { Rankings: list, Iteration: "", HighestPlayedMatch: "" };
+  if (typeof arguments.callee.caller === 'function') {
+    // noop
+  }
+}
+
 // Updates the rankings in place and initiates scrolling if they are long enough to require it.
 var updateStaticRankings = function() {
   getRankingsData(function() {
     var template = getIsFLL() ? fllStandingsTemplate : standingsTemplate;
     var rankingsHtml = template(rankingsData);
-    $("#rankings2").html(rankingsHtml);
+    // Populate both tables so there is always visible content even if we don't scroll.
+    $("#rankings1").html(rankingsHtml);
     $("#scroller").css("transform", "translate(0px, -2px);");
     prevHighestPlayedMatch = rankingsData.HighestPlayedMatch;
     setHighestPlayedMatch(rankingsData.HighestPlayedMatch);

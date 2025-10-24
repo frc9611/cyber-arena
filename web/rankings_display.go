@@ -6,9 +6,10 @@
 package web
 
 import (
+	"net/http"
+
 	"github.com/Team254/cheesy-arena-lite/model"
 	"github.com/Team254/cheesy-arena-lite/websocket"
-	"net/http"
 )
 
 // Renders the display which shows scrolling rankings.
