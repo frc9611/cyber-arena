@@ -97,6 +97,25 @@ var handleMatchLoad = function(data) {
   $("#" + blueSide + "Team2Avatar").attr("src", getAvatarUrl(currentMatch.Blue2));
   $("#" + blueSide + "Team3Avatar").attr("src", getAvatarUrl(currentMatch.Blue3));
 
+  // FLL: Populate Blue1 team name in dedicated field if present.
+  if ($("#leftTeam1Name").length) {
+    try {
+      var teamB1 = data.Teams ? data.Teams["B1"] : null;
+      var teamName = teamB1 ? (teamB1.Nickname || teamB1.Name || "") : "";
+      $("#leftTeam1Name").text(teamName);
+    } catch (e) {
+      $("#leftTeam1Name").text("");
+    }
+  }
+
+  // FLL: Also bind Blue1 team number and avatar directly to left-side IDs if present
+  if ($("#leftTeam1").length) {
+    $("#leftTeam1").text(currentMatch.Blue1);
+  }
+  if ($("#leftTeam1Avatar").length) {
+    $("#leftTeam1Avatar").attr("src", getAvatarUrl(currentMatch.Blue1));
+  }
+
   // Show alliance numbers if this is an elimination match.
   if (currentMatch.Type === "elimination") {
     $("#" + redSide + "ElimAlliance").text(currentMatch.ElimRedAlliance);
@@ -141,6 +160,11 @@ var handleMatchTime = function(data) {
 var handleRealtimeScore = function(data) {
   $("#" + redSide + "ScoreNumber").text(data.Red.ScoreSummary.Score - data.Red.ScoreSummary.EndgamePoints);
   $("#" + blueSide + "ScoreNumber").text(data.Blue.ScoreSummary.Score - data.Blue.ScoreSummary.EndgamePoints);
+
+  // FLL: Ensure the single-side score is always updated from Blue alliance
+  if ($("#leftScoreNumber").length) {
+    $("#leftScoreNumber").text(data.Blue.ScoreSummary.Score - data.Blue.ScoreSummary.EndgamePoints);
+  }
 };
 
 // Handles a websocket message to populate the final score data.

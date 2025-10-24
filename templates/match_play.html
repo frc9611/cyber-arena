@@ -6,7 +6,10 @@
 */}}
 {{define "title"}}Execução da Partida{{end}}
 {{define "body"}}
+
+
 <div class="row">
+  {{if eq .EventSettings.IsFll false }} <!--not FLL-->
   <div class="col-lg-4">
     <a href="/match_play/0/load"><b class="btn btn-info">Carregar Partida de Testes</b></a><br /><br />
     <ul class="nav nav-tabs" style="margin-bottom: 15px;">
@@ -52,8 +55,9 @@
           </table>
         </div>
       {{end}}
-    </div>
+    </div> 
   </div>
+  {{end}}<!--not FLL-->
   <div class="col-lg-8">
     <div class="row text-center">
       <div class="col-lg-3 well well-sm text-center" style="text-transform: uppercase;">
@@ -68,14 +72,15 @@
     <div class="row text-center">
       <div class="col-lg-6 well well-darkblue status-well">
         <div class="row form-group">
-          <div class="col-lg-4">Azul</div>
+          <div class="col-lg-4">{{if eq .EventSettings.IsFll false }} Azul {{else}} Equipe na Mesa {{end}}</div>
+          <!-- not FLL-->
           <div class="col-lg-2" data-toggle="tooltip" title="Driver Station">DS</div>
           <div class="col-lg-2" data-toggle="tooltip" title="Rádio (AP Configured SSID)">Rádio</div>
           <div class="col-lg-2" data-toggle="tooltip" title="Robô">Robô</div>
           <div class="col-lg-2" data-toggle="tooltip" title="Ignorar/Não está jogando">Ign.</div>
         </div>
         {{template "matchPlayTeam" dict "team" .Match.Blue1 "color" "B" "position" 1 "data" .}}
-        {{template "matchPlayTeam" dict "team" .Match.Blue2 "color" "B" "position" 2 "data" .}}
+        {{if eq .EventSettings.IsFll false }} {{template "matchPlayTeam" dict "team" .Match.Blue2 "color" "B" "position" 2 "data" .}} {{end}}
         <!-- {{template "matchPlayTeam" dict "team" .Match.Blue3 "color" "B" "position" 3 "data" .}} -->
         {{if eq .EventSettings.TeamsPerAlliance 3 }}
           {{template "matchPlayTeam" dict "team" .Match.Blue3 "color" "B" "position" 3 "data" .}}
@@ -89,6 +94,7 @@
           </div>
         {{end}}
       </div>
+      {{if eq .EventSettings.IsFll false }}
       <div class="col-lg-6 well well-darkred status-well">
         <div class="row form-group">
           <div class="col-lg-4">Vermelho</div>
@@ -112,6 +118,7 @@
         </div>
         {{end}}
       </div>
+      {{end}}
     </div>
     <div class="row text-center">
       <button type="button" id="startMatch" class="btn btn-success btn-lg btn-match-play"

@@ -598,7 +598,14 @@ func (list MatchPlayList) Swap(i, j int) {
 
 // Constructs the list of matches to display on the side of the match play interface.
 func (web *Web) buildMatchPlayList(matchType string) (MatchPlayList, error) {
-	if web.arena.EventSettings.TeamsPerAlliance == 2 {
+	if web.arena.EventSettings.IsFll {
+		// For FLL, only Blue1 is active, bypass all other stations
+		web.arena.AllianceStations["R1"].Bypass = true
+		web.arena.AllianceStations["R2"].Bypass = true
+		web.arena.AllianceStations["R3"].Bypass = true
+		web.arena.AllianceStations["B2"].Bypass = true
+		web.arena.AllianceStations["B3"].Bypass = true
+	} else if web.arena.EventSettings.TeamsPerAlliance == 2 {
 		web.arena.AllianceStations["R3"].Bypass = true
 		web.arena.AllianceStations["B3"].Bypass = true
 	}
