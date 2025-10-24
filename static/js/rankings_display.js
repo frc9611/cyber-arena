@@ -29,11 +29,15 @@ var getRankingsData = function(callback) {
         var rounds = (s.Rounds && s.Rounds.length ? s.Rounds : [0,0,0]);
         var nick = s.Nickname || "";
         var name = s.Name || "";
+        var best = (typeof s.Best === 'number' ? s.Best : 0);
+        if (s.OfficialRound && s.OfficialRound >= 1 && s.OfficialRound <= 3) {
+          best = rounds[s.OfficialRound - 1] || 0;
+        }
         return {
           TeamId: s.TeamId,
-          Nickname: nick || name, // prefer Nickname, fall back to Name
+          Nickname: nick || name,
           FLLRounds: rounds,
-          FLLBest: (typeof s.Best === 'number' ? s.Best : 0),
+          FLLBest: best,
           R1: rounds[0] || 0,
           R2: rounds[1] || 0,
           R3: rounds[2] || 0

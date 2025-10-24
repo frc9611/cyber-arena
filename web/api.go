@@ -326,6 +326,8 @@ func (web *Web) generateBracketSvg(w io.Writer, activeMatch *model.Match, showTe
 type fllSyncUpsert struct {
 	TeamId int   `json:"teamId"`
 	Rounds []int `json:"rounds"`
+	// Optional official round selection (1..3), 0 to clear/use Best
+	OfficialRound int `json:"officialRound,omitempty"`
 }
 
 // GET /api/fll/scores — returns all per-team scores (Rounds, Best)
@@ -349,11 +351,12 @@ func (web *Web) fllScoresApiGetHandler(w http.ResponseWriter, r *http.Request) {
 				for _, s := range remoteScores {
 					existing, _ := web.arena.Database.GetFllScoreByTeamId(s.TeamId)
 					if existing == nil {
-						_ = web.arena.Database.CreateFllScore(&model.FllScore{TeamId: s.TeamId, Rounds: s.Rounds, Best: s.Best, UpdatedAt: s.UpdatedAt})
+						_ = web.arena.Database.CreateFllScore(&model.FllScore{TeamId: s.TeamId, Rounds: s.Rounds, Best: s.Best, UpdatedAt: s.UpdatedAt, OfficialRound: s.OfficialRound})
 					} else {
 						existing.Rounds = s.Rounds
 						existing.Best = s.Best
 						existing.UpdatedAt = s.UpdatedAt
+						existing.OfficialRound = s.OfficialRound
 						_ = web.arena.Database.UpdateFllScore(existing)
 					}
 				}
@@ -380,22 +383,24 @@ func (web *Web) fllScoresApiGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	// Create response with Nickname and Name
 	type fllScoreWithName struct {
-		TeamId    int       `json:"TeamId"`
-		Rounds    []int     `json:"Rounds"`
-		Best      int       `json:"Best"`
-		UpdatedAt time.Time `json:"UpdatedAt"`
-		Nickname  string    `json:"Nickname"`
-		Name      string    `json:"Name"`
+		TeamId        int       `json:"TeamId"`
+		Rounds        []int     `json:"Rounds"`
+		Best          int       `json:"Best"`
+		UpdatedAt     time.Time `json:"UpdatedAt"`
+		Nickname      string    `json:"Nickname"`
+		Name          string    `json:"Name"`
+		OfficialRound int       `json:"OfficialRound,omitempty"`
 	}
 	resp := make([]fllScoreWithName, 0, len(scores))
 	for _, s := range scores {
 		resp = append(resp, fllScoreWithName{
-			TeamId:    s.TeamId,
-			Rounds:    s.Rounds,
-			Best:      s.Best,
-			UpdatedAt: s.UpdatedAt,
-			Nickname:  teamNick[s.TeamId],
-			Name:      teamName[s.TeamId],
+			TeamId:        s.TeamId,
+			Rounds:        s.Rounds,
+			Best:          s.Best,
+			UpdatedAt:     s.UpdatedAt,
+			Nickname:      teamNick[s.TeamId],
+			Name:          teamName[s.TeamId],
+			OfficialRound: s.OfficialRound,
 		})
 	}
 	jsonData, err := json.MarshalIndent(resp, "", "  ")
@@ -433,7 +438,8 @@ func (web *Web) fllScoresApiPostHandler(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "teamId required", http.StatusBadRequest)
 		return
 	}
-	// Normalize to 3 rounds for now (pad / trim)
+	// Normalize to 3 rounds for now (pad / trim), or preserve if omitted.
+	preserveRounds := len(body.Rounds) == 0
 	rounds := make([]int, 0, 3)
 	for i := 0; i < len(body.Rounds) && i < 3; i++ {
 		rounds = append(rounds, body.Rounds[i])
@@ -453,8 +459,17 @@ func (web *Web) fllScoresApiPostHandler(w http.ResponseWriter, r *http.Request) 
 		handleWebErr(w, err)
 		return
 	}
+	if preserveRounds && existing != nil {
+		// Keep prior rounds / best if not provided
+		rounds = existing.Rounds
+		best = existing.Best
+	}
 	if existing == nil {
 		s := &model.FllScore{TeamId: body.TeamId, Rounds: rounds, Best: best, UpdatedAt: time.Now().UTC()}
+		// Apply OfficialRound if provided
+		if body.OfficialRound >= 0 && body.OfficialRound <= 3 {
+			s.OfficialRound = body.OfficialRound
+		}
 		if err := web.arena.Database.CreateFllScore(s); err != nil {
 			handleWebErr(w, err)
 			return
@@ -463,6 +478,9 @@ func (web *Web) fllScoresApiPostHandler(w http.ResponseWriter, r *http.Request) 
 		existing.Rounds = rounds
 		existing.Best = best
 		existing.UpdatedAt = time.Now().UTC()
+		if body.OfficialRound >= 0 && body.OfficialRound <= 3 {
+			existing.OfficialRound = body.OfficialRound
+		}
 		if err := web.arena.Database.UpdateFllScore(existing); err != nil {
 			handleWebErr(w, err)
 			return
@@ -486,3 +504,6 @@ func (web *Web) fllScoresApiPostHandler(w http.ResponseWriter, r *http.Request) 
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+// No-op stub to avoid duplicate definitions; authoritative implementation is in match_play.go.
+func (web *Web) syncFllFromMatchResultApi(_ *model.Match, _ *model.MatchResult) error { return nil }

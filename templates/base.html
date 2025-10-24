@@ -45,6 +45,9 @@
             <ul class="dropdown-menu">
               <li><a href="/match_play">Execução de Partidas</a></li>
               <li><a href="/match_review">Revisão de Partidas</a></li>
+              {{if .EventSettings.IsFll}}
+              <li><a href="/fll/review">Revisão FLL (Oficial)</a></li>
+              {{end}}
               <li><a href="/static/logs">Logs de Partidas</a></li>
               <li><a href="/alliance_selection">Seleção de Alianças</a></li>
             </ul>

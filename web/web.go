@@ -200,6 +200,9 @@ func (web *Web) newHandler() http.Handler {
 	router.HandleFunc("/setup/teams/generate_wpa_keys", web.teamsGenerateWpaKeysHandler).Methods("GET")
 	router.HandleFunc("/setup/teams/publish", web.teamsPublishHandler).Methods("POST")
 	router.HandleFunc("/setup/teams/refresh", web.teamsRefreshHandler).Methods("GET")
+	// FLL review page (only in FLL mode)
+	router.HandleFunc("/fll/review", web.fllReviewPageHandler).Methods("GET")
+	router.HandleFunc("/api/fll/review", web.fllReviewApiPostHandler).Methods("POST")
 	return router
 }
 

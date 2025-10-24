@@ -1,0 +1,86 @@
+{{/*
+  FLL Official Round Review Page (Master Only)
+*/}}
+{{define "title"}}FLL Review{{end}}
+{{define "body"}}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">FLL Score Review</h3>
+  </div>
+  <div class="panel-body">
+    {{if not .EventSettings.IsFll}}
+      <div class="alert alert-warning">This page is only available when FLL mode is enabled.</div>
+    {{else}}
+      <p>Edit each team’s rounds below. Best updates automatically after save.</p>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Team</th>
+            <th>Name</th>
+            <th>R1</th>
+            <th>R2</th>
+            <th>R3</th>
+            <th>Best</th>
+            <th>Save</th>
+          </tr>
+        </thead>
+        <tbody id="reviewRows"></tbody>
+      </table>
+    {{end}}
+  </div>
+</div>
+{{end}}
+{{define "script"}}
+<script>
+(function(){
+  if (!document.getElementById('reviewRows')) { return; }
+  function esc(v){ return (v==null?'':String(v)); }
+  function rowHtml(t) {
+    var teamLabel = t.TeamId;
+    var name = t.Nickname || t.Name || '';
+    var r1 = (t.Rounds && t.Rounds.length>0)? t.Rounds[0] : 0;
+    var r2 = (t.Rounds && t.Rounds.length>1)? t.Rounds[1] : 0;
+    var r3 = (t.Rounds && t.Rounds.length>2)? t.Rounds[2] : 0;
+    var best = t.Best || Math.max(r1,r2,r3);
+    return '<tr data-team="'+t.TeamId+'">'
+      + '<td><b>'+teamLabel+'</b></td>'
+      + '<td>'+esc(name)+'</td>'
+      + '<td><input type="number" class="form-control input-sm r1" value="'+r1+'" min="0" step="1"/></td>'
+      + '<td><input type="number" class="form-control input-sm r2" value="'+r2+'" min="0" step="1"/></td>'
+      + '<td><input type="number" class="form-control input-sm r3" value="'+r3+'" min="0" step="1"/></td>'
+      + '<td class="best">'+best+'</td>'
+      + '<td><button class="btn btn-primary btn-sm saveBtn">Save</button></td>'
+    + '</tr>';
+  }
+  function load() {
+    $.getJSON('/api/fll/scores').done(function(data){
+      var rows = (data||[])
+        .sort(function(a,b){return (a.TeamId||0)-(b.TeamId||0);})
+        .map(rowHtml).join('');
+      $('#reviewRows').html(rows);
+    });
+  }
+  $(document).on('click', '.saveBtn', function(){
+    var tr = $(this).closest('tr');
+    var teamId = parseInt(tr.attr('data-team'),10);
+    var r1 = parseInt(tr.find('.r1').val(),10) || 0;
+    var r2 = parseInt(tr.find('.r2').val(),10) || 0;
+    var r3 = parseInt(tr.find('.r3').val(),10) || 0;
+    var payload = { teamId: teamId, rounds: [r1, r2, r3] };
+    $.ajax({
+      url: '/api/fll/review',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(payload)
+    }).done(function(){
+      // Update best in-place quickly, then reload for consistency
+      tr.find('.best').text(Math.max(r1, r2, r3));
+      load();
+    }).fail(function(xhr){
+      alert('Save failed: ' + xhr.status + ' ' + xhr.responseText);
+    });
+  });
+  load();
+})();
+</script>
+{{end}}

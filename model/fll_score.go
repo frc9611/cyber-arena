@@ -13,6 +13,8 @@ type FllScore struct {
 	Rounds    []int
 	Best      int
 	UpdatedAt time.Time
+	// OfficialRound: 0 means unset (use Best); 1..3 selects which round counts as official
+	OfficialRound int `json:"officialRound,omitempty"`
 }
 
 func (database *Database) CreateFllScore(score *FllScore) error {
