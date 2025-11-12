@@ -168,6 +168,8 @@ func (web *Web) newHandler() http.Handler {
 	router.HandleFunc("/reports/pdf/backups", web.backupsPdfReportHandler).Methods("GET")
 	router.HandleFunc("/reports/pdf/bracket", web.bracketPdfReportHandler).Methods("GET")
 	router.HandleFunc("/reports/pdf/coupons", web.couponsPdfReportHandler).Methods("GET")
+	router.HandleFunc("/reports/pdf/fll/teams", web.fllTeamsPdfReportHandler).Methods("GET")
+	router.HandleFunc("/reports/pdf/fll/matches", web.fllMatchResultsPdfReportHandler).Methods("GET")
 	router.HandleFunc("/reports/pdf/rankings", web.rankingsPdfReportHandler).Methods("GET")
 	router.HandleFunc("/reports/pdf/schedule/{type}", web.schedulePdfReportHandler).Methods("GET")
 	router.HandleFunc("/reports/pdf/teams", web.teamsPdfReportHandler).Methods("GET")

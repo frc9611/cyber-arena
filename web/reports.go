@@ -707,3 +707,203 @@ func surrogateText(isSurrogate bool) string {
 		return ""
 	}
 }
+
+// Generates a PDF-formatted report of FLL teams (Number, Name, City).
+func (web *Web) fllTeamsPdfReportHandler(w http.ResponseWriter, r *http.Request) {
+	if !web.arena.EventSettings.IsFll {
+		http.Error(w, "This report is only available for FLL events", http.StatusForbidden)
+		return
+	}
+
+	teams, err := web.arena.Database.GetAllTeams()
+	if err != nil {
+		handleWebErr(w, err)
+		return
+	}
+
+	// Filter teams with valid team numbers (> 0)
+	var validTeams []model.Team
+	for _, team := range teams {
+		if team.Id > 0 {
+			validTeams = append(validTeams, team)
+		}
+	}
+
+	colWidths := map[string]float64{"Number": 30, "Name": 80, "City": 60, "Check-in": 20}
+	rowHeight := 7.0
+
+	pdf := gofpdf.New("P", "mm", "Letter", "font")
+	pdf.AddPage()
+
+	// Render title
+	pdf.SetFont("Arial", "B", 14)
+	pdf.CellFormat(190, 10, "Lista de Equipes - "+web.arena.EventSettings.Name, "", 1, "C", false, 0, "")
+	pdf.Ln(5)
+
+	// Render table header
+	pdf.SetFont("Arial", "B", 11)
+	pdf.SetFillColor(0, 102, 179) // Blue header
+	pdf.SetTextColor(255, 255, 255)
+	pdf.CellFormat(colWidths["Number"], rowHeight, "Nº", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(colWidths["Name"], rowHeight, "Nome", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(colWidths["City"], rowHeight, "Cidade", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(colWidths["Check-in"], rowHeight, "Check-in", "1", 1, "C", true, 0, "")
+
+	// Render team rows
+	pdf.SetFont("Arial", "", 10)
+	pdf.SetTextColor(0, 0, 0)
+	for i, team := range validTeams {
+		if i%2 == 0 {
+			pdf.SetFillColor(240, 240, 240)
+		} else {
+			pdf.SetFillColor(255, 255, 255)
+		}
+		pdf.CellFormat(colWidths["Number"], rowHeight, strconv.Itoa(team.Id), "1", 0, "C", true, 0, "")
+		pdf.CellFormat(colWidths["Name"], rowHeight, team.Name, "1", 0, "L", true, 0, "")
+		pdf.CellFormat(colWidths["City"], rowHeight, team.City+", "+team.StateProv+", "+team.Country, "1", 0, "L", true, 0, "")
+		var checkIn string
+		if team.PassedInspection {
+			checkIn = "S"
+		} else {
+			checkIn = "N"
+		}
+		pdf.CellFormat(colWidths["Check-in"], rowHeight, checkIn, "1", 1, "C", true, 0, "")
+	}
+
+	// Write PDF
+	w.Header().Set("Content-Type", "application/pdf")
+	err = pdf.Output(w)
+	if err != nil {
+		handleWebErr(w, err)
+		return
+	}
+}
+
+// Generates a PDF-formatted report of FLL match results with best scores.
+func (web *Web) fllMatchResultsPdfReportHandler(w http.ResponseWriter, r *http.Request) {
+	if !web.arena.EventSettings.IsFll {
+		http.Error(w, "This report is only available for FLL events", http.StatusForbidden)
+		return
+	}
+
+	scores, err := web.arena.Database.GetAllFllScores()
+	if err != nil {
+		handleWebErr(w, err)
+		return
+	}
+
+	teams, err := web.arena.Database.GetAllTeams()
+	if err != nil {
+		handleWebErr(w, err)
+		return
+	}
+
+	// Create a map for quick team lookup
+	teamMap := make(map[int]*model.Team)
+	for i := range teams {
+		if teams[i].Id > 0 {
+			teamMap[teams[i].Id] = &teams[i]
+		}
+	}
+
+	// Sort scores by best score (descending)
+	type scoreEntry struct {
+		TeamId int
+		Name   string
+		R1     int
+		R2     int
+		R3     int
+		Best   int
+	}
+	var entries []scoreEntry
+	for _, score := range scores {
+		team := teamMap[score.TeamId]
+		if team == nil || team.Id <= 0 {
+			continue
+		}
+		name := team.Nickname
+		if name == "" {
+			name = team.Name
+		}
+		r1, r2, r3 := 0, 0, 0
+		if len(score.Rounds) > 0 {
+			r1 = score.Rounds[0]
+		}
+		if len(score.Rounds) > 1 {
+			r2 = score.Rounds[1]
+		}
+		if len(score.Rounds) > 2 {
+			r3 = score.Rounds[2]
+		}
+		entries = append(entries, scoreEntry{
+			TeamId: score.TeamId,
+			Name:   name,
+			R1:     r1,
+			R2:     r2,
+			R3:     r3,
+			Best:   score.Best,
+		})
+	}
+
+	// Sort by best score descending
+	for i := 0; i < len(entries)-1; i++ {
+		for j := i + 1; j < len(entries); j++ {
+			if entries[j].Best > entries[i].Best {
+				entries[i], entries[j] = entries[j], entries[i]
+			}
+		}
+	}
+
+	colWidths := map[string]float64{"Rank": 20, "Team": 25, "Name": 70, "R1": 20, "R2": 20, "R3": 20, "Best": 25}
+	rowHeight := 7.0
+
+	pdf := gofpdf.New("P", "mm", "Letter", "font")
+	pdf.AddPage()
+
+	// Render title
+	pdf.SetFont("Arial", "B", 14)
+	pdf.CellFormat(200, 10, "Resultados das Partidas - "+web.arena.EventSettings.Name, "", 1, "C", false, 0, "")
+	pdf.Ln(5)
+
+	// Render table header
+	pdf.SetFont("Arial", "B", 10)
+	pdf.SetFillColor(0, 102, 179)
+	pdf.SetTextColor(255, 255, 255)
+	pdf.CellFormat(colWidths["Rank"], rowHeight, "Pos.", "1", 0, "C", true, 0, "")
+	//pdf.CellFormat(colWidths["Team"], rowHeight, "Equipe", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(colWidths["Name"], rowHeight, "Nome", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(colWidths["R1"], rowHeight, "Round 1", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(colWidths["R2"], rowHeight, "Round 2", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(colWidths["R3"], rowHeight, "Round 3", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(colWidths["Best"], rowHeight, "Melhor", "1", 1, "C", true, 0, "")
+
+	// Render data rows
+	pdf.SetFont("Arial", "", 9)
+	pdf.SetTextColor(0, 0, 0)
+	for i, entry := range entries {
+		if i%2 == 0 {
+			pdf.SetFillColor(240, 240, 240)
+		} else {
+			pdf.SetFillColor(255, 255, 255)
+		}
+		pdf.CellFormat(colWidths["Rank"], rowHeight, strconv.Itoa(i+1), "1", 0, "C", true, 0, "")
+		//pdf.CellFormat(colWidths["Team"], rowHeight, strconv.Itoa(entry.TeamId), "1", 0, "C", true, 0, "")
+		pdf.CellFormat(colWidths["Name"], rowHeight, entry.Name, "1", 0, "L", true, 0, "")
+		pdf.CellFormat(colWidths["R1"], rowHeight, strconv.Itoa(entry.R1), "1", 0, "C", true, 0, "")
+		pdf.CellFormat(colWidths["R2"], rowHeight, strconv.Itoa(entry.R2), "1", 0, "C", true, 0, "")
+		pdf.CellFormat(colWidths["R3"], rowHeight, strconv.Itoa(entry.R3), "1", 0, "C", true, 0, "")
+
+		// Highlight best score
+		pdf.SetFont("Arial", "B", 9)
+		pdf.CellFormat(colWidths["Best"], rowHeight, strconv.Itoa(entry.Best), "1", 1, "C", true, 0, "")
+		pdf.SetFont("Arial", "", 9)
+	}
+
+	// Write PDF
+	w.Header().Set("Content-Type", "application/pdf")
+	err = pdf.Output(w)
+	if err != nil {
+		handleWebErr(w, err)
+		return
+	}
+}
