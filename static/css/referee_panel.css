@@ -223,3 +223,9 @@ h3 {
   color: #000;
   font-weight: 600;
 }
+
+.cr-checkbox {
+  width: 40px;
+  height: 40px;
+  accent-color: #0066B3;
+} 

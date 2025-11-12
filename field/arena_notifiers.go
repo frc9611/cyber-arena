@@ -20,6 +20,7 @@ type ArenaNotifiers struct {
 	AllianceStationDisplayModeNotifier *websocket.Notifier
 	ArenaStatusNotifier                *websocket.Notifier
 	AudienceDisplayModeNotifier        *websocket.Notifier
+	AudienceScoreVisibilityNotifier    *websocket.Notifier
 	DisplayConfigurationNotifier       *websocket.Notifier
 	EventStatusNotifier                *websocket.Notifier
 	LowerThirdNotifier                 *websocket.Notifier
@@ -51,6 +52,8 @@ func (arena *Arena) configureNotifiers() {
 	arena.ArenaStatusNotifier = websocket.NewNotifier("arenaStatus", arena.generateArenaStatusMessage)
 	arena.AudienceDisplayModeNotifier = websocket.NewNotifier("audienceDisplayMode",
 		arena.generateAudienceDisplayModeMessage)
+	arena.AudienceScoreVisibilityNotifier = websocket.NewNotifier("audienceScoreVisibility",
+		arena.generateAudienceScoreVisibilityMessage)
 	arena.DisplayConfigurationNotifier = websocket.NewNotifier("displayConfiguration",
 		arena.generateDisplayConfigurationMessage)
 	arena.EventStatusNotifier = websocket.NewNotifier("eventStatus", arena.generateEventStatusMessage)
@@ -100,6 +103,10 @@ func (arena *Arena) generateArenaStatusMessage() interface{} {
 
 func (arena *Arena) generateAudienceDisplayModeMessage() interface{} {
 	return arena.AudienceDisplayMode
+}
+
+func (arena *Arena) generateAudienceScoreVisibilityMessage() interface{} {
+	return !arena.HideAudienceScore
 }
 
 func (arena *Arena) generateDisplayConfigurationMessage() interface{} {

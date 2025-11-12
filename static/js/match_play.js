@@ -73,6 +73,11 @@ var setAllianceStationDisplay = function() {
   websocket.send("setAllianceStationDisplay", $("input[name=allianceStationDisplay]:checked").val());
 };
 
+// Sends a websocket message to toggle the visibility of the score on the audience display.
+var toggleAudienceScoreVisibility = function() {
+  websocket.send("toggleAudienceScoreVisibility");
+};
+
 // Sends a websocket message to start the timeout.
 var startTimeout = function() {
   var duration = $("#timeoutDuration").val().split(":");
@@ -314,6 +319,15 @@ var handleEventStatus = function(data) {
   $("#earlyLateMessage").text(data.EarlyLateMessage);
 };
 
+// Handles a websocket message to update the score visibility state.
+var handleAudienceScoreVisibility = function(showScore) {
+  if (showScore) {
+    $("#toggleScoreText").text("Ocultar Pontuação");
+  } else {
+    $("#toggleScoreText").text("Mostrar Pontuação");
+  }
+};
+
 $(function() {
   // Activate tooltips above the status headers.
   $("[data-toggle=tooltip]").tooltip({"placement": "top"});
@@ -323,6 +337,7 @@ $(function() {
     allianceStationDisplayMode: function(event) { handleAllianceStationDisplayMode(event.data); },
     arenaStatus: function(event) { handleArenaStatus(event.data); },
     audienceDisplayMode: function(event) { handleAudienceDisplayMode(event.data); },
+    audienceScoreVisibility: function(event) { handleAudienceScoreVisibility(event.data); },
     eventStatus: function(event) { handleEventStatus(event.data); },
     matchTime: function(event) { handleMatchTime(event.data); },
     matchTiming: function(event) { handleMatchTiming(event.data); },

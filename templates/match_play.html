@@ -137,6 +137,12 @@
           onclick="signalReset();" disabled>
         Sinal de Reset
       </button>
+      {{if .EventSettings.IsFll}}
+      <button type="button" id="toggleScore" class="btn btn-info btn-lg btn-match-play"
+          onclick="toggleAudienceScoreVisibility();">
+        <span id="toggleScoreText">Ocultar Pontuação</span>
+      </button>
+      {{end}}
     </div>
     <div class="row" style="margin-top: 10px; margin-bottom: 5px;">
       {{if .EventSettings.IsFll}}

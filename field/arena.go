@@ -80,6 +80,7 @@ type Arena struct {
 	LowerThird                 *model.LowerThird
 	ShowLowerThird             bool
 	MuteMatchSounds            bool
+	HideAudienceScore          bool
 	matchAborted               bool
 	soundsPlayed               map[*game.MatchSound]struct{}
 	restFieldEstop             bool
@@ -415,6 +416,12 @@ func (arena *Arena) SetAudienceDisplayMode(mode string) {
 			arena.playSound("match_result")
 		}
 	}
+}
+
+// Toggles the visibility of the score on the audience display.
+func (arena *Arena) ToggleAudienceScoreVisibility() {
+	arena.HideAudienceScore = !arena.HideAudienceScore
+	arena.AudienceScoreVisibilityNotifier.Notify()
 }
 
 // Updates the alliance station display screen.

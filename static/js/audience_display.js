@@ -167,6 +167,17 @@ var handleRealtimeScore = function(data) {
   }
 };
 
+// Handles a websocket message to update score visibility on the audience display.
+var handleAudienceScoreVisibility = function(showScore) {
+  if (showScore) {
+    $(".score-number").show();
+    $("#leftScoreNumber").show();
+  } else {
+    $(".score-number").hide();
+    $("#leftScoreNumber").hide();
+  }
+};
+
 // Handles a websocket message to populate the final score data.
 var handleScorePosted = function(data) {
   let coopertitionBonus = 0;
@@ -754,6 +765,7 @@ $(function() {
   websocket = new CheesyWebsocket("/displays/audience/websocket", {
     allianceSelection: function(event) { handleAllianceSelection(event.data); },
     audienceDisplayMode: function(event) { handleAudienceDisplayMode(event.data); },
+    audienceScoreVisibility: function(event) { handleAudienceScoreVisibility(event.data); },
     lowerThird: function(event) { handleLowerThird(event.data); },
     matchLoad: function(event) { handleMatchLoad(event.data); },
     matchTime: function(event) { handleMatchTime(event.data); },

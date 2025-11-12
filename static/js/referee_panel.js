@@ -329,8 +329,8 @@ $(function() {
       wrap.className = 'panel panel-default';
       wrap.innerHTML = `<div class="panel-heading"><b>${c.label}</b></div>
         <div class="panel-body">
-          <label style="display:flex;gap:8px;align-items:center;">
-            <input type="checkbox" id="crit-${c.id}" /> Sim
+          <label style="font-size: 24px; color:#444;display:flex;gap:8px;align-items:center;">
+            <input type="checkbox" class="cr-checkbox" id="crit-${c.id}" /> Sim
           </label>
         </div>`;
       const input = wrap.querySelector('input');
@@ -344,9 +344,10 @@ $(function() {
       wrap.className = 'panel panel-default';
       wrap.innerHTML = `<div class="panel-heading"><b>${c.label}</b></div>
         <div class="panel-body" style="display:flex;gap:8px;align-items:center;">
-          <button class="btn btn-default">-</button>
-          <input type="number" min="${c.min||0}" max="${c.max||0}" value="0" id="crit-${c.id}" style="width:80px;text-align:center;" />
-          <button class="btn btn-default">+</button>
+          <button class="cr-btn-score" data-score-type="down">-</button>
+          <input class="cr-text-input-score-points" type="number" min="${c.min||0}" max="${c.max||0}" value="0" id="crit-${c.id}"/>
+          <button class="cr-btn-score" data-score-type="up">+</button>
+          <span style="color:#666;font-size:1em;font-weight: 600;">/ ${c.max||0}</span>
         </div>`;
       const [btnDec, input, btnInc] = wrap.querySelectorAll('button, input');
       const sync = () => { let v = parseInt(input.value||0); if (isNaN(v)) v=0; v = Math.max(c.min||0, Math.min(c.max||0, v)); input.value = v; state[c.id]=v; computeScore(); };
