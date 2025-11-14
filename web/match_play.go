@@ -686,7 +686,7 @@ func (web *Web) syncFllFromMatchResult(match *model.Match, result *model.MatchRe
 	if remoteUrl != "" {
 		payload := fllSyncUpsert{TeamId: teamId, Rounds: rounds}
 		b, _ := json.Marshal(payload)
-		req, _ := http.NewRequest("POST", remoteUrl, bytes.NewReader(b))
+		req, _ := http.NewRequest("POST", remoteUrl+"/scores", bytes.NewReader(b))
 		req.Header.Set("Content-Type", "application/json")
 		if web.arena.EventSettings.RemoteSyncApiKey != "" {
 			req.Header.Set("X-API-Key", web.arena.EventSettings.RemoteSyncApiKey)
