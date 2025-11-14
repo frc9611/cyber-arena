@@ -507,3 +507,31 @@ func (web *Web) fllScoresApiPostHandler(w http.ResponseWriter, r *http.Request) 
 
 // No-op stub to avoid duplicate definitions; authoritative implementation is in match_play.go.
 func (web *Web) syncFllFromMatchResultApi(_ *model.Match, _ *model.MatchResult) error { return nil }
+
+// POST /api/fll/start-match — remote command to start match timer; auth via EventSettings.RemoteSyncApiKey
+func (web *Web) fllStartMatchApiHandler(w http.ResponseWriter, r *http.Request) {
+	// Only active in FLL mode
+	if !web.arena.EventSettings.IsFll {
+		http.NotFound(w, r)
+		return
+	}
+	// Authenticate via API key
+	if web.arena.EventSettings.RemoteSyncApiKey != "" {
+		if r.Header.Get("X-API-Key") != web.arena.EventSettings.RemoteSyncApiKey {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+	}
+	// Check if we're coming from remote to prevent loops
+	if r.Header.Get("X-From-Remote") == "1" {
+		// Start the match locally
+		err := web.arena.StartMatch()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	} else {
+		http.Error(w, "Must be called from remote master", http.StatusBadRequest)
+	}
+}

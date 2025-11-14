@@ -279,6 +279,10 @@ func (web *Web) matchPlayWebsocketHandler(w http.ResponseWriter, r *http.Request
 				ws.WriteError(err.Error())
 				continue
 			}
+			// If FLL mode with remote sync enabled, broadcast start command to all connected systems
+			if web.arena.EventSettings.IsFll && web.arena.EventSettings.RemoteSyncUrl != "" {
+				go web.broadcastFllStartMatch()
+			}
 		case "abortMatch":
 			err = web.arena.AbortMatch()
 			if err != nil {
@@ -709,6 +713,36 @@ func (list MatchPlayList) Less(i, j int) bool {
 // Helper function to implement the required interface for Sort.
 func (list MatchPlayList) Swap(i, j int) {
 	list[i], list[j] = list[j], list[i]
+}
+
+// Broadcasts the start match command to all remote FLL systems
+func (web *Web) broadcastFllStartMatch() {
+	remoteUrl := web.arena.EventSettings.RemoteSyncUrl
+	if remoteUrl == "" {
+		return
+	}
+	req, err := http.NewRequest("POST", remoteUrl+"/start-match", nil)
+	if err != nil {
+		log.Printf("Error creating start-match request: %v", err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+	if web.arena.EventSettings.RemoteSyncApiKey != "" {
+		req.Header.Set("X-API-Key", web.arena.EventSettings.RemoteSyncApiKey)
+	}
+	req.Header.Set("X-From-Remote", "1")
+
+	client := &http.Client{Timeout: 2 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("Error broadcasting start-match to %s: %v", remoteUrl, err)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusNoContent {
+		log.Printf("Remote system %s returned status %d for start-match", remoteUrl, resp.StatusCode)
+	}
 }
 
 // Constructs the list of matches to display on the side of the match play interface.

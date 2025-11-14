@@ -128,6 +128,7 @@ func (web *Web) newHandler() http.Handler {
 	// New: remote sync endpoints for FLL per-team scores
 	router.HandleFunc("/api/fll/scores", web.fllScoresApiGetHandler).Methods("GET")
 	router.HandleFunc("/api/fll/scores", web.fllScoresApiPostHandler).Methods("POST")
+	router.HandleFunc("/api/fll/start-match", web.fllStartMatchApiHandler).Methods("POST")
 	//router.HandleFunc("/api/match/estop", web.estopHandler).Methods("GET")
 	router.HandleFunc("/display", web.placeholderDisplayHandler).Methods("GET")
 	router.HandleFunc("/display/websocket", web.placeholderDisplayWebsocketHandler).Methods("GET")
