@@ -1,0 +1,236 @@
+{{/*
+  FLL Remote Sync Management Page (Master Node)
+*/}}
+{{define "title"}}Remote Sync{{end}}
+{{define "body"}}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Remote Sync Management</h3>
+  </div>
+  <div class="panel-body">
+    {{if not .EventSettings.IsFll}}
+      <div class="alert alert-warning">
+        <strong>Not Available:</strong> Remote sync is only available when FLL mode is enabled.
+      </div>
+    {{else if eq .EventSettings.RemoteSyncApiKey ""}}
+      <div class="alert alert-info">
+        <strong>Not Configured:</strong> Remote sync API key is not configured. Go to 
+        <a href="/setup/settings">Settings</a> to configure the API key for remote sync.
+      </div>
+    {{else if ne .EventSettings.RemoteSyncUrl ""}}
+      <div class="alert alert-warning">
+        <strong>Client Mode:</strong> This instance is configured as a client (RemoteSyncUrl is set). 
+        This page is only available on the master node. Clear the RemoteSyncUrl in 
+        <a href="/setup/settings">Settings</a> to use this as a master.
+      </div>
+    {{else}}
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h4 class="panel-title">Connected Instances</h4>
+            </div>
+            <div class="panel-body">
+              <p><strong>Master Node:</strong> {{.EventSettings.Name}}</p>
+              <p><small>Clients should configure their RemoteSyncUrl to: <code>http://master:9080/api/fll</code></small></p>
+              <div id="instancesLoading" class="text-center" style="padding: 20px;">
+                <i class="glyphicon glyphicon-refresh spinning"></i> Discovering instances...
+              </div>
+              <table id="instancesTable" class="table table-striped" style="display:none;">
+                <thead>
+                  <tr>
+                    <th>Event Name</th>
+                    <th>Current Match</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="instancesList"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+
+        <div class="col-md-6">
+          <div class="panel panel-success">
+            <div class="panel-heading">
+              <h4 class="panel-title">Global Match Control</h4>
+            </div>
+            <div class="panel-body">
+              <p>Use this button to start the match timer on all connected systems simultaneously.</p>
+              <div id="matchInfo" class="alert alert-info" style="display:none;">
+                <strong>Current Match:</strong> <span id="matchDisplay"></span>
+              </div>
+              <div class="checkbox" style="margin-bottom: 15px;">
+                <label>
+                  <input type="checkbox" id="excludeMasterCheckbox" checked>
+                  <strong>Exclude master node (only start clients)</strong>
+                </label>
+                <p class="help-block" style="margin-left: 20px; margin-top: 5px;">
+                  When checked, only client systems will start. Uncheck to start all systems including this master node.
+                </p>
+              </div>
+              <button id="globalStartBtn" class="btn btn-success btn-lg btn-block" disabled>
+                <i class="glyphicon glyphicon-play"></i> Start Match on All Systems
+              </button>
+              <div id="startResult" class="alert" style="display:none; margin-top: 15px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">How Remote Sync Works</h4>
+        </div>
+        <div class="panel-body">
+          <h5>Match Timer Synchronization:</h5>
+          <ul>
+            <li>When you click "Start Match on All Systems":
+              <ol>
+                <li>Broadcast a start command to all connected client nodes</li>
+                <li>Optionally start the match timer locally (controlled by checkbox)</li>
+                <li>All selected timers start simultaneously across all systems</li>
+              </ol>
+            </li>
+            <li><strong>Exclude Master Option:</strong> Check the box to only start client matches, leaving the master as a control node</li>
+            <li><strong>Important:</strong> Each instance runs its own matches independently</li>
+            <li>The timer synchronization only controls WHEN matches start, not which match is running</li>
+          </ul>
+          
+          <h5>Configuration:</h5>
+          <ul>
+            <li><strong>Master Node (this instance):</strong>
+              <ul>
+                <li>Set <code>RemoteSyncApiKey</code> to a shared secret</li>
+                <li>Leave <code>RemoteSyncUrl</code> empty</li>
+              </ul>
+            </li>
+            <li><strong>Client Nodes:</strong>
+              <ul>
+                <li>Set <code>RemoteSyncUrl</code> to <code>http://master:9080/api/fll</code></li>
+                <li>Set the same <code>RemoteSyncApiKey</code> as the master</li>
+              </ul>
+            </li>
+          </ul>
+          
+          <h5>Score Synchronization:</h5>
+          <ul>
+            <li>FLL scores are automatically synchronized between nodes</li>
+            <li>When you commit a match result, scores are sent to all connected systems</li>
+            <li>You can manually review and edit scores in the <a href="/fll/review">FLL Review</a> page</li>
+          </ul>
+        </div>
+      </div>
+    {{end}}
+  </div>
+</div>
+{{end}}
+
+{{define "script"}}
+<script>
+(function(){
+  var statusCheckInterval;
+
+  function updateStatus() {
+    $.getJSON('/api/remote-sync/status').done(function(data) {
+      // Enable/disable start button based on match state
+      $('#globalStartBtn').prop('disabled', !data.canStartMatch);
+      if (!data.canStartMatch) {
+        $('#startResult').removeClass('alert-success alert-danger')
+          .addClass('alert-warning')
+          .html('<strong>Cannot start:</strong> Match already in progress or no match loaded.')
+          .show();
+      } else {
+        $('#startResult').hide();
+      }
+    });
+    
+    // Fetch connected instances
+    $.getJSON('/api/remote-sync/instances').done(function(data) {
+      var instances = data.instances || [];
+      if (instances.length > 0) {
+        var rows = instances.map(function(inst) {
+          var matchDisplay = inst.currentMatch || 'No match';
+          if (inst.matchType === 'test') matchDisplay = 'Test Match';
+          var typeLabel = inst.isMaster ? '<span class="label label-primary">Master</span>' : '<span class="label label-info">Client</span>';
+          var statusLabel = '<span class="label label-success">Online</span>';
+          return '<tr>' +
+            '<td><strong>' + (inst.eventName || 'Unknown') + '</strong></td>' +
+            '<td>' + matchDisplay + '</td>' +
+            '<td>' + typeLabel + '</td>' +
+            '<td>' + statusLabel + '</td>' +
+            '</tr>';
+        }).join('');
+        $('#instancesList').html(rows);
+        $('#instancesLoading').hide();
+        $('#instancesTable').show();
+      }
+    }).fail(function() {
+      $('#instancesLoading').html('<span class="text-danger">Error loading instances</span>');
+    });
+  }
+
+  $('#globalStartBtn').click(function() {
+    var excludeMaster = $('#excludeMasterCheckbox').is(':checked');
+    var confirmMsg = excludeMaster ? 
+      'Start match on all CLIENT systems (master will NOT start)?' : 
+      'Start match on all connected systems (including master)?';
+    
+    if (!confirm(confirmMsg)) {
+      return;
+    }
+
+    var btn = $(this);
+    btn.prop('disabled', true).html('<i class="glyphicon glyphicon-refresh spinning"></i> Starting...');
+    $('#startResult').hide();
+
+    $.ajax({
+      url: '/api/remote-sync/start-match',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({ excludeMaster: excludeMaster })
+    }).done(function() {
+      $('#startResult')
+        .removeClass('alert-danger alert-warning')
+        .addClass('alert-success')
+        .html('<strong>Success!</strong> Match started on all systems.')
+        .show();
+      
+      // Disable button after successful start
+      setTimeout(function() {
+        updateStatus();
+      }, 1000);
+    }).fail(function(xhr) {
+      $('#startResult')
+        .removeClass('alert-success alert-warning')
+        .addClass('alert-danger')
+        .html('<strong>Error:</strong> ' + (xhr.responseText || 'Failed to start match'))
+        .show();
+      btn.prop('disabled', false).html('<i class="glyphicon glyphicon-play"></i> Start Match on All Systems');
+    });
+  });
+
+  // Initial status check
+  updateStatus();
+
+  // Poll status every 3 seconds
+  statusCheckInterval = setInterval(updateStatus, 3000);
+
+  // Clean up on page unload
+  $(window).on('beforeunload', function() {
+    if (statusCheckInterval) {
+      clearInterval(statusCheckInterval);
+    }
+  });
+
+  // Add spinning animation for refresh icon
+  var style = document.createElement('style');
+  style.textContent = '@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }' +
+                      '.spinning { animation: spin 1s linear infinite; display: inline-block; }';
+  document.head.appendChild(style);
+})();
+</script>
+{{end}}

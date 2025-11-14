@@ -206,6 +206,12 @@ func (web *Web) newHandler() http.Handler {
 	// FLL review page (only in FLL mode)
 	router.HandleFunc("/fll/review", web.fllReviewPageHandler).Methods("GET")
 	router.HandleFunc("/api/fll/review", web.fllReviewApiPostHandler).Methods("POST")
+	// Remote sync management page (master node)
+	router.HandleFunc("/remote-sync", web.remoteSyncPageHandler).Methods("GET")
+	router.HandleFunc("/api/remote-sync/status", web.remoteSyncStatusHandler).Methods("GET")
+	router.HandleFunc("/api/remote-sync/instances", web.remoteSyncInstancesHandler).Methods("GET")
+	router.HandleFunc("/api/remote-sync/info", web.remoteSyncInfoHandler).Methods("GET")
+	router.HandleFunc("/api/remote-sync/start-match", web.remoteSyncStartMatchHandler).Methods("POST")
 	return router
 }
 

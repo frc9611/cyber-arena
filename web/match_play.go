@@ -279,10 +279,8 @@ func (web *Web) matchPlayWebsocketHandler(w http.ResponseWriter, r *http.Request
 				ws.WriteError(err.Error())
 				continue
 			}
-			// If FLL mode with remote sync enabled, broadcast start command to all connected systems
-			if web.arena.EventSettings.IsFll && web.arena.EventSettings.RemoteSyncUrl != "" {
-				go web.broadcastFllStartMatch()
-			}
+			// Note: Local match starts do NOT trigger remote sync.
+			// Remote sync is only triggered from the remote-sync management page.
 		case "abortMatch":
 			err = web.arena.AbortMatch()
 			if err != nil {

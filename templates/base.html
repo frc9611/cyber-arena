@@ -45,9 +45,12 @@
             <ul class="dropdown-menu">
               <li><a href="/match_play">Execução de Partidas</a></li>
               {{if .EventSettings.IsFll}}
-                {{if eq .EventSettings.RemoteSyncUrl ""}}
-                  <li><a href="/fll/review">Revisão FLL (Oficial)</a></li>
+                {{if ne .EventSettings.RemoteSyncApiKey ""}}
+                  {{if eq .EventSettings.RemoteSyncUrl ""}}
+                    <li><a href="/remote-sync">Remote Sync (Master)</a></li>
+                  {{end}}
                 {{end}}
+                <li><a href="/fll/review">Revisão FLL (Oficial)</a></li>
               {{else}}
                   <li><a href="/match_review">Revisão de Partidas</a></li>
                   <li><a href="/static/logs">Logs de Partidas</a></li>

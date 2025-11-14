@@ -86,6 +86,7 @@ func (web *Web) settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	// New remote sync fields
 	eventSettings.RemoteSyncUrl = r.PostFormValue("remoteSyncUrl")
 	eventSettings.RemoteSyncApiKey = r.PostFormValue("remoteSyncApiKey")
+	eventSettings.RemoteSyncClients = r.PostFormValue("remoteSyncClients")
 
 	if eventSettings.Ap2TeamChannel != 0 && eventSettings.Ap2TeamChannel == eventSettings.ApTeamChannel {
 		web.renderSettings(w, r, "Cannot use same channel for both access points.")

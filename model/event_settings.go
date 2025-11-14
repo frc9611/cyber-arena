@@ -42,8 +42,9 @@ type EventSettings struct {
 	TeamsPerAlliance            int
 	IsFll                       bool
 	// Remote sync for multi-table tournaments (optional)
-	RemoteSyncUrl    string
-	RemoteSyncApiKey string
+	RemoteSyncUrl     string
+	RemoteSyncApiKey  string
+	RemoteSyncClients string // Comma-separated list of client URLs (for master node)
 }
 
 func (database *Database) GetEventSettings() (*EventSettings, error) {
@@ -76,6 +77,7 @@ func (database *Database) GetEventSettings() (*EventSettings, error) {
 		IsFll:                       false,
 		RemoteSyncUrl:               "",
 		RemoteSyncApiKey:            "",
+		RemoteSyncClients:           "",
 	}
 
 	if err := database.eventSettingsTable.create(&eventSettings); err != nil {
