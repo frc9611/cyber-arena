@@ -6,6 +6,8 @@
 package web
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -220,7 +222,8 @@ func (web *Web) matchPlayWebsocketHandler(w http.ResponseWriter, r *http.Request
 	// Subscribe the websocket to the notifiers whose messages will be passed on to the client, in a separate goroutine.
 	go ws.HandleNotifiers(web.arena.MatchTimingNotifier, web.arena.ArenaStatusNotifier, web.arena.MatchTimeNotifier,
 		web.arena.RealtimeScoreNotifier, web.arena.AudienceDisplayModeNotifier,
-		web.arena.AllianceStationDisplayModeNotifier, web.arena.EventStatusNotifier)
+		web.arena.AllianceStationDisplayModeNotifier, web.arena.EventStatusNotifier,
+		web.arena.AudienceScoreVisibilityNotifier)
 
 	// Loop, waiting for commands and responding to them, until the client closes the connection.
 	for {
@@ -276,6 +279,8 @@ func (web *Web) matchPlayWebsocketHandler(w http.ResponseWriter, r *http.Request
 				ws.WriteError(err.Error())
 				continue
 			}
+			// Note: Local match starts do NOT trigger remote sync.
+			// Remote sync is only triggered from the remote-sync management page.
 		case "abortMatch":
 			err = web.arena.AbortMatch()
 			if err != nil {
@@ -299,7 +304,16 @@ func (web *Web) matchPlayWebsocketHandler(w http.ResponseWriter, r *http.Request
 			web.arena.AllianceStationDisplayModeNotifier.Notify()
 			continue // Don't reload.
 		case "commitResults":
-			err = web.commitCurrentMatchScore()
+			// Optional payload: { official: boolean }
+			official := false
+			if data != nil {
+				args := struct {
+					Official bool `mapstructure:"official"`
+				}{}
+				_ = mapstructure.Decode(data, &args)
+				official = args.Official
+			}
+			err = web.commitCurrentMatchScoreWithOfficial(official)
 			if err != nil {
 				ws.WriteError(err.Error())
 				continue
@@ -352,6 +366,9 @@ func (web *Web) matchPlayWebsocketHandler(w http.ResponseWriter, r *http.Request
 				continue
 			}
 			web.arena.SetAllianceStationDisplayMode(mode)
+			continue
+		case "toggleAudienceScoreVisibility":
+			web.arena.ToggleAudienceScoreVisibility()
 			continue
 		case "startTimeout":
 			durationSec, ok := data.(float64)
@@ -485,7 +502,8 @@ func (web *Web) commitMatchScore(match *model.Match, matchResult *model.MatchRes
 			return err
 		}
 
-		if match.ShouldUpdateRankings() {
+		// Update rankings only if not suppressed and match says to update.
+		if !web.suppressRankingOnCommit && match.ShouldUpdateRankings() {
 			// Recalculate all the rankings.
 			rankings, err := tournament.CalculateRankings(web.arena.Database, isMatchReviewEdit)
 			if err != nil {
@@ -581,6 +599,105 @@ func (web *Web) commitCurrentMatchScore() error {
 	return web.commitMatchScore(web.arena.CurrentMatch, web.getCurrentMatchResult(), false)
 }
 
+// New: commit and optionally sync to FLL remote when marked official.
+func (web *Web) commitCurrentMatchScoreWithOfficial(official bool) error {
+	result := web.getCurrentMatchResult()
+	// Suppress ranking update for non-official matches
+	if !official {
+		web.suppressRankingOnCommit = true
+	}
+	err := web.commitMatchScore(web.arena.CurrentMatch, result, false)
+	// Always clear the flag after commit
+	web.suppressRankingOnCommit = false
+	if err != nil {
+		return err
+	}
+	// Auto-sync for FLL events only when flagged official.
+	if web.arena.EventSettings.IsFll && official {
+		if err := web.syncFllFromMatchResult(web.arena.CurrentMatch, result); err != nil {
+			log.Printf("FLL sync failed: %v", err)
+		}
+	}
+	return nil
+}
+
+// Compute and upsert the FLL rounds for the Blue1 team and forward to remote hub if configured.
+func (web *Web) syncFllFromMatchResult(match *model.Match, result *model.MatchResult) error {
+	teamId := match.Blue1
+	if teamId <= 0 {
+		return nil
+	}
+	score := result.BlueScoreSummary().Score
+	// Load existing rounds
+	existing, err := web.arena.Database.GetFllScoreByTeamId(teamId)
+	if err != nil {
+		return err
+	}
+	rounds := make([]int, 0, 3)
+	if existing != nil && len(existing.Rounds) > 0 {
+		rounds = append(rounds, existing.Rounds...)
+	}
+	// Normalize to length 3 (pad zeros)
+	for len(rounds) < 3 {
+		rounds = append(rounds, 0)
+	}
+	// Place new score: fill first zero; else replace smallest if new is higher.
+	replaced := false
+	for i := 0; i < 3; i++ {
+		if rounds[i] == 0 {
+			rounds[i] = score
+			replaced = true
+			break
+		}
+	}
+	if !replaced {
+		minIdx := 0
+		for i := 1; i < 3; i++ {
+			if rounds[i] < rounds[minIdx] {
+				minIdx = i
+			}
+		}
+		if score > rounds[minIdx] {
+			rounds[minIdx] = score
+		}
+	}
+	// Upsert locally
+	best := 0
+	for _, v := range rounds {
+		if v > best {
+			best = v
+		}
+	}
+	if existing == nil {
+		fs := &model.FllScore{TeamId: teamId, Rounds: rounds, Best: best, UpdatedAt: time.Now().UTC()}
+		if err := web.arena.Database.CreateFllScore(fs); err != nil {
+			return err
+		}
+	} else {
+		existing.Rounds = rounds
+		existing.Best = best
+		existing.UpdatedAt = time.Now().UTC()
+		if err := web.arena.Database.UpdateFllScore(existing); err != nil {
+			return err
+		}
+	}
+	// Forward to remote hub
+	remoteUrl := web.arena.EventSettings.RemoteSyncUrl
+	if remoteUrl != "" {
+		payload := fllSyncUpsert{TeamId: teamId, Rounds: rounds}
+		b, _ := json.Marshal(payload)
+		req, _ := http.NewRequest("POST", remoteUrl+"/scores", bytes.NewReader(b))
+		req.Header.Set("Content-Type", "application/json")
+		if web.arena.EventSettings.RemoteSyncApiKey != "" {
+			req.Header.Set("X-API-Key", web.arena.EventSettings.RemoteSyncApiKey)
+		}
+		// Avoid loops if hub posts back to us.
+		req.Header.Set("X-From-Remote", "1")
+		_, _ = http.DefaultClient.Do(req)
+	}
+	return nil
+}
+
 // Helper function to implement the required interface for Sort.
 func (list MatchPlayList) Len() int {
 	return len(list)
@@ -596,9 +713,46 @@ func (list MatchPlayList) Swap(i, j int) {
 	list[i], list[j] = list[j], list[i]
 }
 
+// Broadcasts the start match command to all remote FLL systems
+func (web *Web) broadcastFllStartMatch() {
+	remoteUrl := web.arena.EventSettings.RemoteSyncUrl
+	if remoteUrl == "" {
+		return
+	}
+	req, err := http.NewRequest("POST", remoteUrl+"/start-match", nil)
+	if err != nil {
+		log.Printf("Error creating start-match request: %v", err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+	if web.arena.EventSettings.RemoteSyncApiKey != "" {
+		req.Header.Set("X-API-Key", web.arena.EventSettings.RemoteSyncApiKey)
+	}
+	req.Header.Set("X-From-Remote", "1")
+
+	client := &http.Client{Timeout: 2 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("Error broadcasting start-match to %s: %v", remoteUrl, err)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusNoContent {
+		log.Printf("Remote system %s returned status %d for start-match", remoteUrl, resp.StatusCode)
+	}
+}
+
 // Constructs the list of matches to display on the side of the match play interface.
 func (web *Web) buildMatchPlayList(matchType string) (MatchPlayList, error) {
-	if web.arena.EventSettings.TeamsPerAlliance == 2 {
+	if web.arena.EventSettings.IsFll {
+		// For FLL, only Blue1 is active, bypass all other stations
+		web.arena.AllianceStations["R1"].Bypass = true
+		web.arena.AllianceStations["R2"].Bypass = true
+		web.arena.AllianceStations["R3"].Bypass = true
+		web.arena.AllianceStations["B2"].Bypass = true
+		web.arena.AllianceStations["B3"].Bypass = true
+	} else if web.arena.EventSettings.TeamsPerAlliance == 2 {
 		web.arena.AllianceStations["R3"].Bypass = true
 		web.arena.AllianceStations["B3"].Bypass = true
 	}

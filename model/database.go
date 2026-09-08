@@ -35,6 +35,8 @@ type Database struct {
 	sponsorSlideTable  *table[SponsorSlide]
 	teamTable          *table[Team]
 	userSessionTable   *table[UserSession]
+	// New: FLL per-team score table
+	fllScoreTable *table[FllScore]
 }
 
 // Opens the Bolt database at the given path, creating it if it doesn't exist.
@@ -78,6 +80,9 @@ func OpenDatabase(filename string) (*Database, error) {
 		return nil, err
 	}
 	if database.userSessionTable, err = newTable[UserSession](&database); err != nil {
+		return nil, err
+	}
+	if database.fllScoreTable, err = newTable[FllScore](&database); err != nil {
 		return nil, err
 	}
 

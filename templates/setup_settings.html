@@ -43,6 +43,14 @@
               </div>
             </div>
           </div>
+
+          <div class="form-group">
+            <label class="col-lg-5 control-label">Torneio FIRST Lego League?</label>
+              <div class="col-lg-1 checkbox">
+                <input type="checkbox" name="IsFll"{{if .IsFll}} checked{{end}}>
+              </div>
+          </div>
+          
           <div class="form-group">
             <label class="col-lg-5 control-label">Tipo de Playoff</label>
             <div class="col-lg-7">
@@ -114,6 +122,31 @@
               </div>
             </div>
           </div>
+
+          <!-- Remote Sync (FLL multi-table) -->
+          {{if .IsFll}}
+          <div class="form-group">
+            <label class="col-lg-5 control-label">Remote Sync URL (Client Only)</label>
+            <div class="col-lg-7">
+              <input type="text" class="form-control" name="remoteSyncUrl" placeholder="http://master:9080/api/fll" value="{{.RemoteSyncUrl}}" />
+              <p class="help-block">Leave empty for master node. For clients, enter the master's URL.</p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-5 control-label">Remote Sync API Key</label>
+            <div class="col-lg-7">
+              <input type="password" class="form-control" name="remoteSyncApiKey" value="{{.RemoteSyncApiKey}}" />
+              <p class="help-block">Shared secret used for authentication between master and clients.</p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-5 control-label">Remote Sync Clients (Master Only)</label>
+            <div class="col-lg-7">
+              <textarea class="form-control" name="remoteSyncClients" rows="3" placeholder="http://client1:9080,http://client2:9080">{{.RemoteSyncClients}}</textarea>
+              <p class="help-block">Comma-separated list of client URLs. Only needed on master node.</p>
+            </div>
+          </div>
+          {{end}}
         </fieldset>
         <fieldset>
           <legend>Download Automático de Informações da Equipe</legend>

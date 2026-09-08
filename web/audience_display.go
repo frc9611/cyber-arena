@@ -6,10 +6,11 @@
 package web
 
 import (
+	"net/http"
+
 	"github.com/Team254/cheesy-arena-lite/game"
 	"github.com/Team254/cheesy-arena-lite/model"
 	"github.com/Team254/cheesy-arena-lite/websocket"
-	"net/http"
 )
 
 // Renders the audience display to be chroma keyed over the video feed.
@@ -29,7 +30,7 @@ func (web *Web) audienceDisplayHandler(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		*model.EventSettings
 		CurrentMatch *model.Match
-		MatchSounds []*game.MatchSound
+		MatchSounds  []*game.MatchSound
 	}{web.arena.EventSettings, web.arena.CurrentMatch, game.MatchSounds}
 
 	err = template.ExecuteTemplate(w, "audience_display.html", data)
@@ -59,5 +60,5 @@ func (web *Web) audienceDisplayWebsocketHandler(w http.ResponseWriter, r *http.R
 	ws.HandleNotifiers(display.Notifier, web.arena.MatchTimingNotifier, web.arena.AudienceDisplayModeNotifier,
 		web.arena.MatchLoadNotifier, web.arena.MatchTimeNotifier, web.arena.RealtimeScoreNotifier,
 		web.arena.PlaySoundNotifier, web.arena.ScorePostedNotifier, web.arena.AllianceSelectionNotifier,
-		web.arena.LowerThirdNotifier, web.arena.ReloadDisplaysNotifier)
+		web.arena.LowerThirdNotifier, web.arena.ReloadDisplaysNotifier, web.arena.AudienceScoreVisibilityNotifier)
 }

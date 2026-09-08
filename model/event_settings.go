@@ -40,6 +40,11 @@ type EventSettings struct {
 	TeleopDurationSec           int
 	WarningRemainingDurationSec int
 	TeamsPerAlliance            int
+	IsFll                       bool
+	// Remote sync for multi-table tournaments (optional)
+	RemoteSyncUrl     string
+	RemoteSyncApiKey  string
+	RemoteSyncClients string // Comma-separated list of client URLs (for master node)
 }
 
 func (database *Database) GetEventSettings() (*EventSettings, error) {
@@ -58,7 +63,7 @@ func (database *Database) GetEventSettings() (*EventSettings, error) {
 		NumElimAlliances:            8,
 		SelectionRound1Order:        "L",
 		SelectionRound2Order:        "",
-		TeamDownloadOrigin:			 "none",
+		TeamDownloadOrigin:          "none",
 		ApTeamChannel:               157,
 		ApAdminChannel:              0,
 		ApAdminWpaKey:               "1234Five",
@@ -69,6 +74,10 @@ func (database *Database) GetEventSettings() (*EventSettings, error) {
 		TeleopDurationSec:           game.MatchTiming.TeleopDurationSec,
 		WarningRemainingDurationSec: game.MatchTiming.WarningRemainingDurationSec,
 		TeamsPerAlliance:            2,
+		IsFll:                       false,
+		RemoteSyncUrl:               "",
+		RemoteSyncApiKey:            "",
+		RemoteSyncClients:           "",
 	}
 
 	if err := database.eventSettingsTable.create(&eventSettings); err != nil {

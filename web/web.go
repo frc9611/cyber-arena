@@ -26,6 +26,8 @@ const (
 type Web struct {
 	arena           *field.Arena
 	templateHelpers template.FuncMap
+	// When true, the next commitMatchScore call will skip ranking updates.
+	suppressRankingOnCommit bool
 }
 
 func NewWeb(arena *field.Arena) *Web {
@@ -123,6 +125,10 @@ func (web *Web) newHandler() http.Handler {
 	router.HandleFunc("/api/scores", web.setScoresHandler).Methods("PATCH", "PUT")
 	router.HandleFunc("/api/sponsor_slides", web.sponsorSlidesApiHandler).Methods("GET")
 	router.HandleFunc("/api/teams/{teamId}/avatar", web.teamAvatarsApiHandler).Methods("GET")
+	// New: remote sync endpoints for FLL per-team scores
+	router.HandleFunc("/api/fll/scores", web.fllScoresApiGetHandler).Methods("GET")
+	router.HandleFunc("/api/fll/scores", web.fllScoresApiPostHandler).Methods("POST")
+	router.HandleFunc("/api/fll/start-match", web.fllStartMatchApiHandler).Methods("POST")
 	//router.HandleFunc("/api/match/estop", web.estopHandler).Methods("GET")
 	router.HandleFunc("/display", web.placeholderDisplayHandler).Methods("GET")
 	router.HandleFunc("/display/websocket", web.placeholderDisplayWebsocketHandler).Methods("GET")
@@ -163,6 +169,8 @@ func (web *Web) newHandler() http.Handler {
 	router.HandleFunc("/reports/pdf/backups", web.backupsPdfReportHandler).Methods("GET")
 	router.HandleFunc("/reports/pdf/bracket", web.bracketPdfReportHandler).Methods("GET")
 	router.HandleFunc("/reports/pdf/coupons", web.couponsPdfReportHandler).Methods("GET")
+	router.HandleFunc("/reports/pdf/fll/teams", web.fllTeamsPdfReportHandler).Methods("GET")
+	router.HandleFunc("/reports/pdf/fll/matches", web.fllMatchResultsPdfReportHandler).Methods("GET")
 	router.HandleFunc("/reports/pdf/rankings", web.rankingsPdfReportHandler).Methods("GET")
 	router.HandleFunc("/reports/pdf/schedule/{type}", web.schedulePdfReportHandler).Methods("GET")
 	router.HandleFunc("/reports/pdf/teams", web.teamsPdfReportHandler).Methods("GET")
@@ -195,6 +203,15 @@ func (web *Web) newHandler() http.Handler {
 	router.HandleFunc("/setup/teams/generate_wpa_keys", web.teamsGenerateWpaKeysHandler).Methods("GET")
 	router.HandleFunc("/setup/teams/publish", web.teamsPublishHandler).Methods("POST")
 	router.HandleFunc("/setup/teams/refresh", web.teamsRefreshHandler).Methods("GET")
+	// FLL review page (only in FLL mode)
+	router.HandleFunc("/fll/review", web.fllReviewPageHandler).Methods("GET")
+	router.HandleFunc("/api/fll/review", web.fllReviewApiPostHandler).Methods("POST")
+	// Remote sync management page (master node)
+	router.HandleFunc("/remote-sync", web.remoteSyncPageHandler).Methods("GET")
+	router.HandleFunc("/api/remote-sync/status", web.remoteSyncStatusHandler).Methods("GET")
+	router.HandleFunc("/api/remote-sync/instances", web.remoteSyncInstancesHandler).Methods("GET")
+	router.HandleFunc("/api/remote-sync/info", web.remoteSyncInfoHandler).Methods("GET")
+	router.HandleFunc("/api/remote-sync/start-match", web.remoteSyncStartMatchHandler).Methods("POST")
 	return router
 }
 

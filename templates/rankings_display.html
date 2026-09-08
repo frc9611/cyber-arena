@@ -14,15 +14,25 @@
     <link rel="stylesheet" href="/static/css/cheesy-arena.css" />
     <link rel="stylesheet" href="/static/css/rankings_display.css" />
   </head>
-  <body>
+  <body data-is-fll="{{.EventSettings.IsFll}}">
     <div id="column">
       <div id="titlebar">
-        <div class="pull-left">Team Standings<br/></div>
+        <div class="pull-left">COLOCAÇÃO GERAL<br/></div>
         <div class="pull-right">{{.EventSettings.Name}}</div>
         <div>&nbsp;</div>
       </div>
       <div id="standings">
         <table id="header">
+          {{if .EventSettings.IsFll}}
+          <tr>
+            <td class="team-field">Rank</td>
+            <td class="team-nickname">Equipe</td>
+            <td class="team-field">Melhor</td>
+            <td class="team-field">Rodada 1</td>
+            <td class="team-field">Rodada 2</td>
+            <td class="team-field">Rodada 3</td>
+          </tr>
+          {{else}}
           <tr>
             <td class="team-field">Rank</td>
             <td class="team-field">Team</td>
@@ -35,6 +45,7 @@
             <td class="team-field">DQ</td>
             <td class="team-field">Played</td>
           </tr>
+          {{end}}
         </table>
         <div id="container">
           <div id="scroller">
@@ -49,6 +60,24 @@
       <div id="earlyLateMessage"></div>
       <span style="font-size: 18px; font-style: italic; color: white;">Powered by CyberArena</span>
     </div>
+
+    <!-- Templates -->
+    {{if .EventSettings.IsFll}}
+    <script id="fllStandingsTemplate" type="text/x-handlebars-template">
+      <tbody>
+        {{"{{#each Rankings}}"}}
+          <tr>
+            <td class="team-field">{{"{{../Iteration}}"}} {{"{{this.Rank}}"}}</td>
+            <td class="team-nickname">{{"{{this.TeamId}}"}} - {{"{{this.Nickname}}"}}</td>
+            <td class="team-field">{{"{{this.FLLBest}}"}}</td>
+            <td class="team-field">{{"{{this.R1}}"}}</td>
+            <td class="team-field">{{"{{this.R2}}"}}</td>
+            <td class="team-field">{{"{{this.R3}}"}}</td>
+          </tr>
+        {{"{{/each}}"}}
+      </tbody>
+    </script>
+    {{else}}
     <script id="standingsTemplate" type="text/x-handlebars-template">
       <tbody>
         {{"{{#each Rankings}}"}}
@@ -67,6 +96,8 @@
         {{"{{/each}}"}}
       </tbody>
     </script>
+    {{end}}
+
     <script src="/static/js/lib/handlebars-1.3.0.js"></script>
     <script src="/static/js/lib/jquery.min.js"></script>
     <script src="/static/js/lib/jquery.json-2.4.min.js"></script>

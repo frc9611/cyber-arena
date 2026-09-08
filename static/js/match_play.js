@@ -54,7 +54,8 @@ var signalReset = function() {
 
 // Sends a websocket message to commit the match score and load the next match.
 var commitResults = function() {
-  websocket.send("commitResults");
+  var official = $("#isOfficialMatch").prop("checked");
+  websocket.send("commitResults", { official: !!official });
 };
 
 // Sends a websocket message to discard the match score and load the next match.
@@ -70,6 +71,11 @@ var setAudienceDisplay = function() {
 // Sends a websocket message to change what the alliance station display is showing.
 var setAllianceStationDisplay = function() {
   websocket.send("setAllianceStationDisplay", $("input[name=allianceStationDisplay]:checked").val());
+};
+
+// Sends a websocket message to toggle the visibility of the score on the audience display.
+var toggleAudienceScoreVisibility = function() {
+  websocket.send("toggleAudienceScoreVisibility");
 };
 
 // Sends a websocket message to start the timeout.
@@ -313,6 +319,15 @@ var handleEventStatus = function(data) {
   $("#earlyLateMessage").text(data.EarlyLateMessage);
 };
 
+// Handles a websocket message to update the score visibility state.
+var handleAudienceScoreVisibility = function(showScore) {
+  if (showScore) {
+    $("#toggleScoreText").text("Ocultar Pontuação");
+  } else {
+    $("#toggleScoreText").text("Mostrar Pontuação");
+  }
+};
+
 $(function() {
   // Activate tooltips above the status headers.
   $("[data-toggle=tooltip]").tooltip({"placement": "top"});
@@ -322,6 +337,7 @@ $(function() {
     allianceStationDisplayMode: function(event) { handleAllianceStationDisplayMode(event.data); },
     arenaStatus: function(event) { handleArenaStatus(event.data); },
     audienceDisplayMode: function(event) { handleAudienceDisplayMode(event.data); },
+    audienceScoreVisibility: function(event) { handleAudienceScoreVisibility(event.data); },
     eventStatus: function(event) { handleEventStatus(event.data); },
     matchTime: function(event) { handleMatchTime(event.data); },
     matchTiming: function(event) { handleMatchTiming(event.data); },
