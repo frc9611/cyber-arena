@@ -80,7 +80,7 @@ func (web *Web) renderLogin(w http.ResponseWriter, r *http.Request, errorMessage
 
 // Returns true if the given user is authorized for admin operations. Used for HTTP cookie authentication.
 func (web *Web) userIsAdmin(w http.ResponseWriter, r *http.Request) bool {
-	if web.arena.EventSettings.AdminPassword == "" {
+	if web.arena.EventSettings.AdminPassword == "" && web.authCanBeSkipped() {
 		// Disable auth if there is no password configured.
 		return true
 	}
@@ -99,7 +99,7 @@ func (web *Web) userIsAdmin(w http.ResponseWriter, r *http.Request) bool {
 
 // Returns true if the given user is authorized for admin operations. Used for HTTP cookie authentication.
 func (web *Web) userIsRefereeOrHigher(w http.ResponseWriter, r *http.Request) bool {
-	if web.arena.EventSettings.AdminPassword == "" {
+	if web.arena.EventSettings.AdminPassword == "" && web.authCanBeSkipped() {
 		// Disable auth if there is no password configured.
 		return true
 	}
@@ -134,6 +134,16 @@ func (web *Web) getUserSessionFromCookie(r *http.Request) *model.UserSession {
 	}
 	session, _ := web.arena.Database.GetUserSessionByToken(token.Value)
 	return session
+}
+
+/*
+ * A arena de campo sem senha e uma decisao de quem esta no ginasio: a rede e a sala, e pedir senha
+ * atrapalha mais do que protege. A arena em nuvem esta na internet, e a mesma ausencia de senha
+ * deixaria o evento inteiro aberto para qualquer pessoa que descobrisse o endereco. Ali a porta e o
+ * login do Vernum, e nao ha porta alternativa.
+ */
+func (web *Web) authCanBeSkipped() bool {
+	return web.arena.Mode() != config.ModeCloud
 }
 
 func requestIsFromThisMachine(r *http.Request) bool {

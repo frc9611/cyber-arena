@@ -38,6 +38,14 @@ func (web *Web) arenaStep() string {
 	if web.arena.Config.ModeFromEnv && web.arena.Config.Mode == config.ModeStandalone {
 		return arenaStepBlocked
 	}
+	/*
+	 * A arena em nuvem foi provisionada pelo Arena Master, que injetou endereco e token e ja sabe de
+	 * que evento ela e. Nao ha o que um operador configure aqui, e mostrar o assistente sugeriria que
+	 * ha — entao a tela e so o painel, e o registro acontece sozinho no boot.
+	 */
+	if web.arena.Mode() == config.ModeCloud {
+		return arenaStepReady
+	}
 	if settings.AdminPassword == "" {
 		return arenaStepPassword
 	}

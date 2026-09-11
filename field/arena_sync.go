@@ -17,6 +17,7 @@ import (
 	"github.com/Team254/cheesy-arena-lite/model"
 	"github.com/Team254/cheesy-arena-lite/partner"
 	"github.com/Team254/cheesy-arena-lite/version"
+	"github.com/google/uuid"
 )
 
 const (
@@ -442,6 +443,144 @@ func (arena *Arena) ForgetArenaConnectionAfterRestore() {
 		if settings.ArenaClientHost != "" && host != "" && settings.ArenaClientHost != host {
 			settings.ArenaClientUid = ""
 			settings.ArenaClientHost = host
+		}
+	})
+}
+
+/*
+ * A arena em nuvem nasce sabendo de que evento ela e: o Arena Master injetou o endereco e o token e
+ * ninguem vai clicar em nada. Isto faz, sozinho e uma vez so, o que o assistente faz a mao no campo —
+ * conferir, registrar, importar e ligar o envio — e volta a tentar enquanto o servidor nao responde,
+ * porque um pod pode subir antes dele.
+ */
+func (arena *Arena) RunCloudRegistration() {
+	if arena.Config == nil || arena.Mode() != config.ModeCloud {
+		return
+	}
+	wait := 5 * time.Second
+	for {
+		if arena.EventSettings.ArenaConfirmedAt != "" {
+			if !arena.EventSettings.ArenaSyncEnabled {
+				arena.saveArenaProgress(func(settings *model.EventSettings) {
+					settings.ArenaSyncEnabled = true
+				})
+			}
+			arena.WakeArenaSync()
+			return
+		}
+		if err := arena.registerWithArenaMaster(); err != nil {
+			code, message := partner.DescribeArenaError(err)
+			log.Printf("Arena Master (%s): %s — tentando de novo em %s", code, message, wait)
+			time.Sleep(wait)
+			if wait < 2*time.Minute {
+				wait *= 2
+			}
+			continue
+		}
+		log.Printf("Arena Master: registrada no evento %s.", arena.EventSettings.ArenaEventSlug)
+		arena.WakeArenaSync()
+		return
+	}
+}
+
+func (arena *Arena) registerWithArenaMaster() error {
+	settings := arena.arenaSyncSettings()
+	if settings == nil || settings.Token == "" || settings.MasterUrl == "" {
+		return fmt.Errorf("sem endereço ou token do Arena Master")
+	}
+	if settings.ClientUid == "" {
+		host, _ := os.Hostname()
+		arena.saveArenaProgress(func(s *model.EventSettings) {
+			s.ArenaClientUid = strings.ReplaceAll(uuid.New().String(), "-", "")
+			s.ArenaClientHost = host
+			if s.ArenaClientName == "" {
+				s.ArenaClientName = host
+			}
+		})
+		settings = arena.arenaSyncSettings()
+	}
+
+	boot, err := arena.ArenaMasterClient.Bootstrap(settings.ClientUid)
+	if err != nil {
+		return err
+	}
+	result, err := arena.ArenaMasterClient.Heartbeat(&partner.ArenaHeartbeat{
+		ClientUid:     settings.ClientUid,
+		ClientName:    settings.ClientName,
+		ClientVersion: version.Version,
+		Mode:          "CLOUD",
+		// Quem sabe o endereco publico desta arena e o Arena Master, que montou o Ingress dela.
+		PublicUrl: "",
+		EventSlug: boot.Event.Slug,
+	})
+	if err != nil {
+		return err
+	}
+
+	arena.importFromBootstrap(boot)
+	now := time.Now().Format(time.RFC3339)
+	arena.saveArenaProgress(func(s *model.EventSettings) {
+		s.ArenaInstanceId = result.InstanceId
+		s.ArenaEventSlug = boot.Event.Slug
+		s.ArenaEventName = boot.Event.Name
+		s.ArenaVenueKind = boot.Event.Venue.KindLabel
+		s.ArenaVenueKindPlural = boot.Event.Venue.KindLabelPlural
+		if result.VenueSlot != nil {
+			s.ArenaVenueSlot = *result.VenueSlot
+		}
+		s.ArenaVenueLabel = result.VenueLabel
+		s.ArenaCheckedAt = now
+		s.ArenaConfirmedAt = now
+		s.ArenaBootstrappedAt = now
+		s.ArenaSyncEnabled = true
+	})
+	return nil
+}
+
+/*
+ * So semeia o que ainda nao existe. Um pod que reinicia com o volume cheio nao pode ter a configuracao
+ * nem as equipes reescritas por cima do que o evento ja viveu.
+ */
+func (arena *Arena) importFromBootstrap(boot *partner.ArenaBootstrap) {
+	teams, err := arena.Database.GetAllTeams()
+	if err != nil {
+		log.Printf("Arena Master: não consegui ler as equipes locais: %v", err)
+		return
+	}
+	if len(teams) == 0 {
+		for _, team := range boot.Teams {
+			if team.Number <= 0 {
+				continue
+			}
+			record := model.Team{
+				Id: team.Number, Name: team.Name, Nickname: team.Nickname, City: team.City,
+				StateProv: team.StateProv, Country: team.Country, RookieYear: team.RookieYear,
+				RobotName: team.RobotName,
+			}
+			if err := arena.Database.CreateTeam(&record); err != nil {
+				log.Printf("Arena Master: não consegui criar a equipe %d: %v", team.Number, err)
+			}
+		}
+		log.Printf("Arena Master: %d equipes importadas do evento.", len(boot.Teams))
+	}
+
+	matches, _ := arena.Database.GetMatchesByType("qualification")
+	if len(matches) > 0 {
+		return
+	}
+	alliances := boot.Event.NumElimAlliances
+	if boot.Event.ElimType == "double" {
+		alliances = 8
+	} else if alliances < 2 || alliances > 16 {
+		alliances = 8
+	}
+	arena.saveArenaProgress(func(s *model.EventSettings) {
+		s.Name = boot.Event.Name
+		s.ElimType = boot.Event.ElimType
+		s.NumElimAlliances = alliances
+		s.IsFll = boot.Event.IsFll
+		if boot.Event.TeamsPerAlliance > 0 {
+			s.TeamsPerAlliance = boot.Event.TeamsPerAlliance
 		}
 	})
 }

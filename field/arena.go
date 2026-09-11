@@ -603,6 +603,7 @@ func (arena *Arena) Run() {
 		log.Println("Modo nuvem: campo, PLC, ponto de acesso e driver stations desligados.")
 	}
 	go arena.RunArenaSync()
+	go arena.RunCloudRegistration()
 
 	for {
 		arena.Update()
