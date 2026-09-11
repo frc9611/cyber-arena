@@ -604,8 +604,7 @@ func (web *Web) commitCurrentMatchScore() error {
 // New: commit and optionally sync to FLL remote when marked official.
 func (web *Web) commitCurrentMatchScoreWithOfficial(official bool) error {
 	result := web.getCurrentMatchResult()
-	// Suppress ranking update for non-official matches
-	if !official {
+	if !official && web.arena.EventSettings.IsFll {
 		web.suppressRankingOnCommit = true
 	}
 	err := web.commitMatchScore(web.arena.CurrentMatch, result, false)

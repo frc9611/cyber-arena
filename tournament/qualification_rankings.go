@@ -79,6 +79,9 @@ func CalculateRankings(database *model.Database, preservePreviousRank bool) (gam
 func addMatchResultToRankings(
 	rankings map[int]*game.Ranking, teamId int, matchResult *model.MatchResult, isRed bool,
 ) {
+	if teamId <= 0 {
+		return
+	}
 	ranking := rankings[teamId]
 	if ranking == nil {
 		ranking = &game.Ranking{TeamId: teamId}

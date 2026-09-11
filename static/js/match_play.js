@@ -54,7 +54,8 @@ var signalReset = function() {
 
 // Sends a websocket message to commit the match score and load the next match.
 var commitResults = function() {
-  var official = $("#isOfficialMatch").prop("checked");
+  var box = $("#isOfficialMatch");
+  var official = box.length === 0 || box.prop("checked");
   websocket.send("commitResults", { official: !!official });
 };
 

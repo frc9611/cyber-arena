@@ -130,3 +130,22 @@ func setupMatchResultsForRankings(database *model.Database) {
 	matchResult6 := model.BuildTestMatchResult(match6.Id, 1)
 	database.CreateMatchResult(matchResult6)
 }
+
+func TestRankingsIgnoreEmptyRobotSlots(t *testing.T) {
+	database := setupTestDb(t)
+	defer database.Close()
+
+	match := model.Match{Type: "qualification", DisplayName: "1", Red1: 101, Red2: 102,
+		Blue1: 103, Blue2: 104, Status: game.RedWonMatch}
+	assert.Nil(t, database.CreateMatch(&match))
+	result := model.NewMatchResult()
+	result.MatchId = match.Id
+	assert.Nil(t, database.CreateMatchResult(result))
+
+	rankings, err := CalculateRankings(database, false)
+	assert.Nil(t, err)
+	assert.Equal(t, 4, len(rankings))
+	for _, ranking := range rankings {
+		assert.NotEqual(t, 0, ranking.TeamId)
+	}
+}
