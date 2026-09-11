@@ -537,24 +537,34 @@ input[data-changed="true"], select[data-changed="true"] {
   margin-bottom: 10px;
 }
 
+/* Mesma familia do #4C4474: a saturacao e a luminosidade quase iguais, so o matiz muda. */
 .bg-cyber-local {
-  background-color: #B45309 !important;
+  background-color: #9B6B2E !important;
 }
 
 .bg-cyber-cloud {
-  background-color: #0F766E !important;
+  background-color: #3F6B73 !important;
 }
 
+/* A caixa acompanha a do .navbar-brand do Bootstrap 3 (padding 15px, line-height 20px), que e o que
+   faz o selo assentar na mesma linha do nome em vez de flutuar acima dele. */
 .arena-mode-badge {
   display: inline-block;
-  margin: 16px 0 0 4px;
+  padding: 15px 0;
+  line-height: 20px;
+  vertical-align: top;
+}
+
+.arena-mode-badge b {
+  display: inline-block;
   padding: 2px 9px;
   border-radius: 999px;
-  background-color: rgba(255, 255, 255, .22);
+  background-color: rgba(255, 255, 255, .20);
   color: #fff;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: .08em;
+  line-height: 16px;
   text-transform: uppercase;
-  vertical-align: top;
+  vertical-align: 2px;
 }
