@@ -56,7 +56,7 @@ func (client *FTCScoutClient) GetTeam(teamNumber int) (*FTCScoutTeam, error) {
 }
 
 func (client *FTCScoutClient) DownloadTeamAvatar(teamNumber, year int) error {
-	path := fmt.Sprintf("/api/v3/team/%s/media/%d", (teamNumber), year)
+	path := fmt.Sprintf("/api/v3/team/%d/media/%d", teamNumber, year)
 	resp, err := client.getRequest(path)
 	if err != nil {
 		return err

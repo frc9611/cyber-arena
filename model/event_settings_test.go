@@ -24,7 +24,7 @@ func TestEventSettingsReadWrite(t *testing.T) {
 			NumElimAlliances:            8,
 			SelectionRound1Order:        "L",
 			SelectionRound2Order:        "",
-			TeamDownloadOrigin:          "TBA",
+			TeamDownloadOrigin:          "none",
 			ApTeamChannel:               157,
 			ApAdminChannel:              0,
 			ApAdminWpaKey:               "1234Five",
@@ -33,6 +33,7 @@ func TestEventSettingsReadWrite(t *testing.T) {
 			PauseDurationSec:            2,
 			TeleopDurationSec:           135,
 			WarningRemainingDurationSec: 30,
+			TeamsPerAlliance:            2,
 		},
 		*eventSettings,
 	)

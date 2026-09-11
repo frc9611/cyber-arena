@@ -89,7 +89,6 @@ func TestAllianceSelection(t *testing.T) {
 		// Check that the initial lineup is populated correctly.
 		assert.Equal(t, 102, alliances[0].Lineup[0])
 		assert.Equal(t, 101, alliances[0].Lineup[1])
-		assert.Equal(t, 103, alliances[0].Lineup[2])
 	}
 	matches, err := web.arena.Database.GetMatchesByType("elimination")
 	assert.Nil(t, err)

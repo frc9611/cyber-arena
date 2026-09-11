@@ -22,7 +22,7 @@ func TestUserSessionCrud(t *testing.T) {
 	db := setupTestDb(t)
 	defer db.Close()
 
-	session := UserSession{0, "token1", "Bertha", time.Now()}
+	session := UserSession{Token: "token1", Username: "Bertha", CreatedAt: time.Now()}
 	err := db.CreateUserSession(&session)
 	assert.Nil(t, err)
 	session2, err := db.GetUserSessionByToken("token1")
@@ -41,7 +41,7 @@ func TestTruncateUserSessions(t *testing.T) {
 	db := setupTestDb(t)
 	defer db.Close()
 
-	session := UserSession{0, "token1", "Bertha", time.Now()}
+	session := UserSession{Token: "token1", Username: "Bertha", CreatedAt: time.Now()}
 	db.CreateUserSession(&session)
 	db.TruncateUserSessions()
 	session2, err := db.GetUserSessionByToken("token1")

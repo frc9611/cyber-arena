@@ -146,7 +146,7 @@ func (web *Web) refereePanelWebsocketHandler(w http.ResponseWriter, r *http.Requ
 			case 3:
 				web.arena.BlueScore.EndgamePoints += points
 			default:
-				ws.WriteError(fmt.Sprintf("Tipo de modo de jogo invalido '%s'.", modeId))
+				ws.WriteError(fmt.Sprintf("Tipo de modo de jogo invalido '%d'.", modeId))
 			}
 
 			web.arena.RealtimeScoreNotifier.Notify()
@@ -170,7 +170,7 @@ func (web *Web) refereePanelWebsocketHandler(w http.ResponseWriter, r *http.Requ
 			case 3:
 				web.arena.RedScore.EndgamePoints += points
 			default:
-				ws.WriteError(fmt.Sprintf("Tipo de modo de jogo invalido '%s'.", modeId))
+				ws.WriteError(fmt.Sprintf("Tipo de modo de jogo invalido '%d'.", modeId))
 			}
 
 			web.arena.RealtimeScoreNotifier.Notify()
