@@ -5,8 +5,6 @@
 
 package game
 
-import "math/rand"
-
 type RankingFields struct {
 	RankingPoints int
 	AutoPoints    int
@@ -30,9 +28,6 @@ type Rankings []Ranking
 
 func (fields *RankingFields) AddScoreSummary(ownScore *ScoreSummary, opponentScore *ScoreSummary) {
 	fields.Played += 1
-
-	// Store a random value to be used as the last tiebreaker if necessary.
-	fields.Random = rand.Float64()
 
 	// Assign ranking points and wins/losses/ties.
 	if ownScore.Score > opponentScore.Score {
@@ -60,6 +55,14 @@ func (rankings Rankings) Len() int {
 func (rankings Rankings) Less(i, j int) bool {
 	a := rankings[i]
 	b := rankings[j]
+
+	// A team with no match ranks last: cross-multiplication by zero makes it tie with everybody.
+	if a.Played == 0 || b.Played == 0 {
+		if a.Played != b.Played {
+			return b.Played == 0
+		}
+		return a.TeamId < b.TeamId
+	}
 
 	// Use cross-multiplication to keep it in integer math.
 	if a.RankingPoints*b.Played == b.RankingPoints*a.Played {

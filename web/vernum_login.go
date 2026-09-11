@@ -2,10 +2,14 @@ package web
 
 import (
 	"bytes"
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/Team254/cheesy-arena-lite/model"
@@ -48,19 +52,26 @@ func (web *Web) startVernumLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	state := uuid.New().String()
+	verifier, err := newCodeVerifier()
+	if err != nil {
+		web.renderLogin(w, r, "Não consegui preparar a entrada pelo Vernum. Tente de novo.")
+		return
+	}
 	http.SetCookie(w, &http.Cookie{
 		Name:     vernumStateCookie,
-		Value:    state + "|" + r.URL.Query().Get("redirect"),
+		Value:    state + "|" + verifier + "|" + r.URL.Query().Get("redirect"),
 		Path:     "/",
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
 		MaxAge:   600,
 	})
-	target := fmt.Sprintf("%s/entrar-com-vernum?client_id=%s&redirect_uri=%s&state=%s",
+	target := fmt.Sprintf(
+		"%s/entrar-com-vernum?client_id=%s&redirect_uri=%s&state=%s&code_challenge=%s&code_challenge_method=S256",
 		cfg.VernumSsoUrl,
 		url.QueryEscape(cfg.VernumClientId),
 		url.QueryEscape(web.vernumRedirectUri(r)),
-		url.QueryEscape(state))
+		url.QueryEscape(state),
+		url.QueryEscape(codeChallengeOf(verifier)))
 	http.Redirect(w, r, target, 303)
 }
 
@@ -81,7 +92,7 @@ func (web *Web) vernumCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := web.exchangeVernumCode(code, web.vernumRedirectUri(r))
+	token, err := web.exchangeVernumCode(code, web.vernumRedirectUri(r), parts[1])
 	if err != nil {
 		web.renderLogin(w, r, err.Error())
 		return
@@ -109,20 +120,21 @@ func (web *Web) vernumCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	web.setSessionCookie(w, session.Token)
 	http.SetCookie(w, &http.Cookie{Name: vernumStateCookie, Value: "", Path: "/", MaxAge: -1})
 
-	redirectUrl := parts[1]
+	redirectUrl := parts[2]
 	if redirectUrl == "" {
 		redirectUrl = web.arena.Config.Path("/")
 	}
 	http.Redirect(w, r, redirectUrl, 303)
 }
 
-func (web *Web) exchangeVernumCode(code, redirectUri string) (*vernumTokenResponse, error) {
+func (web *Web) exchangeVernumCode(code, redirectUri, verifier string) (*vernumTokenResponse, error) {
 	cfg := web.arena.Config
 	body, _ := json.Marshal(map[string]string{
 		"clientId":     cfg.VernumClientId,
 		"clientSecret": cfg.VernumClientSecret,
 		"code":         code,
 		"redirectUri":  redirectUri,
+		"codeVerifier": verifier,
 	})
 	client := &http.Client{Timeout: 15 * time.Second}
 	resp, err := client.Post(cfg.VernumApiUrl+"/public/sso/token", "application/json", bytes.NewReader(body))
@@ -180,11 +192,24 @@ func (web *Web) vernumRoleForThisEvent(accessToken string) (string, error) {
 	return "", fmt.Errorf("Você não foi convidado para este evento no Arena Master.")
 }
 
-func splitState(value string) [2]string {
-	for i := 0; i < len(value); i++ {
-		if value[i] == '|' {
-			return [2]string{value[:i], value[i+1:]}
-		}
+func newCodeVerifier() (string, error) {
+	drawn := make([]byte, 48)
+	if _, err := rand.Read(drawn); err != nil {
+		return "", err
 	}
-	return [2]string{value, ""}
+	return base64.RawURLEncoding.EncodeToString(drawn), nil
+}
+
+func codeChallengeOf(verifier string) string {
+	digest := sha256.Sum256([]byte(verifier))
+	return base64.RawURLEncoding.EncodeToString(digest[:])
+}
+
+func splitState(value string) [3]string {
+	parts := strings.SplitN(value, "|", 3)
+	answer := [3]string{}
+	for i := 0; i < len(parts) && i < 3; i++ {
+		answer[i] = parts[i]
+	}
+	return answer
 }

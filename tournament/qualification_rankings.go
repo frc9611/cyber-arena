@@ -8,6 +8,7 @@ package tournament
 import (
 	"github.com/Team254/cheesy-arena-lite/game"
 	"github.com/Team254/cheesy-arena-lite/model"
+	"math/rand"
 	"sort"
 )
 
@@ -56,6 +57,22 @@ func CalculateRankings(database *model.Database, preservePreviousRank bool) (gam
 		oldRankingsMap[ranking.TeamId] = ranking
 	}
 
+	// The random tiebreaker is drawn once per team and kept, not redrawn on every calculation: a
+	// value that changes every time makes a tied pair trade places on every page load. The draw
+	// walks the teams in order, because map order is not an order.
+	teamIds := make([]int, 0, len(rankings))
+	for teamId := range rankings {
+		teamIds = append(teamIds, teamId)
+	}
+	sort.Ints(teamIds)
+	for _, teamId := range teamIds {
+		if old, ok := oldRankingsMap[teamId]; ok && old.Random != 0 {
+			rankings[teamId].Random = old.Random
+		} else {
+			rankings[teamId].Random = rand.Float64()
+		}
+	}
+
 	sortedRankings := sortRankings(rankings)
 	for rank, ranking := range sortedRankings {
 		sortedRankings[rank].Rank = rank + 1
@@ -95,11 +112,16 @@ func addMatchResultToRankings(
 	}
 }
 
+// The map has no order, so the slice is put in team order before a stable sort. Without both, two
+// teams that tie on every criterion swap places between one calculation and the next.
 func sortRankings(rankings map[int]*game.Ranking) game.Rankings {
 	var sortedRankings game.Rankings
 	for _, ranking := range rankings {
 		sortedRankings = append(sortedRankings, *ranking)
 	}
-	sort.Sort(sortedRankings)
+	sort.Slice(sortedRankings, func(i, j int) bool {
+		return sortedRankings[i].TeamId < sortedRankings[j].TeamId
+	})
+	sort.Stable(sortedRankings)
 	return sortedRankings
 }

@@ -63,7 +63,7 @@
         { id: "M10_SCALE", label: "M10 - INCLINE AS BALANÇAS - Balança inclinada tocando o tapete", type: "yesno", pointsYes: 20 },
         { id: "M10_PLATE", label: "M10 - INCLINE AS BALANÇAS - Prato totalmente removido", type: "yesno", pointsYes: 10 },
         { id: "M11_ARTIFACTS", label: "M11 - ARTEFATOS DO PESCADOR - Artefatos acima da camada do solo", type: "yesno", pointsYes: 20 },
-        { id: "M11_FLAG", label: "M11 - ARTEFATOS DO PESCADOR - Bônus: Bandeira abaixada", type: "yesno", pointsYes: 10 },
+        { id: "M11_FLAG", label: "M11 - ARTEFATOS DO PESCADOR - Bônus: Bandeira abaixada", type: "yesno", pointsYes: 10, requiresTrue: ["M11_ARTIFACTS"] },
         { id: "M12_SAND", label: "M12 - OPERAÇÃO DE SALVAMENTO - Areia totalmente limpa", type: "yesno", pointsYes: 20 },
         { id: "M12_SHIP", label: "M12 - OPERAÇÃO DE SALVAMENTO - Navio totalmente levantado", type: "yesno", pointsYes: 10 },
         { id: "M13_STATUE", label: "M13 - RECONSTRUÇÃO DA ESTÁTUA - Estátua completamente levantada", type: "yesno", pointsYes: 30 },

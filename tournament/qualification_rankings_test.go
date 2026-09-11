@@ -61,6 +61,9 @@ func TestCalculateRankings(t *testing.T) {
 		assert.Equal(t, 5, rankings[5].PreviousRank)
 	}
 
+	// This third result leaves every team on the same ranking points, so the order inside each pair
+	// is the random tiebreaker and asserting it would be asserting math/rand. What the rules do
+	// decide is which pair a team lands in, by tiebreaker points per match played.
 	matchResult3 = model.BuildTestMatchResult(3, 4)
 	err = database.CreateMatchResult(matchResult3)
 	assert.Nil(t, err)
@@ -70,18 +73,32 @@ func TestCalculateRankings(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, updatedRankings, rankings)
 	if assert.Equal(t, 6, len(rankings)) {
-		assert.Equal(t, 4, rankings[0].TeamId)
-		assert.Equal(t, 3, rankings[0].PreviousRank)
-		assert.Equal(t, 2, rankings[1].TeamId)
-		assert.Equal(t, 1, rankings[1].PreviousRank)
-		assert.Equal(t, 3, rankings[2].TeamId)
-		assert.Equal(t, 2, rankings[2].PreviousRank)
-		assert.Equal(t, 6, rankings[3].TeamId)
-		assert.Equal(t, 5, rankings[3].PreviousRank)
-		assert.Equal(t, 5, rankings[4].TeamId)
-		assert.Equal(t, 6, rankings[4].PreviousRank)
-		assert.Equal(t, 1, rankings[5].TeamId)
-		assert.Equal(t, 4, rankings[5].PreviousRank)
+		assert.ElementsMatch(t, []int{2, 4}, []int{rankings[0].TeamId, rankings[1].TeamId})
+		assert.ElementsMatch(t, []int{3, 6}, []int{rankings[2].TeamId, rankings[3].TeamId})
+		assert.ElementsMatch(t, []int{1, 5}, []int{rankings[4].TeamId, rankings[5].TeamId})
+
+		// preservePreviousRank keeps the rank each team already carried, instead of the last one.
+		previous := map[int]int{2: 1, 3: 2, 1: 4, 4: 3, 5: 6, 6: 5}
+		for _, ranking := range rankings {
+			assert.Equal(t, previous[ranking.TeamId], ranking.PreviousRank,
+				"previous rank of team %d", ranking.TeamId)
+		}
+	}
+
+	// The table has to say the same thing every time it is drawn. It did not: the random tiebreaker
+	// was drawn again on every calculation, so a tied pair traded places on every page load.
+	order := func(rankings game.Rankings) []int {
+		ids := make([]int, 0, len(rankings))
+		for _, ranking := range rankings {
+			ids = append(ids, ranking.TeamId)
+		}
+		return ids
+	}
+	first := order(rankings)
+	for round := 0; round < 3; round++ {
+		again, err := CalculateRankings(database, true)
+		assert.Nil(t, err)
+		assert.Equal(t, first, order(again), "a classificação mudou sozinha na volta %d", round+1)
 	}
 }
 

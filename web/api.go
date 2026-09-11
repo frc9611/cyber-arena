@@ -327,8 +327,8 @@ func (web *Web) generateBracketSvg(w io.Writer, activeMatch *model.Match, showTe
 type fllSyncUpsert struct {
 	TeamId int   `json:"teamId"`
 	Rounds []int `json:"rounds"`
-	// Optional official round selection (1..3), 0 to clear/use Best
-	OfficialRound int `json:"officialRound,omitempty"`
+	// Optional official round selection (1..3), 0 to clear/use Best. Absent leaves it alone.
+	OfficialRound *int `json:"officialRound,omitempty"`
 }
 
 // GET /api/fll/scores — returns all per-team scores (Rounds, Best)
@@ -341,7 +341,6 @@ func (web *Web) fllScoresApiGetHandler(w http.ResponseWriter, r *http.Request) {
 	// If configured, pull latest from remote hub into local before serving.
 	remoteUrl := strings.TrimRight(web.arena.EventSettings.RemoteSyncUrl, "/")
 	if remoteUrl != "" && r.Header.Get("X-From-Remote") != "1" {
-		// The setting is the base of the master's API, as every other caller reads it.
 		req, _ := http.NewRequest("GET", remoteUrl+"/scores", nil)
 		req.Header.Set("X-From-Remote", "1")
 		// Optional key for reads; not required by our handler.
@@ -474,8 +473,8 @@ func (web *Web) fllScoresApiPostHandler(w http.ResponseWriter, r *http.Request) 
 	if existing == nil {
 		s := &model.FllScore{TeamId: body.TeamId, Rounds: rounds, Best: best, UpdatedAt: time.Now().UTC()}
 		// Apply OfficialRound if provided
-		if body.OfficialRound >= 0 && body.OfficialRound <= 3 {
-			s.OfficialRound = body.OfficialRound
+		if body.OfficialRound != nil && *body.OfficialRound >= 0 && *body.OfficialRound <= 3 {
+			s.OfficialRound = *body.OfficialRound
 		}
 		if err := web.arena.Database.CreateFllScore(s); err != nil {
 			handleWebErr(w, err)
@@ -485,8 +484,8 @@ func (web *Web) fllScoresApiPostHandler(w http.ResponseWriter, r *http.Request) 
 		existing.Rounds = rounds
 		existing.Best = best
 		existing.UpdatedAt = time.Now().UTC()
-		if body.OfficialRound >= 0 && body.OfficialRound <= 3 {
-			existing.OfficialRound = body.OfficialRound
+		if body.OfficialRound != nil && *body.OfficialRound >= 0 && *body.OfficialRound <= 3 {
+			existing.OfficialRound = *body.OfficialRound
 		}
 		if err := web.arena.Database.UpdateFllScore(existing); err != nil {
 			handleWebErr(w, err)

@@ -339,12 +339,6 @@ func (arena *Arena) BuildArenaSnapshot(settings *arenaSyncConfig) (*partner.Aren
 		Awards:           &snapshotAwards,
 		FllScores:        snapshotFll,
 	}
-	/*
-	 * Equipes, classificacao, aliancas, premiacoes e pontuacoes da FLL sao do evento, nao deste lugar.
-	 * Com tres mesas enviando, o servidor guardaria tres copias de cada uma e a pagina publica leria
-	 * a equipe tres vezes. So a ancora manda; as outras continuam mandando as proprias partidas.
-	 * Nulo aqui nao e lista vazia: e "nao estou falando disso", e e por isso que nada e apagado.
-	 */
 	if !settings.Anchor {
 		snapshot.Teams = nil
 		snapshot.Rankings = nil
@@ -601,17 +595,6 @@ func (arena *Arena) importFromBootstrap(boot *partner.ArenaBootstrap) {
 	})
 }
 
-/*
- * Na nuvem quem responde onde esta maquina fica e quem a colocou la. O provisionador criou o pod da
- * mesa 2, entao perguntar de novo no assistente seria perguntar o que ele ja respondeu — e um campo
- * em branco na hora do torneio vira placar registrado no lugar errado.
- *
- * A malha da FLL entra do mesmo jeito: o mestre recebe a pontuacao de cada mesa e devolve tudo o que
- * tem, e e por isso que qualquer mesa consegue mostrar a classificacao do evento inteiro. Endereco e
- * chave vem do cluster, pelo Service, sem sair pela internet.
- *
- * Fora da nuvem nada disso existe: standalone e local continuam com o que a tela de configuracoes diz.
- */
 func (arena *Arena) applyCloudWiring() {
 	if arena.Config == nil || arena.Mode() != config.ModeCloud {
 		return

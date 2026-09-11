@@ -12,8 +12,6 @@ import (
 	"github.com/Team254/cheesy-arena-lite/model"
 )
 
-// A table cannot wait on a master that is down: the score is already written locally, and the next
-// push carries it anyway.
 const fllMeshTimeout = 3 * time.Second
 
 // Shows the remote sync management page (master node only).
@@ -245,7 +243,6 @@ func (web *Web) getClientInfo(clientUrl string) map[string]interface{} {
 	return info
 }
 
-// Sends one payload to the master node of the FLL mesh, under the base URL of its API.
 func (web *Web) postToFllMaster(suffix string, payload []byte) {
 	remoteUrl := strings.TrimRight(web.arena.EventSettings.RemoteSyncUrl, "/")
 	if remoteUrl == "" {
