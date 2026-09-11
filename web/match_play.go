@@ -6,7 +6,6 @@
 package web
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -683,19 +682,8 @@ func (web *Web) syncFllFromMatchResult(match *model.Match, result *model.MatchRe
 		}
 	}
 	// Forward to remote hub
-	remoteUrl := web.arena.EventSettings.RemoteSyncUrl
-	if remoteUrl != "" {
-		payload := fllSyncUpsert{TeamId: teamId, Rounds: rounds}
-		b, _ := json.Marshal(payload)
-		req, _ := http.NewRequest("POST", remoteUrl+"/scores", bytes.NewReader(b))
-		req.Header.Set("Content-Type", "application/json")
-		if web.arena.EventSettings.RemoteSyncApiKey != "" {
-			req.Header.Set("X-API-Key", web.arena.EventSettings.RemoteSyncApiKey)
-		}
-		// Avoid loops if hub posts back to us.
-		req.Header.Set("X-From-Remote", "1")
-		_, _ = http.DefaultClient.Do(req)
-	}
+	payload, _ := json.Marshal(fllSyncUpsert{TeamId: teamId, Rounds: rounds})
+	web.postToFllMaster("/scores", payload)
 	return nil
 }
 
@@ -720,28 +708,7 @@ func (web *Web) broadcastFllStartMatch() {
 	if remoteUrl == "" {
 		return
 	}
-	req, err := http.NewRequest("POST", remoteUrl+"/start-match", nil)
-	if err != nil {
-		log.Printf("Error creating start-match request: %v", err)
-		return
-	}
-	req.Header.Set("Content-Type", "application/json")
-	if web.arena.EventSettings.RemoteSyncApiKey != "" {
-		req.Header.Set("X-API-Key", web.arena.EventSettings.RemoteSyncApiKey)
-	}
-	req.Header.Set("X-From-Remote", "1")
-
-	client := &http.Client{Timeout: 2 * time.Second}
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Printf("Error broadcasting start-match to %s: %v", remoteUrl, err)
-		return
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusNoContent {
-		log.Printf("Remote system %s returned status %d for start-match", remoteUrl, resp.StatusCode)
-	}
+	web.postToFllMaster("/start-match", nil)
 }
 
 // Constructs the list of matches to display on the side of the match play interface.

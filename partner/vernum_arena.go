@@ -120,6 +120,7 @@ type ArenaHeartbeatResult struct {
 	ServerTime      string   `json:"serverTime"`
 	ServerInstance  string   `json:"serverInstance"`
 	DeleteSuspended bool     `json:"deleteSuspended"`
+	Anchor          bool     `json:"anchor"`
 	Notices         []string `json:"notices"`
 }
 

@@ -68,6 +68,7 @@ type EventSettings struct {
 	ArenaBootstrappedAt   string
 	ArenaBootstrapJson    string
 	ArenaLocalFingerprint string
+	ArenaIsAnchor         bool
 	ArenaSyncEnabled      bool
 	ArenaSyncSeconds      int
 	ArenaSyncGeneration   int

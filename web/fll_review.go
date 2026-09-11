@@ -2,10 +2,8 @@
 package web
 
 import (
-	"bytes"
 	"encoding/json"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/Team254/cheesy-arena-lite/model"
@@ -92,17 +90,8 @@ func (web *Web) fllReviewApiPostHandler(w http.ResponseWriter, r *http.Request) 
 
 	// Forward to remote hub if configured and not looped.
 	if r.Header.Get("X-From-Remote") != "1" {
-		remoteUrl := web.arena.EventSettings.RemoteSyncUrl
-		if remoteUrl != "" {
-			payload, _ := json.Marshal(body)
-			req, _ := http.NewRequest("POST", strings.TrimRight(remoteUrl, "/")+"/review", bytes.NewReader(payload))
-			req.Header.Set("Content-Type", "application/json")
-			if web.arena.EventSettings.RemoteSyncApiKey != "" {
-				req.Header.Set("X-API-Key", web.arena.EventSettings.RemoteSyncApiKey)
-			}
-			req.Header.Set("X-From-Remote", "1")
-			_, _ = http.DefaultClient.Do(req)
-		}
+		payload, _ := json.Marshal(body)
+		web.postToFllMaster("/review", payload)
 	}
 	w.WriteHeader(http.StatusNoContent)
 }

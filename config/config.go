@@ -31,6 +31,13 @@ type Config struct {
 	VernumApiUrl       string
 	VernumClientId     string
 	VernumClientSecret string
+	VenueSlot          int
+	VenueSlotFromEnv   bool
+	VenueLabel         string
+	FllRole            string
+	FllKey             string
+	FllMasterUrl       string
+	FllClients         string
 }
 
 func Load() *Config {
@@ -48,12 +55,33 @@ func Load() *Config {
 		VernumApiUrl:       strings.TrimRight(strings.TrimSpace(os.Getenv("VERNUM_API_URL")), "/"),
 		VernumClientId:     strings.TrimSpace(os.Getenv("VERNUM_CLIENT_ID")),
 		VernumClientSecret: strings.TrimSpace(os.Getenv("VERNUM_CLIENT_SECRET")),
+		VenueSlot:          intOr("ARENA_VENUE_SLOT", 0),
+		VenueLabel:         strings.TrimSpace(os.Getenv("ARENA_VENUE_LABEL")),
+		FllRole:            strings.ToLower(strings.TrimSpace(os.Getenv("ARENA_FLL_ROLE"))),
+		FllKey:             strings.TrimSpace(os.Getenv("ARENA_FLL_KEY")),
+		FllMasterUrl:       strings.TrimSpace(os.Getenv("ARENA_FLL_MASTER_URL")),
+		FllClients:         strings.TrimSpace(os.Getenv("ARENA_FLL_CLIENTS")),
 	}
 	config.TokenFromEnv = config.Token != ""
+	config.VenueSlotFromEnv = strings.TrimSpace(os.Getenv("ARENA_VENUE_SLOT")) != ""
 	if config.Mode == "" {
 		config.Mode = ModeStandalone
 	}
 	return config
+}
+
+func (config *Config) IsFllMaster() bool {
+	return config.FllRole == "master"
+}
+
+func (config *Config) FllClientList() []string {
+	list := make([]string, 0)
+	for _, raw := range strings.Split(config.FllClients, ",") {
+		if url := strings.TrimRight(strings.TrimSpace(raw), "/"); url != "" {
+			list = append(list, url)
+		}
+	}
+	return list
 }
 
 func (config *Config) EffectiveMode(settingsMode string) string {

@@ -2,6 +2,7 @@
 package web
 
 import (
+	"bytes"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -10,6 +11,10 @@ import (
 
 	"github.com/Team254/cheesy-arena-lite/model"
 )
+
+// A table cannot wait on a master that is down: the score is already written locally, and the next
+// push carries it anyway.
+const fllMeshTimeout = 3 * time.Second
 
 // Shows the remote sync management page (master node only).
 func (web *Web) remoteSyncPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -238,4 +243,33 @@ func (web *Web) getClientInfo(clientUrl string) map[string]interface{} {
 	info["isMaster"] = false
 	info["status"] = "online"
 	return info
+}
+
+// Sends one payload to the master node of the FLL mesh, under the base URL of its API.
+func (web *Web) postToFllMaster(suffix string, payload []byte) {
+	remoteUrl := strings.TrimRight(web.arena.EventSettings.RemoteSyncUrl, "/")
+	if remoteUrl == "" {
+		return
+	}
+	req, err := http.NewRequest("POST", remoteUrl+suffix, bytes.NewReader(payload))
+	if err != nil {
+		log.Printf("Error creating %s request for %s: %v", suffix, remoteUrl, err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+	if web.arena.EventSettings.RemoteSyncApiKey != "" {
+		req.Header.Set("X-API-Key", web.arena.EventSettings.RemoteSyncApiKey)
+	}
+	req.Header.Set("X-From-Remote", "1")
+
+	client := &http.Client{Timeout: fllMeshTimeout}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("Error forwarding %s to %s: %v", suffix, remoteUrl, err)
+		return
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode >= 300 {
+		log.Printf("Master %s returned status %d for %s", remoteUrl, resp.StatusCode, suffix)
+	}
 }

@@ -429,6 +429,7 @@ func (web *Web) arenaMasterRegisterHandler(w http.ResponseWriter, r *http.Reques
 	now := time.Now().Format(time.RFC3339)
 	web.arena.SaveArenaSettings(func(s *model.EventSettings) {
 		s.ArenaInstanceId = result.InstanceId
+		s.ArenaIsAnchor = result.Anchor
 		s.ArenaClientName = name
 		s.ArenaPublicUrl = publicUrl
 		s.ArenaConfirmedAt = now

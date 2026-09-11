@@ -6,13 +6,14 @@
 package web
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Team254/cheesy-arena-lite/game"
@@ -338,11 +339,17 @@ func (web *Web) fllScoresApiGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// If configured, pull latest from remote hub into local before serving.
-	remoteUrl := web.arena.EventSettings.RemoteSyncUrl
+	remoteUrl := strings.TrimRight(web.arena.EventSettings.RemoteSyncUrl, "/")
 	if remoteUrl != "" && r.Header.Get("X-From-Remote") != "1" {
-		req, _ := http.NewRequest("GET", remoteUrl, nil)
+		// The setting is the base of the master's API, as every other caller reads it.
+		req, _ := http.NewRequest("GET", remoteUrl+"/scores", nil)
+		req.Header.Set("X-From-Remote", "1")
 		// Optional key for reads; not required by our handler.
-		resp, err := http.DefaultClient.Do(req)
+		client := &http.Client{Timeout: fllMeshTimeout}
+		resp, err := client.Do(req)
+		if err != nil {
+			log.Printf("Error pulling scores from %s: %v", remoteUrl, err)
+		}
 		if err == nil && resp.StatusCode == http.StatusOK {
 			defer resp.Body.Close()
 			var remoteScores []model.FllScore
@@ -489,17 +496,8 @@ func (web *Web) fllScoresApiPostHandler(w http.ResponseWriter, r *http.Request) 
 
 	// Forward to remote hub if configured and not already forwarded.
 	if r.Header.Get("X-From-Remote") != "1" {
-		remoteUrl := web.arena.EventSettings.RemoteSyncUrl
-		if remoteUrl != "" {
-			payload, _ := json.Marshal(body)
-			req, _ := http.NewRequest("POST", remoteUrl, bytes.NewReader(payload))
-			req.Header.Set("Content-Type", "application/json")
-			if web.arena.EventSettings.RemoteSyncApiKey != "" {
-				req.Header.Set("X-API-Key", web.arena.EventSettings.RemoteSyncApiKey)
-			}
-			req.Header.Set("X-From-Remote", "1")
-			_, _ = http.DefaultClient.Do(req)
-		}
+		payload, _ := json.Marshal(body)
+		web.postToFllMaster("/scores", payload)
 	}
 
 	w.WriteHeader(http.StatusNoContent)
