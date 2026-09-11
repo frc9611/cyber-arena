@@ -259,8 +259,8 @@ func (arena *Arena) LoadMatch(match *model.Match) error {
 
 	// Reset the arena state and game scores.
 	arena.soundsPlayed = make(map[*game.MatchSound]struct{})
-	arena.RedScore = new(game.Score)
-	arena.BlueScore = new(game.Score)
+	arena.RedScore = arena.newScore("red")
+	arena.BlueScore = arena.newScore("blue")
 	arena.FieldVolunteers = false
 	arena.FieldReset = false
 	arena.Plc.ResetMatch()
@@ -618,12 +618,63 @@ func (arena *Arena) Run() {
 
 // Calculates the red alliance score summary for the given realtime snapshot.
 func (arena *Arena) RedScoreSummary() *game.ScoreSummary {
-	return arena.RedScore.Summarize()
+	return arena.RedScore.SummarizeAgainst(arena.BlueScore)
 }
 
 // Calculates the blue alliance score summary for the given realtime snapshot.
 func (arena *Arena) BlueScoreSummary() *game.ScoreSummary {
-	return arena.BlueScore.Summarize()
+	return arena.BlueScore.SummarizeAgainst(arena.RedScore)
+}
+
+// The season and the level travel on the score, not looked up later: a Team Update changes the
+// document, and a match already played has to keep being read at the level it was played at.
+func (arena *Arena) newScore(alliance string) *game.Score {
+	return &game.Score{
+		SeasonKey: arena.EventSettings.SeasonKey,
+		Level:     arena.EventSettings.EventLevel,
+		Robots:    arena.RobotsOnField(alliance),
+	}
+}
+
+// The period a click lands in, taken from the clock instead of from the panel: the referee presses
+// a button, and which window it fell into is not their job to know.
+func (arena *Arena) CurrentPeriod() string {
+	season := game.SeasonByKey(arena.EventSettings.SeasonKey)
+	scoring := []string{}
+	if season != nil {
+		scoring = season.ScoringPeriods()
+	}
+	first, last := "", ""
+	if len(scoring) > 0 {
+		first = scoring[0]
+		last = scoring[len(scoring)-1]
+	}
+	switch arena.MatchState {
+	case WarmupPeriod, AutoPeriod:
+		return first
+	case PausePeriod, TeleopPeriod, PostMatch:
+		return last
+	}
+	return last
+}
+
+// Robots that will actually play: a bypassed station is not a robot that failed to leave.
+func (arena *Arena) RobotsOnField(alliance string) int {
+	stations := []string{"R1", "R2", "R3"}
+	if alliance == "blue" {
+		stations = []string{"B1", "B2", "B3"}
+	}
+	count := 0
+	for index, station := range stations {
+		if index >= arena.EventSettings.TeamsPerAlliance {
+			break
+		}
+		allianceStation := arena.AllianceStations[station]
+		if allianceStation != nil && !allianceStation.Bypass {
+			count++
+		}
+	}
+	return count
 }
 
 // Loads a team into an alliance station, cleaning up the previous team there if there is one.

@@ -79,6 +79,20 @@ todos os casos de todas as temporadas embutidas, e o validador exige que cada ra
 verdadeiro em um caso e falso em outro. Uma temporada cujo RP nunca dispara é indistinguível de uma
 que funciona — até um domingo à tarde.
 
+### A arbitragem sai do documento
+
+A tela de arbitragem não tem mais bloco de HTML por ação: ela é desenhada de `game/seasons/*.json`
+pelo `static/js/season_panel.js`. Um clique vira **uma** mensagem — `scoreTally` — e a guarda de
+estado da partida mora nela, num lugar só; antes havia quatro caminhos que escreviam pontos, em duas
+cópias, e só um deles recusava clique antes da partida começar. O painel não sabe quanto vale nada:
+manda o clique e o servidor responde com o placar que calculou, as categorias vivas e quais ranking
+points já estão ganhos.
+
+O documento chega pela mensagem `matchLoad` do websocket, nunca pelo template: o `html/template`
+escaparia o JSON como literal de string, e por chegar assim uma troca de temporada em Configurações
+recarrega todos os painéis sozinha. Recarregar a página no meio da partida devolve o estado inteiro,
+porque ele é do servidor e não do navegador.
+
 Um resultado gravado **antes** das temporadas não tem tally, e continua sendo lido como sempre: a
 soma dos quatro números digitados. As quatro colunas mantiveram o nome no banco e na API; só os
 campos Go viraram `Legacy*`. Nada foi reescrito no banco de um evento que já aconteceu.

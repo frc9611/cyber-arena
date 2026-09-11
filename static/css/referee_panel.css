@@ -229,3 +229,37 @@ h3 {
   height: 40px;
   accent-color: #0066B3;
 } 
+/* Painel desenhado da temporada */
+.sp-headline { display: flex; align-items: baseline; gap: 12px; }
+.sp-season-name { color: #888; font-size: 0.9em; }
+.sp-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 8px; }
+.sp-alliance { padding: 8px; border-radius: 6px; background: #ffffff10; }
+.sp-alliance-red { border-top: 3px solid #d9534f; }
+.sp-alliance-blue { border-top: 3px solid #337ab7; }
+.sp-alliance-title { margin: 0 0 8px 0; font-weight: 600; }
+.sp-entry { margin-bottom: 10px; }
+.sp-entry-label { display: block; font-weight: 600; font-size: 0.95em; }
+.sp-help { display: block; color: #999; font-size: 0.8em; margin-top: 2px; }
+.sp-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.sp-btn { min-width: 44px; min-height: 44px; font-size: 1.2em; border: 1px solid #0003; border-radius: 4px; }
+.sp-value { min-width: 40px; text-align: center; font-size: 1.3em; font-weight: 600; }
+.sp-number { width: 90px; }
+.sp-toggle, .sp-choice, .sp-slot, .sp-foul { border: 1px solid #0003; border-radius: 4px; background: #fff; }
+.sp-toggle { min-height: 44px; width: 100%; }
+.sp-on { background: #5cb85c; color: #fff; border-color: #4cae4c; }
+.sp-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-top: 4px; }
+.sp-slot { min-height: 44px; }
+.sp-slot-on { background: #5cb85c; color: #fff; }
+.sp-slot-auto { background: #f0ad4e; color: #fff; }
+.sp-robot-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+.sp-robot-name { min-width: 70px; font-size: 0.9em; }
+.sp-choice { flex: 1; min-height: 44px; }
+.sp-foul { display: block; width: 100%; min-height: 44px; margin-bottom: 6px; text-align: left; padding: 0 10px; }
+.sp-outcomes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 8px; }
+.sp-outcome { padding: 8px; border-radius: 6px; background: #ffffff10; }
+.sp-cat, .sp-rp { display: flex; justify-content: space-between; padding: 2px 0; }
+.sp-rp { border-top: 1px dashed #0002; }
+.sp-rp.sp-on .sp-cat-value { color: #3c763d; font-weight: 700; }
+.sp-cat-label { color: #bbb; }
+.sp-cat-value { font-weight: 600; }
+.sp-empty { color: #999; padding: 16px; }

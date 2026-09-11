@@ -15,6 +15,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Team254/cheesy-arena-lite/field"
+	"github.com/Team254/cheesy-arena-lite/game"
 	"github.com/Team254/cheesy-arena-lite/model"
 )
 
@@ -41,6 +43,8 @@ func (web *Web) settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		eventSettings.Name = previousEventName
 	}
 	previousAdminPassword := eventSettings.AdminPassword
+	previousSeason := eventSettings.SeasonKey
+	previousLevel := eventSettings.EventLevel
 
 	eventSettings.ElimType = r.PostFormValue("elimType")
 	numAlliances := 0
@@ -84,6 +88,14 @@ func (web *Web) settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	eventSettings.TeamsPerAlliance, _ = strconv.Atoi(r.PostFormValue("teamsPerAlliance"))
 	eventSettings.IsFll = r.PostFormValue("IsFll") == "on"
 	// New remote sync fields
+	if season := game.SeasonByKey(r.PostFormValue("seasonKey")); season != nil {
+		eventSettings.SeasonKey = season.Key
+		level := r.PostFormValue("eventLevel")
+		if !season.KnowsLevel(level) {
+			level = season.DefaultLevel()
+		}
+		eventSettings.EventLevel = level
+	}
 	eventSettings.RemoteSyncUrl = r.PostFormValue("remoteSyncUrl")
 	eventSettings.RemoteSyncApiKey = r.PostFormValue("remoteSyncApiKey")
 	eventSettings.RemoteSyncClients = r.PostFormValue("remoteSyncClients")
@@ -104,6 +116,18 @@ func (web *Web) settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		handleWebErr(w, err)
 		return
+	}
+
+	// The season is stamped on the score when the match is loaded, so a match already on the field
+	// would keep scoring by the old document until somebody noticed. Reloading redraws every panel
+	// with the new one, and it only happens before a match is running.
+	if previousSeason != eventSettings.SeasonKey || previousLevel != eventSettings.EventLevel {
+		if web.arena.MatchState == field.PreMatch && web.arena.CurrentMatch != nil {
+			if err := web.arena.LoadMatch(web.arena.CurrentMatch); err != nil {
+				handleWebErr(w, err)
+				return
+			}
+		}
 	}
 
 	if eventSettings.AdminPassword != previousAdminPassword {
@@ -251,10 +275,20 @@ func (web *Web) renderSettings(w http.ResponseWriter, r *http.Request, errorMess
 	data := struct {
 		*model.EventSettings
 		ErrorMessage string
-	}{web.arena.EventSettings, errorMessage}
+		Seasons      []*game.Season
+		Levels       []game.SeasonLevel
+	}{web.arena.EventSettings, errorMessage, game.AllSeasons(), levelsOf(web.arena.EventSettings.SeasonKey)}
 	err = template.ExecuteTemplate(w, "base", data)
 	if err != nil {
 		handleWebErr(w, err)
 		return
 	}
+}
+
+func levelsOf(key string) []game.SeasonLevel {
+	season := game.SeasonByKey(key)
+	if season == nil {
+		return nil
+	}
+	return season.EventLevels
 }

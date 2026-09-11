@@ -393,59 +393,26 @@ func (web *Web) matchPlayWebsocketHandler(w http.ResponseWriter, r *http.Request
 			web.arena.CurrentMatch.DisplayName = name
 			web.arena.MatchLoadNotifier.Notify()
 			continue
-		case "updateRealtimeScore":
-			args := data.(map[string]interface{})
-			web.arena.BlueScore.LegacyAutoPoints = int(args["blueAuto"].(float64))
-			web.arena.RedScore.LegacyAutoPoints = int(args["redAuto"].(float64))
-			web.arena.BlueScore.LegacyTeleopPoints = int(args["blueTeleop"].(float64))
-			web.arena.RedScore.LegacyTeleopPoints = int(args["redTeleop"].(float64))
-			web.arena.BlueScore.LegacyEndgamePoints = int(args["blueEndgame"].(float64))
-			web.arena.RedScore.LegacyEndgamePoints = int(args["redEndgame"].(float64))
-			web.arena.RealtimeScoreNotifier.Notify()
-			continue
-
-		case "addBluePoints":
-			// 1 = AUTO ; 2 = TELEOP ; 3 = END_GAME
-
-			args := data.(map[string]interface{})
-			modeId := int(args["modeId"].(float64))
-			points := int(args["points"].(float64))
-
-			switch modeId {
-			case 1:
-				web.arena.BlueScore.LegacyAutoPoints += points
-			case 2:
-				web.arena.BlueScore.LegacyTeleopPoints += points
-			case 3:
-				web.arena.BlueScore.LegacyEndgamePoints += points
-			default:
-				ws.WriteError(fmt.Sprintf("Tipo de modo de jogo invalido '%d'.", modeId))
+		case "scoreTally":
+			args := struct {
+				Alliance string
+				Action   string
+				Group    string
+				Slot     int
+				Option   string
+				Period   string
+				Delta    int
+				Absolute bool
+			}{}
+			if err := mapstructure.Decode(data, &args); err != nil {
+				ws.WriteError(err.Error())
+				continue
 			}
-
-			web.arena.RealtimeScoreNotifier.Notify()
-
-		case "addRedPoints":
-			// 1 = AUTO ; 2 = TELEOP ; 3 = END_GAME
-
-			args := data.(map[string]interface{})
-			modeId := int(args["modeId"].(float64))
-			points := int(args["points"].(float64))
-
-			if web.arena.MatchState == 0 {
-				break
+			if err := web.applyTally(args.Alliance, args.Action, args.Group, args.Slot, args.Option,
+				args.Period, args.Delta, args.Absolute); err != nil {
+				ws.WriteError(err.Error())
+				continue
 			}
-
-			switch modeId {
-			case 1:
-				web.arena.RedScore.LegacyAutoPoints += points
-			case 2:
-				web.arena.RedScore.LegacyTeleopPoints += points
-			case 3:
-				web.arena.RedScore.LegacyEndgamePoints += points
-			default:
-				ws.WriteError(fmt.Sprintf("Tipo de modo de jogo invalido '%d'.", modeId))
-			}
-
 			web.arena.RealtimeScoreNotifier.Notify()
 		default:
 			ws.WriteError(fmt.Sprintf("Invalid message type '%s'.", messageType))

@@ -69,6 +69,8 @@ type EventSettings struct {
 	ArenaBootstrapJson    string
 	ArenaLocalFingerprint string
 	ArenaIsAnchor         bool
+	SeasonKey             string
+	EventLevel            string
 	ArenaSyncEnabled      bool
 	ArenaSyncSeconds      int
 	ArenaSyncGeneration   int
@@ -111,6 +113,8 @@ func (database *Database) GetEventSettings() (*EventSettings, error) {
 		RemoteSyncUrl:               "",
 		RemoteSyncApiKey:            "",
 		RemoteSyncClients:           "",
+		SeasonKey:                   game.LegacySeasonKey,
+		EventLevel:                  "",
 	}
 
 	if err := database.eventSettingsTable.create(&eventSettings); err != nil {

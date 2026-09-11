@@ -4,6 +4,7 @@
 package model
 
 import (
+	"github.com/Team254/cheesy-arena-lite/game"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -34,6 +35,7 @@ func TestEventSettingsReadWrite(t *testing.T) {
 			TeleopDurationSec:           135,
 			WarningRemainingDurationSec: 30,
 			TeamsPerAlliance:            2,
+			SeasonKey:                   game.LegacySeasonKey,
 		},
 		*eventSettings,
 	)

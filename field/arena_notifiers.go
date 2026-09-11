@@ -161,6 +161,9 @@ func (arena *Arena) generateMatchLoadMessage() interface{} {
 		}
 	}
 
+	// The season travels with the match instead of being baked into the template: html/template
+	// would escape the document as a string literal, and this way a change of season reloads every
+	// panel by itself.
 	return &struct {
 		MatchType         string
 		Match             *model.Match
@@ -169,6 +172,10 @@ func (arena *Arena) generateMatchLoadMessage() interface{} {
 		Matchup           *bracket.Matchup
 		RedOffFieldTeams  []*model.Team
 		BlueOffFieldTeams []*model.Team
+		Season            *game.Season
+		EventLevel        string
+		RedRobots         int
+		BlueRobots        int
 	}{
 		arena.CurrentMatch.CapitalizedType(),
 		arena.CurrentMatch,
@@ -177,6 +184,10 @@ func (arena *Arena) generateMatchLoadMessage() interface{} {
 		matchup,
 		redOffFieldTeams,
 		blueOffFieldTeams,
+		game.SeasonByKey(arena.EventSettings.SeasonKey),
+		arena.EventSettings.EventLevel,
+		arena.RobotsOnField("red"),
+		arena.RobotsOnField("blue"),
 	}
 }
 

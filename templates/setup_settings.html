@@ -45,6 +45,32 @@
           </div>
 
           <div class="form-group">
+            <label class="col-lg-5 control-label">Temporada</label>
+            <div class="col-lg-7">
+              <select class="form-control" name="seasonKey">
+                {{$key := .SeasonKey}}
+                {{range .Seasons}}
+                  <option value="{{.Key}}"{{if eq .Key $key}} selected{{end}}>{{.Program}} {{.Year}} — {{.Name}} (r{{.Revision}})</option>
+                {{end}}
+              </select>
+              <p class="help-block">Ela decide o que a arbitragem mostra, quanto vale cada coisa e como a classificação ordena.</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-lg-5 control-label">Nível do evento</label>
+            <div class="col-lg-7">
+              <select class="form-control" name="eventLevel">
+                {{$level := .EventLevel}}
+                {{range .Levels}}
+                  <option value="{{.ID}}"{{if eq .ID $level}} selected{{end}}>{{.Label}}</option>
+                {{end}}
+              </select>
+              <p class="help-block">Alguns limiares mudam com o nível: o CORAL RP pede 5 num Regional e 7 no Mundial.</p>
+            </div>
+          </div>
+
+          <div class="form-group">
             <label class="col-lg-5 control-label">Torneio FIRST Lego League?</label>
               <div class="col-lg-1 checkbox">
                 <input type="checkbox" name="IsFll"{{if .IsFll}} checked{{end}}>
