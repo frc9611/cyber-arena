@@ -34,17 +34,17 @@ func TestScoreEquals(t *testing.T) {
 	assert.False(t, score3.Equals(score1))
 
 	score2 = TestScore1()
-	score2.AutoPoints = 20
+	score2.LegacyAutoPoints = 20
 	assert.False(t, score1.Equals(score2))
 	assert.False(t, score2.Equals(score1))
 
 	score2 = TestScore1()
-	score2.TeleopPoints = 35
+	score2.LegacyTeleopPoints = 35
 	assert.False(t, score1.Equals(score2))
 	assert.False(t, score2.Equals(score1))
 
 	score2 = TestScore1()
-	score2.EndgamePoints = 15
+	score2.LegacyEndgamePoints = 15
 	assert.False(t, score1.Equals(score2))
 	assert.False(t, score2.Equals(score1))
 }

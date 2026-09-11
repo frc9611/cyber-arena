@@ -51,7 +51,37 @@ evento que não tem nada a ver com o Vernum.
 | `ARENA_MASTER_URL` | *(vazio)* | endereço do Vernum Arena Master |
 | `ARENA_TOKEN` | *(vazio)* | token desta instância; vazio, nenhuma chamada de rede sai |
 | `ARENA_SYNC_SECONDS` | `30` | de quanto em quanto tempo mandar |
+| `ARENA_VENUE_SLOT`, `ARENA_VENUE_LABEL` | *(vazio)* | qual mesa ou arena este processo é; em nuvem quem responde é o provisionador |
+| `ARENA_FLL_ROLE`, `ARENA_FLL_KEY`, `ARENA_FLL_MASTER_URL`, `ARENA_FLL_CLIENTS` | *(vazio)* | a malha da FLL, fiada pelo Arena Master no cluster |
 | `VERNUM_SSO_URL`, `VERNUM_API_URL`, `VERNUM_CLIENT_ID`, `VERNUM_CLIENT_SECRET` | *(vazio)* | o login do Vernum, em modo nuvem |
+
+`ARENA_FLL_MASTER_URL` é a **base** da API do mestre (`http://mestre/api/fll`), não a URL das
+pontuações: quem chama acrescenta `/scores`, `/review` ou `/start-match`.
+
+### Temporadas
+
+Uma temporada é um **documento JSON** em `game/seasons/`, compilado no binário por `go:embed`. O que
+fica gravado numa partida é o **tally** — contagens por ação e ocupação de slot, com o período que
+ocupou cada um —, nunca os pontos: pontos, categorias, ranking points, elegibilidade e vetor de
+desempate são sempre derivados do tally mais o documento mais o nível do evento. É isso que faz um
+Team Update publicado em abril poder ser aplicado com a temporada quase toda jogada.
+
+Duas consequências que valem estar escritas:
+
+- **O par `occupiedIn`/`everIn`.** Os pontos leem quem ocupa o slot agora; o AUTO RP lê quem *já*
+  ocupou no autônomo. O coral retirado no teleop perde os pontos e mantém o RP, que é exatamente a
+  regra 6.5.1 e exatamente o que o sistema oficial da FIRST errou em 2025 (Team Update 20).
+- **Um slot por robô** (`"slots": "robots"`) faz "cada robô recebe um único crédito" ser impossível
+  de violar, em vez de um teto numérico que um clique a mais fura.
+
+Cada documento carrega os próprios **casos de teste**, e eles são portão: `go test ./game/...` roda
+todos os casos de todas as temporadas embutidas, e o validador exige que cada ranking point apareça
+verdadeiro em um caso e falso em outro. Uma temporada cujo RP nunca dispara é indistinguível de uma
+que funciona — até um domingo à tarde.
+
+Um resultado gravado **antes** das temporadas não tem tally, e continua sendo lido como sempre: a
+soma dos quatro números digitados. As quatro colunas mantiveram o nome no banco e na API; só os
+campos Go viraram `Legacy*`. Nada foi reescrito no banco de um evento que já aconteceu.
 
 ### Conectar a um evento
 

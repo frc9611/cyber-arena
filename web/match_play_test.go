@@ -139,7 +139,7 @@ func TestCommitMatch(t *testing.T) {
 	assert.Nil(t, web.arena.Database.CreateMatch(match))
 	matchResult = model.NewMatchResult()
 	matchResult.MatchId = match.Id
-	matchResult.BlueScore = &game.Score{AutoPoints: 10}
+	matchResult.BlueScore = &game.Score{LegacyAutoPoints: 10}
 	err = web.commitMatchScore(match, matchResult, true)
 	assert.Nil(t, err)
 	assert.Equal(t, 1, matchResult.PlayNumber)
@@ -148,7 +148,7 @@ func TestCommitMatch(t *testing.T) {
 
 	matchResult = model.NewMatchResult()
 	matchResult.MatchId = match.Id
-	matchResult.RedScore = &game.Score{AutoPoints: 20}
+	matchResult.RedScore = &game.Score{LegacyAutoPoints: 20}
 	err = web.commitMatchScore(match, matchResult, true)
 	assert.Nil(t, err)
 	assert.Equal(t, 2, matchResult.PlayNumber)
@@ -280,12 +280,12 @@ func TestMatchPlayWebsocketCommands(t *testing.T) {
 	})
 	readWebsocketType(t, ws, "arenaStatus")
 	readWebsocketType(t, ws, "realtimeScore")
-	assert.Equal(t, 20, web.arena.SavedMatchResult.RedScore.AutoPoints)
-	assert.Equal(t, 40, web.arena.SavedMatchResult.RedScore.TeleopPoints)
-	assert.Equal(t, 60, web.arena.SavedMatchResult.RedScore.EndgamePoints)
-	assert.Equal(t, 10, web.arena.SavedMatchResult.BlueScore.AutoPoints)
-	assert.Equal(t, 30, web.arena.SavedMatchResult.BlueScore.TeleopPoints)
-	assert.Equal(t, 50, web.arena.SavedMatchResult.BlueScore.EndgamePoints)
+	assert.Equal(t, 20, web.arena.SavedMatchResult.RedScore.LegacyAutoPoints)
+	assert.Equal(t, 40, web.arena.SavedMatchResult.RedScore.LegacyTeleopPoints)
+	assert.Equal(t, 60, web.arena.SavedMatchResult.RedScore.LegacyEndgamePoints)
+	assert.Equal(t, 10, web.arena.SavedMatchResult.BlueScore.LegacyAutoPoints)
+	assert.Equal(t, 30, web.arena.SavedMatchResult.BlueScore.LegacyTeleopPoints)
+	assert.Equal(t, 50, web.arena.SavedMatchResult.BlueScore.LegacyEndgamePoints)
 	ws.Write("commitResults", nil)
 	readWebsocketMultiple(t, ws, 3) // reload, realtimeScore, setAllianceStationDisplay
 	assert.Equal(t, field.PreMatch, web.arena.MatchState)

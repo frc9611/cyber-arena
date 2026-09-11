@@ -115,8 +115,8 @@ func setupMatchResultsForRankings(database *model.Database) {
 	database.CreateMatch(&match2)
 	matchResult2 := model.BuildTestMatchResult(match2.Id, 1)
 	matchResult2.BlueScore, matchResult2.RedScore = matchResult2.RedScore, matchResult2.BlueScore
-	matchResult2.RedScore.AutoPoints += 2
-	matchResult2.BlueScore.AutoPoints += 2
+	matchResult2.RedScore.LegacyAutoPoints += 2
+	matchResult2.BlueScore.LegacyAutoPoints += 2
 	database.CreateMatchResult(matchResult2)
 
 	match3 := model.Match{Type: "qualification", DisplayName: "3", Red1: 6, Red2: 5, Red3: 4, Blue1: 3, Blue2: 2,

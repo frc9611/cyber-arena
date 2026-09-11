@@ -395,12 +395,12 @@ func (web *Web) matchPlayWebsocketHandler(w http.ResponseWriter, r *http.Request
 			continue
 		case "updateRealtimeScore":
 			args := data.(map[string]interface{})
-			web.arena.BlueScore.AutoPoints = int(args["blueAuto"].(float64))
-			web.arena.RedScore.AutoPoints = int(args["redAuto"].(float64))
-			web.arena.BlueScore.TeleopPoints = int(args["blueTeleop"].(float64))
-			web.arena.RedScore.TeleopPoints = int(args["redTeleop"].(float64))
-			web.arena.BlueScore.EndgamePoints = int(args["blueEndgame"].(float64))
-			web.arena.RedScore.EndgamePoints = int(args["redEndgame"].(float64))
+			web.arena.BlueScore.LegacyAutoPoints = int(args["blueAuto"].(float64))
+			web.arena.RedScore.LegacyAutoPoints = int(args["redAuto"].(float64))
+			web.arena.BlueScore.LegacyTeleopPoints = int(args["blueTeleop"].(float64))
+			web.arena.RedScore.LegacyTeleopPoints = int(args["redTeleop"].(float64))
+			web.arena.BlueScore.LegacyEndgamePoints = int(args["blueEndgame"].(float64))
+			web.arena.RedScore.LegacyEndgamePoints = int(args["redEndgame"].(float64))
 			web.arena.RealtimeScoreNotifier.Notify()
 			continue
 
@@ -413,11 +413,11 @@ func (web *Web) matchPlayWebsocketHandler(w http.ResponseWriter, r *http.Request
 
 			switch modeId {
 			case 1:
-				web.arena.BlueScore.AutoPoints += points
+				web.arena.BlueScore.LegacyAutoPoints += points
 			case 2:
-				web.arena.BlueScore.TeleopPoints += points
+				web.arena.BlueScore.LegacyTeleopPoints += points
 			case 3:
-				web.arena.BlueScore.EndgamePoints += points
+				web.arena.BlueScore.LegacyEndgamePoints += points
 			default:
 				ws.WriteError(fmt.Sprintf("Tipo de modo de jogo invalido '%d'.", modeId))
 			}
@@ -437,11 +437,11 @@ func (web *Web) matchPlayWebsocketHandler(w http.ResponseWriter, r *http.Request
 
 			switch modeId {
 			case 1:
-				web.arena.RedScore.AutoPoints += points
+				web.arena.RedScore.LegacyAutoPoints += points
 			case 2:
-				web.arena.RedScore.TeleopPoints += points
+				web.arena.RedScore.LegacyTeleopPoints += points
 			case 3:
-				web.arena.RedScore.EndgamePoints += points
+				web.arena.RedScore.LegacyEndgamePoints += points
 			default:
 				ws.WriteError(fmt.Sprintf("Tipo de modo de jogo invalido '%d'.", modeId))
 			}

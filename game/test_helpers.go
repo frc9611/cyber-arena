@@ -7,17 +7,17 @@ package game
 
 func TestScore1() *Score {
 	return &Score{
-		AutoPoints:    45,
-		TeleopPoints:  80,
-		EndgamePoints: 30,
+		LegacyAutoPoints:    45,
+		LegacyTeleopPoints:  80,
+		LegacyEndgamePoints: 30,
 	}
 }
 
 func TestScore2() *Score {
 	return &Score{
-		AutoPoints:    15,
-		TeleopPoints:  40,
-		EndgamePoints: 25,
+		LegacyAutoPoints:    15,
+		LegacyTeleopPoints:  40,
+		LegacyEndgamePoints: 25,
 	}
 }
 

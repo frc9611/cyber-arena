@@ -1,0 +1,224 @@
+{
+  "schema": 2,
+  "key": "frc-2025-reefscape",
+  "revision": 3,
+  "revisionNote": "TU21 (08/04/2025): CORAL RP 5→7 e BARGE 14→16 SOMENTE no Mundial.",
+  "program": "FRC",
+  "name": "REEFSCAPE",
+  "year": 2025,
+  "format": "alliance",
+  "robotsPerAlliance": 3,
+
+  "periods": [
+    { "id": "auto",   "label": "Autônomo",    "durationSec": 15,  "scoring": true },
+    { "id": "pause",  "label": "Transição",   "durationSec": 3,   "scoring": false },
+    { "id": "teleop", "label": "Teleoperado", "durationSec": 135, "warningSec": 20, "scoring": true }
+  ],
+
+  "eventLevels": [
+    { "id": "REGIONAL",     "label": "Regional" },
+    { "id": "DISTRICT",     "label": "Distrital" },
+    { "id": "DCMP",         "label": "Campeonato distrital" },
+    { "id": "CHAMPIONSHIP", "label": "Mundial" }
+  ],
+
+  "thresholds": {
+    "coralPerLevel": { "REGIONAL": 5,  "DISTRICT": 5,  "DCMP": 5,  "CHAMPIONSHIP": 7 },
+    "bargePoints":   { "REGIONAL": 14, "DISTRICT": 14, "DCMP": 14, "CHAMPIONSHIP": 16 },
+    "coopAlgae":     { "*": 2 }
+  },
+  "thresholdsOverridable": false,
+
+  "categories": [
+    { "id": "leave",         "label": "Leave" },
+    { "id": "coral",         "label": "Coral" },
+    { "id": "algae",         "label": "Algae" },
+    { "id": "barge",         "label": "Barge" },
+    { "id": "foulCommitted", "label": "Faltas cometidas", "kind": "foulCommitted" },
+    { "id": "foulReceived",  "label": "Faltas recebidas",  "kind": "foulReceived" }
+  ],
+
+  "slotGroups": [
+    { "id": "leave", "label": "LEAVE", "category": "leave",
+      "help": "Saiu completamente da ZONA INICIAL antes do fim do autônomo.",
+      "slots": "robots", "exclusiveBy": "slot", "provenance": false, "layout": "robots",
+      "options": [ { "id": "left", "label": "Saiu", "short": "L", "period": "auto", "points": 3 } ] },
+
+    { "id": "coralL2", "label": "Coral L2", "category": "coral",
+      "slots": 12, "exclusiveBy": "slot", "provenance": true, "tracksEver": true, "layout": "grid",
+      "help": "Um CORAL por GALHO. Retirar no teleop tira os pontos do auto e mantém o AUTO RP.",
+      "options": [ { "id": "coral", "label": "Coral", "points": { "auto": 4, "teleop": 3 } } ] },
+
+    { "id": "coralL3", "label": "Coral L3", "category": "coral",
+      "slots": 12, "exclusiveBy": "slot", "provenance": true, "tracksEver": true, "layout": "grid",
+      "options": [ { "id": "coral", "label": "Coral", "points": { "auto": 6, "teleop": 4 } } ] },
+
+    { "id": "coralL4", "label": "Coral L4", "category": "coral",
+      "slots": 12, "exclusiveBy": "slot", "provenance": true, "tracksEver": true, "layout": "grid",
+      "options": [ { "id": "coral", "label": "Coral", "points": { "auto": 7, "teleop": 5 } } ] },
+
+    { "id": "endgame", "label": "Fim de partida", "category": "barge",
+      "slots": "robots", "exclusiveBy": "slot", "provenance": false, "layout": "robots",
+      "help": "Cada ROBÔ recebe um único crédito. Marcar outra opção troca a anterior.",
+      "options": [
+        { "id": "park",    "label": "PARK na BARGE ZONE", "short": "P", "period": "teleop", "points": 2 },
+        { "id": "shallow", "label": "Shallow CAGE",       "short": "S", "period": "teleop", "points": 6 },
+        { "id": "deep",    "label": "Deep CAGE",          "short": "D", "period": "teleop", "points": 12 } ] }
+  ],
+
+  "actions": [
+    { "id": "coralL1", "label": "Coral L1 (trough)", "category": "coral", "unit": "count",
+      "periods": ["auto", "teleop"], "points": { "auto": 3, "teleop": 2 },
+      "tracksEver": true, "removalOrder": ["teleop", "auto"],
+      "help": "O trough não rastreia posição: remover tira primeiro o do teleop." },
+
+    { "id": "algaeProcessor", "label": "Algae no Processor", "category": "algae", "unit": "count",
+      "periods": ["auto", "teleop"], "points": { "auto": 6, "teleop": 6 } },
+
+    { "id": "algaeNet", "label": "Algae na Net", "category": "algae", "unit": "count",
+      "periods": ["auto", "teleop"], "points": { "auto": 4, "teleop": 4 } },
+
+    { "id": "minorFoul", "label": "Falta menor", "kind": "foul", "unit": "count",
+      "points": 2, "creditsOpponent": true },
+    { "id": "majorFoul", "label": "Falta maior", "kind": "foul", "unit": "count",
+      "points": 6, "creditsOpponent": true },
+    { "id": "deliberacao", "label": "Deliberação do árbitro-chefe", "kind": "adjustment",
+      "unit": "freeValue", "creditsOpponent": true, "confirm": true }
+  ],
+
+  "flags": [
+    { "id": "coop", "label": "Coopertition", "points": 1, "into": "coopertition", "qualOnly": true,
+      "when": ["and",
+        [">=", ["n", "algaeProcessor"], ["thr", "coopAlgae"]],
+        [">=", ["opp", ["n", "algaeProcessor"]], ["thr", "coopAlgae"]]] }
+  ],
+
+  "ranking": {
+    "mode": "alliance",
+    "rsDecimals": 2,
+    "result": { "win": 3, "tie": 1, "loss": 0 },
+    "surrogate":    { "rp": 0, "sortZero": true, "countsPlayed": true },
+    "disqualified": { "rp": 0, "sortZero": true, "countsPlayed": true },
+
+    "rankingPoints": [
+      { "id": "autoRp", "label": "AUTO RP", "points": 1,
+        "when": ["and",
+          ["==", ["n", "leave"], ["robots"]],
+          [">=", ["+", ["ever", "coralL1", "auto"], ["ever", "coralL2", "auto"],
+                       ["ever", "coralL3", "auto"], ["ever", "coralL4", "auto"]], 1]] },
+
+      { "id": "coralRp", "label": "CORAL RP", "points": 1,
+        "when": [">=",
+          ["countTrue", [
+            [">=", ["n", "coralL1"], ["thr", "coralPerLevel"]],
+            [">=", ["n", "coralL2"], ["thr", "coralPerLevel"]],
+            [">=", ["n", "coralL3"], ["thr", "coralPerLevel"]],
+            [">=", ["n", "coralL4"], ["thr", "coralPerLevel"]]]],
+          ["if", ["flag", "coop"], 3, 4]] },
+
+      { "id": "bargeRp", "label": "BARGE RP", "points": 1,
+        "when": [">=", ["cat", "barge"], ["thr", "bargePoints"]] }
+    ],
+
+    "tiebreakers": [
+      { "id": "coop",    "label": "Coopertition",      "expr": ["flagPts", "coop"] },
+      { "id": "noFoul",  "label": "Pontos sem faltas", "expr": ["-", ["total"], ["cat", "foulReceived"]] },
+      { "id": "autoAgg", "label": "LEAVE + Coral do auto",
+        "expr": ["+", ["pts", "leave"],
+                      ["pts", "coralL1", "auto"], ["pts", "coralL2", "auto"],
+                      ["pts", "coralL3", "auto"], ["pts", "coralL4", "auto"]] },
+      { "id": "barge",   "label": "Pontos de Barge",   "expr": ["cat", "barge"] }
+    ]
+  },
+
+  "tests": [
+    { "name": "Cenário do dossiê: 3 LEAVE, 3 coral no L4 no auto, 2 algae no processor dos dois lados, um deep climb",
+      "level": "REGIONAL", "robots": 3,
+      "state": {
+        "slots": { "leave": { "1": "left", "2": "left", "3": "left" },
+                   "coralL4": { "1": { "option": "coral", "in": "auto" },
+                                "2": { "option": "coral", "in": "auto" },
+                                "3": { "option": "coral", "in": "auto" } },
+                   "endgame": { "1": "deep" } },
+        "actions": { "algaeProcessor@teleop": 2 } },
+      "opponent": { "actions": { "algaeProcessor@teleop": 2 } },
+      "expect": { "total": 54,
+                  "categories": { "leave": 9, "coral": 21, "algae": 12, "barge": 12, "foulReceived": 0 },
+                  "flags": ["coop"], "flagPts": { "coop": 1 },
+                  "rpEarned": ["autoRp"], "rpEligible": ["autoRp"],
+                  "sort": [1, 54, 30, 12] } },
+
+    { "name": "AUTO RP com 3 LEAVE e 1 coral no L2 do auto",
+      "level": "REGIONAL", "robots": 3,
+      "steps": [ { "group": "leave", "slot": 1, "option": "left" },
+                 { "group": "leave", "slot": 2, "option": "left" },
+                 { "group": "leave", "slot": 3, "option": "left" },
+                 { "group": "coralL2", "slot": 3, "option": "coral", "period": "auto" } ],
+      "expect": { "total": 13, "rpEarned": ["autoRp"], "sort": [0, 13, 13, 0] } },
+
+    { "name": "TU20 — coral do auto retirado no teleop: perde o ponto, MANTÉM o AUTO RP",
+      "level": "REGIONAL", "robots": 3,
+      "steps": [ { "group": "leave", "slot": 1, "option": "left" },
+                 { "group": "leave", "slot": 2, "option": "left" },
+                 { "group": "leave", "slot": 3, "option": "left" },
+                 { "group": "coralL2", "slot": 3, "option": "coral", "period": "auto" },
+                 { "group": "coralL2", "slot": 3, "option": null } ],
+      "expect": { "total": 9, "categories": { "coral": 0, "leave": 9 },
+                  "rpEarned": ["autoRp"], "sort": [0, 9, 9, 0] } },
+
+    { "name": "TU20 — e recolocado no mesmo galho: os pontos do auto voltam",
+      "level": "REGIONAL", "robots": 3,
+      "steps": [ { "group": "coralL2", "slot": 3, "option": "coral", "period": "auto" },
+                 { "group": "coralL2", "slot": 3, "option": null },
+                 { "group": "coralL2", "slot": 3, "option": "coral", "period": "auto" } ],
+      "expect": { "total": 4, "categories": { "coral": 4 } } },
+
+    { "name": "Um robô recebe um único crédito de fim de partida",
+      "level": "REGIONAL", "robots": 3,
+      "steps": [ { "group": "endgame", "slot": 1, "option": "deep" },
+                 { "group": "endgame", "slot": 1, "option": "park" } ],
+      "expect": { "categories": { "barge": 2 }, "rpEarned": [] } },
+
+    { "name": "Coopertition afrouxa o CORAL RP para 3 níveis",
+      "level": "REGIONAL", "robots": 3,
+      "state": { "actions": { "coralL1@teleop": 5, "algaeProcessor@teleop": 2 },
+                 "slots": { "coralL2": { "1": "coral", "2": "coral", "3": "coral", "4": "coral", "5": "coral" },
+                            "coralL3": { "1": "coral", "2": "coral", "3": "coral", "4": "coral", "5": "coral" } } },
+      "opponent": { "actions": { "algaeProcessor@teleop": 2 } },
+      "expect": { "flags": ["coop"], "rpEarned": ["coralRp"], "rpEligible": ["coralRp"] } },
+
+    { "name": "Sem Coopertition, os mesmos 3 níveis NÃO dão o CORAL RP",
+      "level": "REGIONAL", "robots": 3,
+      "state": { "actions": { "coralL1@teleop": 5 },
+                 "slots": { "coralL2": { "1": "coral", "2": "coral", "3": "coral", "4": "coral", "5": "coral" },
+                            "coralL3": { "1": "coral", "2": "coral", "3": "coral", "4": "coral", "5": "coral" } } },
+      "expect": { "flags": [], "rpEarned": [] } },
+
+    { "name": "Limiar por nível: 5 corais em cada nível dão CORAL RP em Regional e não no Mundial",
+      "level": "CHAMPIONSHIP", "robots": 3,
+      "state": { "actions": { "coralL1@teleop": 5 },
+                 "slots": { "coralL2": { "1": "coral", "2": "coral", "3": "coral", "4": "coral", "5": "coral" },
+                            "coralL3": { "1": "coral", "2": "coral", "3": "coral", "4": "coral", "5": "coral" },
+                            "coralL4": { "1": "coral", "2": "coral", "3": "coral", "4": "coral", "5": "coral" } } },
+      "expect": { "rpEarned": [] } },
+
+    { "name": "BARGE RP com dois shallow e um park",
+      "level": "REGIONAL", "robots": 3,
+      "state": { "slots": { "endgame": { "1": "shallow", "2": "shallow", "3": "park" } } },
+      "expect": { "categories": { "barge": 14 }, "rpEarned": ["bargeRp"] } },
+
+    { "name": "AUTO RP com um robô bypassado: dois LEAVE bastam",
+      "level": "REGIONAL", "robots": 2,
+      "state": { "slots": { "leave": { "1": "left", "2": "left" },
+                            "coralL3": { "7": { "option": "coral", "in": "auto" } } } },
+      "expect": { "total": 12, "rpEarned": ["autoRp"] } },
+
+    { "name": "Falta dos dois lados: o total conta a recebida, o desempate desconta a recebida",
+      "level": "REGIONAL", "robots": 3,
+      "state": { "actions": { "minorFoul": 2 } },
+      "opponent": { "actions": { "majorFoul": 1 } },
+      "expect": { "total": 6,
+                  "categories": { "foulCommitted": 4, "foulReceived": 6 },
+                  "sort": [0, 0, 0, 0] } }
+  ]
+}

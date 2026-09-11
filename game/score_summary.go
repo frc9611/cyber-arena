@@ -11,6 +11,7 @@ type ScoreSummary struct {
 	EndgamePoints int
 	FoulPoints    int
 	Score         int
+	Outcome       *MatchOutcome `json:",omitempty"`
 }
 
 type MatchStatus string

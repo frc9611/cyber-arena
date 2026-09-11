@@ -73,14 +73,14 @@ type jsonScore struct {
 func (web *Web) getScoresHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(jsonScore{
 		Red: jsonAllianceScore{
-			Auto:    web.arena.RedScore.AutoPoints,
-			Teleop:  web.arena.RedScore.TeleopPoints,
-			Endgame: web.arena.RedScore.EndgamePoints,
+			Auto:    web.arena.RedScore.LegacyAutoPoints,
+			Teleop:  web.arena.RedScore.LegacyTeleopPoints,
+			Endgame: web.arena.RedScore.LegacyEndgamePoints,
 		},
 		Blue: jsonAllianceScore{
-			Auto:    web.arena.BlueScore.AutoPoints,
-			Teleop:  web.arena.BlueScore.TeleopPoints,
-			Endgame: web.arena.BlueScore.EndgamePoints,
+			Auto:    web.arena.BlueScore.LegacyAutoPoints,
+			Teleop:  web.arena.BlueScore.LegacyTeleopPoints,
+			Endgame: web.arena.BlueScore.LegacyEndgamePoints,
 		},
 	})
 }
@@ -105,11 +105,11 @@ func (web *Web) setScoresHandler(w http.ResponseWriter, r *http.Request) {
 		web.arena.BlueScore = new(game.Score)
 	}
 
-	web.arena.RedScore.AutoPoints += scores.Red.Auto
-	web.arena.RedScore.TeleopPoints += scores.Red.Teleop
-	web.arena.RedScore.EndgamePoints += scores.Red.Endgame
-	web.arena.BlueScore.AutoPoints += scores.Blue.Auto
-	web.arena.BlueScore.TeleopPoints += scores.Blue.Teleop
-	web.arena.BlueScore.EndgamePoints += scores.Blue.Endgame
+	web.arena.RedScore.LegacyAutoPoints += scores.Red.Auto
+	web.arena.RedScore.LegacyTeleopPoints += scores.Red.Teleop
+	web.arena.RedScore.LegacyEndgamePoints += scores.Red.Endgame
+	web.arena.BlueScore.LegacyAutoPoints += scores.Blue.Auto
+	web.arena.BlueScore.LegacyTeleopPoints += scores.Blue.Teleop
+	web.arena.BlueScore.LegacyEndgamePoints += scores.Blue.Endgame
 	web.arena.RealtimeScoreNotifier.Notify()
 }

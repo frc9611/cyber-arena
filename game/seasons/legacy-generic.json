@@ -1,0 +1,79 @@
+{
+  "schema": 2,
+  "key": "legacy-generic",
+  "revision": 1,
+  "revisionNote": "O que a arena fazia antes de existir temporada: três somas digitadas e o painel de faltas.",
+  "program": "GENERIC",
+  "name": "Genérica",
+  "year": 2024,
+  "format": "alliance",
+  "robotsPerAlliance": 3,
+
+  "periods": [
+    { "id": "auto",   "label": "Autônomo",    "durationSec": 15,  "scoring": true },
+    { "id": "pause",  "label": "Transição",   "durationSec": 2,   "scoring": false },
+    { "id": "teleop", "label": "Teleoperado", "durationSec": 135, "warningSec": 30, "scoring": true }
+  ],
+
+  "eventLevels": [ { "id": "EVENT", "label": "Evento" } ],
+
+  "thresholds": { "none": { "*": 0 } },
+
+  "categories": [
+    { "id": "auto",          "label": "Autônomo" },
+    { "id": "teleop",        "label": "Teleoperado" },
+    { "id": "endgame",       "label": "Fim de partida" },
+    { "id": "foulCommitted", "label": "Faltas cometidas", "kind": "foulCommitted" },
+    { "id": "foulReceived",  "label": "Faltas recebidas",  "kind": "foulReceived" }
+  ],
+
+  "actions": [
+    { "id": "autoPoints", "label": "Pontos do autônomo", "category": "auto", "unit": "freeValue",
+      "periods": ["auto"] },
+    { "id": "teleopPoints", "label": "Pontos do teleoperado", "category": "teleop", "unit": "freeValue",
+      "periods": ["teleop"] },
+    { "id": "endgamePoints", "label": "Pontos de fim de partida", "category": "endgame",
+      "unit": "freeValue", "periods": ["teleop"] },
+
+    { "id": "minorFoul", "label": "Falta", "kind": "foul", "unit": "count",
+      "points": 3, "creditsOpponent": true },
+    { "id": "majorFoul", "label": "Falta técnica", "kind": "foul", "unit": "count",
+      "points": 5, "creditsOpponent": true },
+    { "id": "deliberacao", "label": "Deliberação do árbitro-chefe", "kind": "adjustment",
+      "unit": "freeValue", "creditsOpponent": true, "confirm": true }
+  ],
+
+  "ranking": {
+    "mode": "alliance",
+    "rsDecimals": 2,
+    "result": { "win": 2, "tie": 1, "loss": 0 },
+    "surrogate":    { "rp": 0, "sortZero": true, "countsPlayed": false },
+    "disqualified": { "rp": 0, "sortZero": true, "countsPlayed": true },
+
+    "rankingPoints": [
+      { "id": "scored", "label": "Pontuou", "points": 0, "when": [">", ["total"], 0] }
+    ],
+
+    "tiebreakers": [
+      { "id": "auto",    "label": "Pontos do autônomo",      "expr": ["cat", "auto"] },
+      { "id": "endgame", "label": "Pontos de fim de partida", "expr": ["cat", "endgame"] },
+      { "id": "teleop",  "label": "Pontos do teleoperado",    "expr": ["cat", "teleop"] }
+    ]
+  },
+
+  "tests": [
+    { "name": "As três somas digitadas viram o placar, e a falta recebida entra",
+      "level": "EVENT", "robots": 3,
+      "state": { "adjust": { "autoPoints": 10, "teleopPoints": 20, "endgamePoints": 30 } },
+      "opponent": { "actions": { "minorFoul": 2 } },
+      "expect": { "total": 66,
+                  "categories": { "auto": 10, "teleop": 20, "endgame": 30, "foulReceived": 6 },
+                  "rpEarned": ["scored"],
+                  "sort": [10, 30, 20] } },
+
+    { "name": "Partida em branco não pontua",
+      "level": "EVENT", "robots": 3,
+      "state": { "adjust": { "autoPoints": 0 } },
+      "expect": { "total": 0, "rpEarned": [], "sort": [0, 0, 0] } }
+  ]
+}

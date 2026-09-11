@@ -318,12 +318,10 @@ func (client *TbaClient) PublishMatches(database *model.Database) error {
 				return err
 			}
 			if matchResult != nil {
-				redScoreSummary = matchResult.RedScore.AutoPoints +
-					matchResult.RedScore.TeleopPoints +
-					matchResult.RedScore.EndgamePoints
-				blueScoreSummary = matchResult.BlueScore.AutoPoints +
-					matchResult.BlueScore.TeleopPoints +
-					matchResult.BlueScore.EndgamePoints
+				red := matchResult.RedScoreSummary()
+				blue := matchResult.BlueScoreSummary()
+				redScoreSummary = red.Score - red.FoulPoints
+				blueScoreSummary = blue.Score - blue.FoulPoints
 				redScore = &redScoreSummary
 				blueScore = &blueScoreSummary
 			}

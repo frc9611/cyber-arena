@@ -151,10 +151,10 @@ func TestMatchReviewEditCurrentMatch(t *testing.T) {
 	// Check that the persisted match is still unedited and that the realtime scores have been updated instead.
 	match2, _ := web.arena.Database.GetMatchById(match.Id)
 	assert.Equal(t, game.MatchNotPlayed, match2.Status)
-	assert.Equal(t, 10, web.arena.RedScore.AutoPoints)
-	assert.Equal(t, 20, web.arena.RedScore.TeleopPoints)
-	assert.Equal(t, 30, web.arena.RedScore.EndgamePoints)
-	assert.Equal(t, 40, web.arena.BlueScore.AutoPoints)
-	assert.Equal(t, 50, web.arena.BlueScore.TeleopPoints)
-	assert.Equal(t, 60, web.arena.BlueScore.EndgamePoints)
+	assert.Equal(t, 10, web.arena.RedScore.LegacyAutoPoints)
+	assert.Equal(t, 20, web.arena.RedScore.LegacyTeleopPoints)
+	assert.Equal(t, 30, web.arena.RedScore.LegacyEndgamePoints)
+	assert.Equal(t, 40, web.arena.BlueScore.LegacyAutoPoints)
+	assert.Equal(t, 50, web.arena.BlueScore.LegacyTeleopPoints)
+	assert.Equal(t, 60, web.arena.BlueScore.LegacyEndgamePoints)
 }
