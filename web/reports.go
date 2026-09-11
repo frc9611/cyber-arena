@@ -34,7 +34,10 @@ func (web *Web) rankingsCsvReportHandler(w http.ResponseWriter, r *http.Request)
 		handleWebErr(w, err)
 		return
 	}
-	err = template.ExecuteTemplate(w, "rankings.csv", rankings)
+	err = template.ExecuteTemplate(w, "rankings.csv", struct {
+		Rankings game.Rankings
+		Criteria []game.SeasonSort
+	}{rankings, web.rankingCriteria()})
 	if err != nil {
 		handleWebErr(w, err)
 		return
@@ -49,9 +52,17 @@ func (web *Web) rankingsPdfReportHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// The widths of the table columns in mm, stored here so that they can be referenced for each row.
-	colWidths := map[string]float64{"Rank": 13, "Team": 22, "RP": 23, "Auto": 23, "Endgame": 23, "Teleop": 23,
-		"W-L-T": 23, "DQ": 23, "Played": 23}
+	// The columns are the criteria the season declared, so the widths are shared out instead of
+	// being a table of four names that only one season ever had.
+	criteria := web.rankingCriteria()
+	fixed := 15.0 + 20.0 + 15.0 + 25.0 + 20.0
+	perCriterion := 25.0
+	if len(criteria) > 0 {
+		perCriterion = (195.0 - fixed) / float64(len(criteria))
+		if perCriterion > 40 {
+			perCriterion = 40
+		}
+	}
 	rowHeight := 6.5
 
 	pdf := gofpdf.New("P", "mm", "Letter", "font")
@@ -60,28 +71,32 @@ func (web *Web) rankingsPdfReportHandler(w http.ResponseWriter, r *http.Request)
 	// Render table header row.
 	pdf.SetFont("Arial", "B", 10)
 	pdf.SetFillColor(220, 220, 220)
-	pdf.CellFormat(195, rowHeight, "Team Standings - "+web.arena.EventSettings.Name, "", 1, "C", false, 0, "")
-	pdf.CellFormat(colWidths["Rank"], rowHeight, "Rank", "1", 0, "C", true, 0, "")
-	pdf.CellFormat(colWidths["Team"], rowHeight, "Team", "1", 0, "C", true, 0, "")
-	pdf.CellFormat(colWidths["RP"], rowHeight, "RP", "1", 0, "C", true, 0, "")
-	pdf.CellFormat(colWidths["Auto"], rowHeight, "Auto", "1", 0, "C", true, 0, "")
-	pdf.CellFormat(colWidths["Endgame"], rowHeight, "Endgame", "1", 0, "C", true, 0, "")
-	pdf.CellFormat(colWidths["Teleop"], rowHeight, "Teleop", "1", 0, "C", true, 0, "")
-	pdf.CellFormat(colWidths["W-L-T"], rowHeight, "W-L-T", "1", 0, "C", true, 0, "")
-	pdf.CellFormat(colWidths["Played"], rowHeight, "Played", "1", 1, "C", true, 0, "")
+	pdf.CellFormat(195, rowHeight, "Classificação - "+web.arena.EventSettings.Name, "", 1, "C", false, 0, "")
+	pdf.CellFormat(15, rowHeight, "Rank", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(20, rowHeight, "Equipe", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(15, rowHeight, "RP", "1", 0, "C", true, 0, "")
+	for _, criterion := range criteria {
+		pdf.CellFormat(perCriterion, rowHeight, criterion.Label, "1", 0, "C", true, 0, "")
+	}
+	pdf.CellFormat(25, rowHeight, "V-D-E", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(20, rowHeight, "Jogadas", "1", 1, "C", true, 0, "")
 	for _, ranking := range rankings {
 		// Render ranking info row.
 		pdf.SetFont("Arial", "B", 10)
-		pdf.CellFormat(colWidths["Rank"], rowHeight, strconv.Itoa(ranking.Rank), "1", 0, "C", false, 0, "")
+		pdf.CellFormat(15, rowHeight, strconv.Itoa(ranking.Rank), "1", 0, "C", false, 0, "")
 		pdf.SetFont("Arial", "", 10)
-		pdf.CellFormat(colWidths["Team"], rowHeight, strconv.Itoa(ranking.TeamId), "1", 0, "C", false, 0, "")
-		pdf.CellFormat(colWidths["RP"], rowHeight, strconv.Itoa(ranking.RankingPoints), "1", 0, "C", false, 0, "")
-		pdf.CellFormat(colWidths["Auto"], rowHeight, strconv.Itoa(ranking.AutoPoints), "1", 0, "C", false, 0, "")
-		pdf.CellFormat(colWidths["Endgame"], rowHeight, strconv.Itoa(ranking.EndgamePoints), "1", 0, "C", false, 0, "")
-		pdf.CellFormat(colWidths["Teleop"], rowHeight, strconv.Itoa(ranking.TeleopPoints), "1", 0, "C", false, 0, "")
+		pdf.CellFormat(20, rowHeight, strconv.Itoa(ranking.TeamId), "1", 0, "C", false, 0, "")
+		pdf.CellFormat(15, rowHeight, strconv.Itoa(ranking.RankingPoints), "1", 0, "C", false, 0, "")
+		for index := range criteria {
+			value := 0
+			if index < len(ranking.Sort) {
+				value = ranking.Sort[index]
+			}
+			pdf.CellFormat(perCriterion, rowHeight, strconv.Itoa(value), "1", 0, "C", false, 0, "")
+		}
 		record := fmt.Sprintf("%d-%d-%d", ranking.Wins, ranking.Losses, ranking.Ties)
-		pdf.CellFormat(colWidths["W-L-T"], rowHeight, record, "1", 0, "C", false, 0, "")
-		pdf.CellFormat(colWidths["Played"], rowHeight, strconv.Itoa(ranking.Played), "1", 1, "C", false, 0, "")
+		pdf.CellFormat(25, rowHeight, record, "1", 0, "C", false, 0, "")
+		pdf.CellFormat(20, rowHeight, strconv.Itoa(ranking.Played), "1", 1, "C", false, 0, "")
 	}
 
 	// Write out the PDF file as the HTTP response.
@@ -906,4 +921,12 @@ func (web *Web) fllMatchResultsPdfReportHandler(w http.ResponseWriter, r *http.R
 		handleWebErr(w, err)
 		return
 	}
+}
+
+func (web *Web) rankingCriteria() []game.SeasonSort {
+	season := game.SeasonByKey(web.arena.EventSettings.SeasonKey)
+	if season == nil {
+		return nil
+	}
+	return season.Ranking.Tiebreakers
 }

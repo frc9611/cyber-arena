@@ -13,11 +13,20 @@ import (
 )
 
 // Determines the rankings from the stored match results, and saves them to the database.
+//
+// A surrogate is no longer skipped. Skipping it was a fourth behaviour that no manual describes:
+// the season declares whether the appearance counts as played, what it pays and whether it feeds
+// the tiebreakers, and the same three answers cover a disqualified alliance.
 func CalculateRankings(database *model.Database, preservePreviousRank bool) (game.Rankings, error) {
 	matches, err := database.GetMatchesByType("qualification")
 	if err != nil {
 		return nil, err
 	}
+	settings, err := database.GetEventSettings()
+	if err != nil {
+		return nil, err
+	}
+	season := game.SeasonByKey(settings.SeasonKey)
 	rankings := make(map[int]*game.Ranking)
 	for _, match := range matches {
 		if !match.IsComplete() {
@@ -27,23 +36,29 @@ func CalculateRankings(database *model.Database, preservePreviousRank bool) (gam
 		if err != nil {
 			return nil, err
 		}
-		if !match.Red1IsSurrogate {
-			addMatchResultToRankings(rankings, match.Red1, matchResult, true)
+		red := []struct {
+			team      int
+			surrogate bool
+		}{
+			{match.Red1, match.Red1IsSurrogate},
+			{match.Red2, match.Red2IsSurrogate},
+			{match.Red3, match.Red3IsSurrogate},
 		}
-		if !match.Red2IsSurrogate {
-			addMatchResultToRankings(rankings, match.Red2, matchResult, true)
+		blue := []struct {
+			team      int
+			surrogate bool
+		}{
+			{match.Blue1, match.Blue1IsSurrogate},
+			{match.Blue2, match.Blue2IsSurrogate},
+			{match.Blue3, match.Blue3IsSurrogate},
 		}
-		if !match.Red3IsSurrogate {
-			addMatchResultToRankings(rankings, match.Red3, matchResult, true)
+		for _, station := range red {
+			addMatchResultToRankings(season, rankings, station.team, matchResult, true,
+				entryOf(station.surrogate, match.RedDisqualified))
 		}
-		if !match.Blue1IsSurrogate {
-			addMatchResultToRankings(rankings, match.Blue1, matchResult, false)
-		}
-		if !match.Blue2IsSurrogate {
-			addMatchResultToRankings(rankings, match.Blue2, matchResult, false)
-		}
-		if !match.Blue3IsSurrogate {
-			addMatchResultToRankings(rankings, match.Blue3, matchResult, false)
+		for _, station := range blue {
+			addMatchResultToRankings(season, rankings, station.team, matchResult, false,
+				entryOf(station.surrogate, match.BlueDisqualified))
 		}
 	}
 
@@ -73,7 +88,7 @@ func CalculateRankings(database *model.Database, preservePreviousRank bool) (gam
 		}
 	}
 
-	sortedRankings := sortRankings(rankings)
+	sortedRankings := sortRankings(rankings, season)
 	for rank, ranking := range sortedRankings {
 		sortedRankings[rank].Rank = rank + 1
 		if oldRank, ok := oldRankingsMap[ranking.TeamId]; ok {
@@ -92,10 +107,19 @@ func CalculateRankings(database *model.Database, preservePreviousRank bool) (gam
 	return sortedRankings, nil
 }
 
+func entryOf(surrogate, disqualified bool) game.RankingEntry {
+	if disqualified {
+		return game.EntryDisqualified
+	}
+	if surrogate {
+		return game.EntrySurrogate
+	}
+	return game.EntryNormal
+}
+
 // Incrementally accounts for the given match result in the set of rankings that are being built.
-func addMatchResultToRankings(
-	rankings map[int]*game.Ranking, teamId int, matchResult *model.MatchResult, isRed bool,
-) {
+func addMatchResultToRankings(season *game.Season, rankings map[int]*game.Ranking, teamId int,
+	matchResult *model.MatchResult, isRed bool, entry game.RankingEntry) {
 	if teamId <= 0 {
 		return
 	}
@@ -106,15 +130,15 @@ func addMatchResultToRankings(
 	}
 
 	if isRed {
-		ranking.AddScoreSummary(matchResult.RedScoreSummary(), matchResult.BlueScoreSummary())
+		ranking.AddScoreSummary(season, matchResult.RedScoreSummary(), matchResult.BlueScoreSummary(), entry)
 	} else {
-		ranking.AddScoreSummary(matchResult.BlueScoreSummary(), matchResult.RedScoreSummary())
+		ranking.AddScoreSummary(season, matchResult.BlueScoreSummary(), matchResult.RedScoreSummary(), entry)
 	}
 }
 
 // The map has no order, so the slice is put in team order before a stable sort. Without both, two
 // teams that tie on every criterion swap places between one calculation and the next.
-func sortRankings(rankings map[int]*game.Ranking) game.Rankings {
+func sortRankings(rankings map[int]*game.Ranking, season *game.Season) game.Rankings {
 	var sortedRankings game.Rankings
 	for _, ranking := range rankings {
 		sortedRankings = append(sortedRankings, *ranking)
@@ -122,6 +146,6 @@ func sortRankings(rankings map[int]*game.Ranking) game.Rankings {
 	sort.Slice(sortedRankings, func(i, j int) bool {
 		return sortedRankings[i].TeamId < sortedRankings[j].TeamId
 	})
-	sort.Stable(sortedRankings)
+	game.SortRankings(sortedRankings, season)
 	return sortedRankings
 }

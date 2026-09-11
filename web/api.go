@@ -148,6 +148,15 @@ func (web *Web) rankingsApiHandler(w http.ResponseWriter, r *http.Request) {
 		rankingsWithNicknames[i] = RankingWithNickname{ranking, teamNicknames[ranking.TeamId]}
 	}
 
+	// The labels of the tiebreaker vector travel with the rows: the standings screen does not
+	// subscribe to matchLoad, so this answer is the only place it could learn the season from.
+	criteria := []rankingCriterion{}
+	if season := game.SeasonByKey(web.arena.EventSettings.SeasonKey); season != nil {
+		for _, tiebreaker := range season.Ranking.Tiebreakers {
+			criteria = append(criteria, rankingCriterion{tiebreaker.ID, tiebreaker.Label})
+		}
+	}
+
 	// Get the last match scored so we can report that on the display.
 	matches, err := web.arena.Database.GetMatchesByType("qualification")
 	if err != nil {
@@ -163,8 +172,9 @@ func (web *Web) rankingsApiHandler(w http.ResponseWriter, r *http.Request) {
 
 	data := struct {
 		Rankings           []RankingWithNickname
+		Criteria           []rankingCriterion
 		HighestPlayedMatch string
-	}{rankingsWithNicknames, highestPlayedMatch}
+	}{rankingsWithNicknames, criteria, highestPlayedMatch}
 	jsonData, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
 		handleWebErr(w, err)
@@ -177,6 +187,11 @@ func (web *Web) rankingsApiHandler(w http.ResponseWriter, r *http.Request) {
 		handleWebErr(w, err)
 		return
 	}
+}
+
+type rankingCriterion struct {
+	Id    string
+	Label string
 }
 
 // Generates a JSON dump of the alliances.

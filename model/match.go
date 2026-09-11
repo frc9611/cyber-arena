@@ -35,6 +35,8 @@ type Match struct {
 	Blue2IsSurrogate bool
 	Blue3            int
 	Blue3IsSurrogate bool
+	RedDisqualified  bool
+	BlueDisqualified bool
 	StartedAt        time.Time
 	ScoreCommittedAt time.Time
 	Status           game.MatchStatus

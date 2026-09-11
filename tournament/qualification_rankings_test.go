@@ -166,3 +166,72 @@ func TestRankingsIgnoreEmptyRobotSlots(t *testing.T) {
 		assert.NotEqual(t, 0, ranking.TeamId)
 	}
 }
+
+// A surrogate appearance used to be skipped entirely, which is a fourth behaviour no manual
+// describes. The season declares it: it counts as played, it pays nothing, and it feeds no
+// tiebreaker. Team 2 is a surrogate in match 1 and plays for real in matches 2 and 3.
+func TestASurrogateCountsAsPlayedAndPaysNothing(t *testing.T) {
+	database := setupTestDb(t)
+	settings, err := database.GetEventSettings()
+	assert.Nil(t, err)
+	settings.SeasonKey = "frc-2025-reefscape"
+	settings.EventLevel = "REGIONAL"
+	assert.Nil(t, database.UpdateEventSettings(settings))
+
+	match := model.Match{Type: "qualification", DisplayName: "1", Red1: 1, Red2: 2, Red3: 3,
+		Blue1: 4, Blue2: 5, Blue3: 6, Status: game.RedWonMatch, Red2IsSurrogate: true}
+	assert.Nil(t, database.CreateMatch(&match))
+	assert.Nil(t, database.CreateMatchResult(model.BuildTestMatchResult(match.Id, 1)))
+
+	rankings, err := CalculateRankings(database, false)
+	assert.Nil(t, err)
+	byTeam := map[int]game.Ranking{}
+	for _, ranking := range rankings {
+		byTeam[ranking.TeamId] = ranking
+	}
+
+	if assert.Contains(t, byTeam, 2) {
+		surrogate := byTeam[2]
+		assert.Equal(t, 1, surrogate.Played, "a aparição conta como jogada")
+		assert.Equal(t, 0, surrogate.RankingPoints, "e não paga nada")
+		assert.Equal(t, 0, surrogate.Wins, "nem entra no retrospecto")
+		for index, value := range surrogate.Sort {
+			assert.Equal(t, 0, value, "critério %d do surrogate", index)
+		}
+	}
+	if assert.Contains(t, byTeam, 1) {
+		real := byTeam[1]
+		assert.Equal(t, 1, real.Played)
+		assert.Equal(t, 3, real.RankingPoints, "a vitória vale 3 na REEFSCAPE, não 2")
+		assert.Equal(t, 1, real.Wins)
+	}
+}
+
+// A disqualified alliance takes nothing away from the match and says so in its own column.
+func TestADisqualifiedAllianceScoresNothing(t *testing.T) {
+	database := setupTestDb(t)
+	settings, _ := database.GetEventSettings()
+	settings.SeasonKey = "frc-2025-reefscape"
+	assert.Nil(t, database.UpdateEventSettings(settings))
+
+	match := model.Match{Type: "qualification", DisplayName: "1", Red1: 1, Red2: 2, Red3: 3,
+		Blue1: 4, Blue2: 5, Blue3: 6, Status: game.RedWonMatch, RedDisqualified: true}
+	assert.Nil(t, database.CreateMatch(&match))
+	assert.Nil(t, database.CreateMatchResult(model.BuildTestMatchResult(match.Id, 1)))
+
+	rankings, err := CalculateRankings(database, false)
+	assert.Nil(t, err)
+	byTeam := map[int]game.Ranking{}
+	for _, ranking := range rankings {
+		byTeam[ranking.TeamId] = ranking
+	}
+	if assert.Contains(t, byTeam, 1) {
+		disqualified := byTeam[1]
+		assert.Equal(t, 1, disqualified.Played)
+		assert.Equal(t, 1, disqualified.Disqualifications)
+		assert.Equal(t, 0, disqualified.RankingPoints)
+	}
+	if assert.Contains(t, byTeam, 4) {
+		assert.Equal(t, 0, byTeam[4].RankingPoints, "quem perdeu continua sem pontos")
+	}
+}

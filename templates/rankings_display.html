@@ -33,18 +33,7 @@
             <td class="team-field">Rodada 3</td>
           </tr>
           {{else}}
-          <tr>
-            <td class="team-field">Rank</td>
-            <td class="team-field">Team</td>
-            <td class="team-nickname">Name</td>
-            <td class="team-field">RP</td>
-            <td class="team-field">Auto</td>
-            <td class="team-field">Endgame</td>
-            <td class="team-field">Teleop</td>
-            <td class="team-field">W-L-T</td>
-            <td class="team-field">DQ</td>
-            <td class="team-field">Played</td>
-          </tr>
+          <tr id="standingsHeader"></tr>
           {{end}}
         </table>
         <div id="container">
@@ -78,6 +67,16 @@
       </tbody>
     </script>
     {{else}}
+    <script id="standingsHeaderTemplate" type="text/x-handlebars-template">
+      <td class="team-field">Rank</td>
+      <td class="team-field">Equipe</td>
+      <td class="team-nickname">Nome</td>
+      <td class="team-field">RP</td>
+      {{"{{#each Criteria}}"}}<td class="team-field">{{"{{this.Label}}"}}</td>{{"{{/each}}"}}
+      <td class="team-field">V-D-E</td>
+      <td class="team-field">DQ</td>
+      <td class="team-field">Jogadas</td>
+    </script>
     <script id="standingsTemplate" type="text/x-handlebars-template">
       <tbody>
         {{"{{#each Rankings}}"}}
@@ -86,9 +85,7 @@
             <td class="team-field">{{"{{this.TeamId}}"}}</td>
             <td class="team-nickname">{{"{{this.Nickname}}"}}</td>
             <td class="team-field">{{"{{this.RankingPoints}}"}}</td>
-            <td class="team-field">{{"{{this.AutoPoints}}"}}</td>
-            <td class="team-field">{{"{{this.EndgamePoints}}"}}</td>
-            <td class="team-field">{{"{{this.TeleopPoints}}"}}</td>
+            {{"{{#each this.Sort}}"}}<td class="team-field">{{"{{this}}"}}</td>{{"{{/each}}"}}
             <td class="team-field">{{"{{this.Wins}}"}}-{{"{{this.Losses}}"}}-{{"{{this.Ties}}"}}</td>
             <td class="team-field">{{"{{this.Disqualifications}}"}}</td>
             <td class="team-field">{{"{{this.Played}}"}}</td>

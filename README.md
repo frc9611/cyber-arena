@@ -93,6 +93,24 @@ escaparia o JSON como literal de string, e por chegar assim uma troca de tempora
 recarrega todos os painéis sozinha. Recarregar a página no meio da partida devolve o estado inteiro,
 porque ele é do servidor e não do navegador.
 
+### A classificação também é declarada
+
+Quanto vale uma vitória, quais são os critérios de desempate e o que um surrogate ou uma aliança
+desqualificada leva da partida saem do documento. Três coisas que estavam erradas e agora não estão:
+
+- **A vitória valia 2 em toda temporada que já existiu.** REEFSCAPE, REBUILT e DECODE pagam 3, e o
+  número vem do bloco `ranking.result`.
+- **O surrogate era pulado.** Pular é um quarto comportamento que nenhum manual descreve: a
+  temporada declara se a aparição conta como jogada, quanto paga e se alimenta os desempates, e as
+  mesmas três respostas cobrem uma aliança desqualificada.
+- **O primeiro critério compara o Ranking Score arredondado.** 19 RP em 11 partidas e 26 em 15 dão
+  1,73 os dois e oficialmente empatam; a multiplicação cruzada pura separava por um ponto em 286.
+  Os critérios seguintes continuam sendo comparados por média, como o manual ordena.
+
+As telas não têm mais coluna cravada: a tabela, o telão, o CSV e o PDF desenham uma coluna por
+critério da temporada, e o `/api/rankings` manda os rótulos junto com as linhas — é a única fonte que
+a tela de classificação consulta, porque ela não assina `matchLoad`.
+
 Um resultado gravado **antes** das temporadas não tem tally, e continua sendo lido como sempre: a
 soma dos quatro números digitados. As quatro colunas mantiveram o nome no banco e na API; só os
 campos Go viraram `Legacy*`. Nada foi reescrito no banco de um evento que já aconteceu.

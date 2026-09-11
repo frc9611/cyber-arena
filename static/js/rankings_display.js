@@ -9,6 +9,7 @@ var initialDwellMs = 3000;  // How long the display waits upon initial load befo
 var scrollMsPerRow;  // How long in milliseconds it takes to scroll a height of one row.
 var staticUpdateIntervalMs = 10000;  // How long between updates if not scrolling.
 var standingsTemplate; // assigned at runtime based on mode
+var standingsHeaderTemplate;
 var fllStandingsTemplate; // only in FLL mode
 var rankingsData;
 var prevHighestPlayedMatch;
@@ -79,8 +80,18 @@ function finishFll(list) {
 }
 
 // Updates the rankings in place and initiates scrolling if they are long enough to require it.
+// The header comes from the same answer as the rows: the columns are the tiebreakers the season
+// declared, and a season with five of them draws five.
+var updateStandingsHeader = function() {
+  if (getIsFLL() || !standingsHeaderTemplate) {
+    return;
+  }
+  $("#standingsHeader").html(standingsHeaderTemplate(rankingsData));
+};
+
 var updateStaticRankings = function() {
   getRankingsData(function() {
+    updateStandingsHeader();
     var template = getIsFLL() ? fllStandingsTemplate : standingsTemplate;
     var rankingsHtml = template(rankingsData);
     // Populate both tables so there is always visible content even if we don't scroll.
@@ -161,6 +172,10 @@ $(function() {
   var defaultTemplateEl = $("#standingsTemplate");
   if (defaultTemplateEl.length) {
     standingsTemplate = Handlebars.compile(defaultTemplateEl.html());
+  }
+  var headerTemplateEl = $("#standingsHeaderTemplate");
+  if (headerTemplateEl.length) {
+    standingsHeaderTemplate = Handlebars.compile(headerTemplateEl.html());
   }
 
   // Set up the websocket back to the server. Used only for remote forcing of reloads.
