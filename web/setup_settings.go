@@ -197,6 +197,7 @@ func (web *Web) restoreDbHandler(w http.ResponseWriter, r *http.Request) {
 		handleWebErr(w, err)
 		return
 	}
+	web.arena.ForgetArenaConnectionAfterRestore()
 
 	http.Redirect(w, r, "/setup/settings", 303)
 }
@@ -236,6 +237,7 @@ func (web *Web) clearDbHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	web.arena.AllianceSelectionAlliances = []model.Alliance{}
 	cachedRankedTeams = []*RankedTeam{}
+	web.arena.BumpArenaGeneration()
 
 	http.Redirect(w, r, "/setup/settings", 303)
 }

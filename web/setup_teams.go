@@ -106,6 +106,7 @@ func (web *Web) teamsClearHandler(w http.ResponseWriter, r *http.Request) {
 		handleWebErr(w, err)
 		return
 	}
+	web.arena.BumpArenaGeneration()
 	http.Redirect(w, r, "/setup/teams", 303)
 }
 

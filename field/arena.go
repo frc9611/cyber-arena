@@ -8,6 +8,7 @@ package field
 import (
 	"fmt"
 	"log"
+	"sync/atomic"
 	"time"
 
 	"github.com/Team254/cheesy-arena-lite/bracket"
@@ -47,18 +48,22 @@ const (
 )
 
 type Arena struct {
-	Config           *config.Config
-	Database         *model.Database
-	EventSettings    *model.EventSettings
-	accessPoint      network.AccessPoint
-	accessPoint2     network.AccessPoint
-	networkSwitch    *network.Switch
-	Plc              plc.Plc
-	Arduino          serial.Arduino
-	TbaClient        *partner.TbaClient
-	FTCScoutClient   *partner.FTCScoutClient
-	AllianceStations map[string]*AllianceStation
-	Displays         map[string]*Display
+	Config            *config.Config
+	Database          *model.Database
+	EventSettings     *model.EventSettings
+	accessPoint       network.AccessPoint
+	accessPoint2      network.AccessPoint
+	networkSwitch     *network.Switch
+	Plc               plc.Plc
+	Arduino           serial.Arduino
+	TbaClient         *partner.TbaClient
+	ArenaMasterClient *partner.ArenaMasterClient
+	arenaSync         atomic.Pointer[arenaSyncConfig]
+	arenaSyncWake     chan struct{}
+	arenaSyncing      atomic.Bool
+	FTCScoutClient    *partner.FTCScoutClient
+	AllianceStations  map[string]*AllianceStation
+	Displays          map[string]*Display
 	ArenaNotifiers
 	MatchState
 	lastMatchState             MatchState
@@ -135,6 +140,9 @@ func NewArena(dbPath string, cfg *config.Config) (*Arena, error) {
 	arena.AllianceStationDisplayMode = "match"
 
 	arena.restFieldEstop = false
+
+	arena.arenaSyncWake = make(chan struct{}, 1)
+	arena.ReloadArenaMasterClient()
 
 	return arena, nil
 }
@@ -594,6 +602,7 @@ func (arena *Arena) Run() {
 	} else {
 		log.Println("Modo nuvem: campo, PLC, ponto de acesso e driver stations desligados.")
 	}
+	go arena.RunArenaSync()
 
 	for {
 		arena.Update()

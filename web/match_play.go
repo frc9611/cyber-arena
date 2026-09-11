@@ -570,6 +570,8 @@ func (web *Web) commitMatchScore(match *model.Match, matchResult *model.MatchRes
 			}()
 		}
 
+		web.arena.WakeArenaSync()
+
 		// Back up the database, but don't error out if it fails.
 		err = web.arena.Database.Backup(web.arena.EventSettings.Name,
 			fmt.Sprintf("post_%s_match_%s", match.Type, match.DisplayName))

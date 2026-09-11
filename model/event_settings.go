@@ -44,9 +44,39 @@ type EventSettings struct {
 	// Remote sync for multi-table tournaments (optional)
 	RemoteSyncUrl     string
 	RemoteSyncApiKey  string
-	ArenaMode         string
-	ArenaEventSlug    string
 	RemoteSyncClients string // Comma-separated list of client URLs (for master node)
+	// Vernum Arena Master
+	ArenaMode             string
+	ArenaMasterUrl        string
+	ArenaServerVerifiedAt string
+	ArenaToken            string
+	ArenaTokenPrefix      string
+	ArenaExpectedSlug     string
+	ArenaClientUid        string
+	ArenaClientHost       string
+	ArenaClientName       string
+	ArenaPublicUrl        string
+	ArenaInstanceId       int64
+	ArenaEventSlug        string
+	ArenaEventName        string
+	ArenaVenueSlot        int
+	ArenaVenueLabel       string
+	ArenaVenueKind        string
+	ArenaVenueKindPlural  string
+	ArenaCheckedAt        string
+	ArenaConfirmedAt      string
+	ArenaBootstrappedAt   string
+	ArenaBootstrapJson    string
+	ArenaLocalFingerprint string
+	ArenaSyncEnabled      bool
+	ArenaSyncSeconds      int
+	ArenaSyncGeneration   int
+	ArenaRevision         int64
+	ArenaEventRevision    int64
+	ArenaLastSyncAt       string
+	ArenaLastError        string
+	ArenaLastErrorCode    string
+	ArenaLastErrorAt      string
 }
 
 func (database *Database) GetEventSettings() (*EventSettings, error) {

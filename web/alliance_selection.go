@@ -165,6 +165,7 @@ func (web *Web) allianceSelectionResetHandler(w http.ResponseWriter, r *http.Req
 		handleWebErr(w, err)
 		return
 	}
+	web.arena.BumpArenaGeneration()
 
 	// Replace the current in-memory bracket if it was populated with teams.
 	if err = web.arena.CreatePlayoffBracket(); err != nil {
