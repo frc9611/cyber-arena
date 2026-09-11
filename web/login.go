@@ -6,28 +6,31 @@
 package web
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
+	"github.com/Team254/cheesy-arena-lite/config"
 	"github.com/Team254/cheesy-arena-lite/model"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
 
 // Shows the login form.
 func (web *Web) loginHandler(w http.ResponseWriter, r *http.Request) {
+	if web.arena.Mode() == config.ModeCloud {
+		web.startVernumLogin(w, r)
+		return
+	}
 	web.renderLogin(w, r, "")
 }
 
 // Processes the login request.
 func (web *Web) loginPostHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.PostFormValue("username")
-	scope, err := web.checkAuthPassword(username, r.PostFormValue("password"))
+	scope, err := web.checkAuthPassword(username, r.PostFormValue("password"), r)
 	if err != nil {
 		web.renderLogin(w, r, err.Error())
 		return
@@ -50,7 +53,7 @@ func (web *Web) loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{Name: sessionTokenCookie, Value: session.Token})
+	web.setSessionCookie(w, session.Token)
 	redirectUrl := r.URL.Query().Get("redirect")
 	if redirectUrl == "" {
 		redirectUrl = "/"
@@ -108,9 +111,20 @@ func (web *Web) userIsRefereeOrHigher(w http.ResponseWriter, r *http.Request) bo
 		if r.URL.RawQuery != "" {
 			redirect += "?" + r.URL.RawQuery
 		}
-		http.Redirect(w, r, "/login?redirect="+url.QueryEscape(redirect), 307)
+		http.Redirect(w, r, web.arena.Config.Path("/login")+"?redirect="+url.QueryEscape(redirect), 307)
 		return false
 	}
+}
+
+func (web *Web) setSessionCookie(w http.ResponseWriter, token string) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     sessionTokenCookie,
+		Value:    token,
+		Path:     "/",
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		Secure:   web.arena.Mode() == config.ModeCloud,
+	})
 }
 
 func (web *Web) getUserSessionFromCookie(r *http.Request) *model.UserSession {
@@ -122,69 +136,30 @@ func (web *Web) getUserSessionFromCookie(r *http.Request) *model.UserSession {
 	return session
 }
 
-func extractClaims(tokenStr string) (jwt.MapClaims, bool) {
-	token, _, err := new(jwt.Parser).ParseUnverified(tokenStr, jwt.MapClaims{})
-
+func requestIsFromThisMachine(r *http.Request) bool {
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
-		return nil, false
+		host = r.RemoteAddr
 	}
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-		return claims, true
-	} else {
-		fmt.Println("Invalid JWT Token")
-		return nil, false
-	}
+	ip := net.ParseIP(strings.TrimSpace(host))
+	return ip != nil && ip.IsLoopback()
 }
 
-func vernumLogin(user, password string) (string, bool) {
-	url := "http://server.joaorodrigo.eu:32080/login"
-	method := "POST"
-	//vernumPrivateKey := os.Getenv("V_PRIVATE_KEY")
-
-	payload := strings.NewReader(`{"username": "` + user + `", "password": "` + password + `"}`)
-	client := &http.Client{}
-	req, err := http.NewRequest(method, url, payload)
-	if err != nil {
-		fmt.Println(err)
-		return "INVALID", false
+func (web *Web) checkAuthPassword(user, password string, r *http.Request) (string, error) {
+	mode := web.arena.Mode()
+	if mode == config.ModeCloud {
+		return "INVALID", fmt.Errorf("Esta arena entra pelo Vernum. Use o botão de entrar com o Vernum.")
 	}
-
-	req.Header.Add("Content-Type", "application/json")
-
-	res, err := client.Do(req)
-	if err != nil {
-		fmt.Println(err)
-		return "INVALID", false
-	}
-	defer res.Body.Close()
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		fmt.Println(err)
-		return "INVALID", false
-	}
-
-	fmt.Println(string(body))
-	var jsonMap map[string]interface{}
-	json.Unmarshal([]byte(string(body)), &jsonMap)
-	_, ok := jsonMap["accessToken"]
-
-	claims, _ := extractClaims(jsonMap["accessToken"].(string))
-
-	scope := claims["scope"].(string)
-	fmt.Println(scope)
-
-	return scope, ok
-}
-
-func (web *Web) checkAuthPassword(user, password string) (string, error) {
-	if user == adminUser && password == web.arena.EventSettings.AdminPassword {
+	if mode == config.ModeLocal && user == localUser && password == localPassword {
+		if !requestIsFromThisMachine(r) {
+			return "INVALID", fmt.Errorf("O login %s só vale no próprio computador da arena. "+
+				"De outra máquina, entre como %s com a senha das configurações.", localUser, adminUser)
+		}
 		return "ADMIN", nil
 	}
-	scope, vernumOk := vernumLogin(user, password)
-	if vernumOk {
-		return scope, nil
-	} else {
-		return "INVALID", fmt.Errorf("[VERNUM_SERVER] Invalid login credentials")
+	if user == adminUser && web.arena.EventSettings.AdminPassword != "" &&
+		password == web.arena.EventSettings.AdminPassword {
+		return "ADMIN", nil
 	}
+	return "INVALID", fmt.Errorf("Usuário ou senha incorretos.")
 }

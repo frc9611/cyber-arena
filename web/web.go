@@ -13,14 +13,19 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/Team254/cheesy-arena-lite/config"
 	"github.com/Team254/cheesy-arena-lite/field"
 	"github.com/Team254/cheesy-arena-lite/model"
+	"github.com/Team254/cheesy-arena-lite/version"
 	"github.com/gorilla/mux"
 )
 
 const (
 	sessionTokenCookie = "session_token"
+	vernumStateCookie  = "vernum_state"
 	adminUser          = "admin"
+	localUser          = "local"
+	localPassword      = "local"
 )
 
 type Web struct {
@@ -65,6 +70,21 @@ func NewWeb(arena *field.Arena) *Web {
 		},
 		"toUpper": func(str string) string {
 			return strings.ToUpper(str)
+		},
+		"arenaMode": func() string {
+			return arena.Mode()
+		},
+		"arenaModeClass": func() string {
+			return config.ModeClass(arena.Mode())
+		},
+		"arenaModeLabel": func() string {
+			return config.ModeLabel(arena.Mode())
+		},
+		"arenaVersion": func() string {
+			return version.Version
+		},
+		"url": func(path string) string {
+			return arena.Config.Path(path)
 		},
 	}
 
@@ -149,6 +169,7 @@ func (web *Web) newHandler() http.Handler {
 	router.HandleFunc("/displays/twitch", web.twitchDisplayHandler).Methods("GET")
 	router.HandleFunc("/displays/twitch/websocket", web.twitchDisplayWebsocketHandler).Methods("GET")
 	router.HandleFunc("/login", web.loginHandler).Methods("GET")
+	router.HandleFunc("/sso/callback", web.vernumCallbackHandler).Methods("GET")
 	router.HandleFunc("/login", web.loginPostHandler).Methods("POST")
 	router.HandleFunc("/match_play", web.matchPlayHandler).Methods("GET")
 	router.HandleFunc("/match_play/{matchId}/load", web.matchPlayLoadHandler).Methods("GET")

@@ -536,3 +536,25 @@ input[data-changed="true"], select[data-changed="true"] {
   margin-top: 5px;
   margin-bottom: 10px;
 }
+
+.bg-cyber-local {
+  background-color: #B45309 !important;
+}
+
+.bg-cyber-cloud {
+  background-color: #0F766E !important;
+}
+
+.arena-mode-badge {
+  display: inline-block;
+  margin: 16px 0 0 4px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, .22);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  vertical-align: top;
+}

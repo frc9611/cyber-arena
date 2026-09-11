@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/Team254/cheesy-arena-lite/bracket"
+	"github.com/Team254/cheesy-arena-lite/config"
 	"github.com/Team254/cheesy-arena-lite/game"
 	"github.com/Team254/cheesy-arena-lite/model"
 	"github.com/Team254/cheesy-arena-lite/network"
@@ -46,6 +47,7 @@ const (
 )
 
 type Arena struct {
+	Config           *config.Config
 	Database         *model.Database
 	EventSettings    *model.EventSettings
 	accessPoint      network.AccessPoint
@@ -96,8 +98,9 @@ type AllianceStation struct {
 }
 
 // Creates the arena and sets it to its initial state.
-func NewArena(dbPath string) (*Arena, error) {
+func NewArena(dbPath string, cfg *config.Config) (*Arena, error) {
 	arena := new(Arena)
+	arena.Config = cfg
 	arena.configureNotifiers()
 
 	var err error
@@ -567,15 +570,30 @@ func (arena *Arena) Update() {
 	arena.lastMatchState = arena.MatchState
 }
 
+func (arena *Arena) Mode() string {
+	if arena.Config == nil {
+		return config.ModeStandalone
+	}
+	return arena.Config.EffectiveMode(arena.EventSettings.ArenaMode)
+}
+
+func (arena *Arena) FieldHardwareEnabled() bool {
+	return arena.Mode() != config.ModeCloud
+}
+
 // Loops indefinitely to track and update the arena components.
 func (arena *Arena) Run() {
-	// Start other loops in goroutines.
-	go arena.listenForDriverStations()
-	go arena.listenForDsUdpPackets()
-	go arena.accessPoint.Run()
-	go arena.accessPoint2.Run()
-	go arena.Plc.Run()
-	go arena.Arduino.Run()
+	if arena.FieldHardwareEnabled() {
+		// Start other loops in goroutines.
+		go arena.listenForDriverStations()
+		go arena.listenForDsUdpPackets()
+		go arena.accessPoint.Run()
+		go arena.accessPoint2.Run()
+		go arena.Plc.Run()
+		go arena.Arduino.Run()
+	} else {
+		log.Println("Modo nuvem: campo, PLC, ponto de acesso e driver stations desligados.")
+	}
 
 	for {
 		arena.Update()

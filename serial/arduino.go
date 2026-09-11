@@ -47,7 +47,8 @@ func (arduino *Arduino) Run() {
 
 		port, err := serial.Open(port1, mode)
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("Error opening serial port %v: %v", port1, err)
+			continue
 		}
 
 		// Wait for "pong" response

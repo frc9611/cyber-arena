@@ -44,6 +44,8 @@ type EventSettings struct {
 	// Remote sync for multi-table tournaments (optional)
 	RemoteSyncUrl     string
 	RemoteSyncApiKey  string
+	ArenaMode         string
+	ArenaEventSlug    string
 	RemoteSyncClients string // Comma-separated list of client URLs (for master node)
 }
 

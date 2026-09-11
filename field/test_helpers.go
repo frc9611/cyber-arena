@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/Team254/cheesy-arena-lite/config"
 	"github.com/Team254/cheesy-arena-lite/game"
 	"github.com/Team254/cheesy-arena-lite/model"
 	"github.com/stretchr/testify/assert"
@@ -22,7 +23,7 @@ func SetupTestArena(t *testing.T, uniqueName string) *Arena {
 	model.BaseDir = ".."
 	dbPath := filepath.Join(model.BaseDir, fmt.Sprintf("%s_test.db", uniqueName))
 	os.Remove(dbPath)
-	arena, err := NewArena(dbPath)
+	arena, err := NewArena(dbPath, config.Load())
 	assert.Nil(t, err)
 	return arena
 }
