@@ -190,7 +190,7 @@ func (web *Web) arenaMasterPasswordHandler(w http.ResponseWriter, r *http.Reques
 		handleWebErr(w, err)
 		return
 	}
-	web.setSessionCookie(w, session.Token)
+	web.setSessionCookie(w, r, session.Token)
 	writeJson(w, http.StatusOK, map[string]interface{}{"ok": true, "step": web.arenaStep()})
 }
 

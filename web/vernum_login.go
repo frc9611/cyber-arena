@@ -37,9 +37,9 @@ type vernumArenaMe struct {
 }
 
 func (web *Web) vernumRedirectUri(r *http.Request) string {
-	scheme := "https"
-	if r.TLS == nil && r.Header.Get("X-Forwarded-Proto") != "https" {
-		scheme = "http"
+	scheme := "http"
+	if requestIsSecure(r) {
+		scheme = "https"
 	}
 	return fmt.Sprintf("%s://%s%s", scheme, r.Host, web.arena.Config.Path("/sso/callback"))
 }
@@ -60,9 +60,10 @@ func (web *Web) startVernumLogin(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     vernumStateCookie,
 		Value:    state + "|" + verifier + "|" + r.URL.Query().Get("redirect"),
-		Path:     "/",
+		Path:     web.cookiePath(),
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
+		Secure:   requestIsSecure(r),
 		MaxAge:   600,
 	})
 	target := fmt.Sprintf(
@@ -117,8 +118,8 @@ func (web *Web) vernumCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		handleWebErr(w, err)
 		return
 	}
-	web.setSessionCookie(w, session.Token)
-	http.SetCookie(w, &http.Cookie{Name: vernumStateCookie, Value: "", Path: "/", MaxAge: -1})
+	web.setSessionCookie(w, r, session.Token)
+	http.SetCookie(w, &http.Cookie{Name: vernumStateCookie, Value: "", Path: web.cookiePath(), MaxAge: -1})
 
 	redirectUrl := parts[2]
 	if redirectUrl == "" {

@@ -53,7 +53,7 @@ func (web *Web) loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	web.setSessionCookie(w, session.Token)
+	web.setSessionCookie(w, r, session.Token)
 	redirectUrl := r.URL.Query().Get("redirect")
 	if redirectUrl == "" {
 		redirectUrl = "/"
@@ -116,15 +116,39 @@ func (web *Web) userIsRefereeOrHigher(w http.ResponseWriter, r *http.Request) bo
 	}
 }
 
-func (web *Web) setSessionCookie(w http.ResponseWriter, token string) {
+// Secure follows how the request actually arrived, not the mode. A cloud arena behind an ingress
+// with no certificate is served over plain HTTP, and a Secure cookie there is dropped by the
+// browser without a word: the session never sticks, the next page sends the person back to the SSO,
+// and the login spins forever.
+//
+// The path is the base path of this arena, so two arenas on the same host cannot read each other's
+// session or answer each other's login.
+func (web *Web) setSessionCookie(w http.ResponseWriter, r *http.Request, token string) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     sessionTokenCookie,
 		Value:    token,
-		Path:     "/",
+		Path:     web.cookiePath(),
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
-		Secure:   web.arena.Mode() == config.ModeCloud,
+		Secure:   requestIsSecure(r),
 	})
+}
+
+func (web *Web) cookiePath() string {
+	if web.arena.Config == nil || web.arena.Config.BasePath == "" {
+		return "/"
+	}
+	return web.arena.Config.BasePath
+}
+
+func requestIsSecure(r *http.Request) bool {
+	if r == nil {
+		return false
+	}
+	if r.TLS != nil {
+		return true
+	}
+	return strings.EqualFold(r.Header.Get("X-Forwarded-Proto"), "https")
 }
 
 func (web *Web) getUserSessionFromCookie(r *http.Request) *model.UserSession {
