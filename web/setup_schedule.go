@@ -27,7 +27,7 @@ func (web *Web) scheduleGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	matchType := getMatchType(r)
 	if matchType == "" {
-		http.Redirect(w, r, "/setup/schedule?matchType=practice", 302)
+		http.Redirect(w, r, web.arena.Config.Path("/setup/schedule?matchType=practice"), 302)
 		return
 	}
 
@@ -108,7 +108,7 @@ func (web *Web) scheduleGeneratePostHandler(w http.ResponseWriter, r *http.Reque
 	}
 	cachedTeamFirstMatches[matchType] = teamFirstMatches
 
-	http.Redirect(w, r, "/setup/schedule?matchType="+matchType, 303)
+	http.Redirect(w, r, web.arena.Config.Path("/setup/schedule?matchType=")+matchType, 303)
 }
 
 // Publishes the schedule in the database to TBA
@@ -130,7 +130,7 @@ func (web *Web) scheduleRepublishPostHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	http.Redirect(w, r, "/setup/schedule?matchType="+getMatchType(r), 303)
+	http.Redirect(w, r, web.arena.Config.Path("/setup/schedule?matchType=")+getMatchType(r), 303)
 }
 
 // Saves the generated schedule to the database.
@@ -180,7 +180,7 @@ func (web *Web) scheduleSavePostHandler(w http.ResponseWriter, r *http.Request) 
 		}
 	}
 
-	http.Redirect(w, r, "/setup/schedule?matchType="+matchType, 303)
+	http.Redirect(w, r, web.arena.Config.Path("/setup/schedule?matchType=")+matchType, 303)
 }
 
 func (web *Web) renderSchedule(w http.ResponseWriter, r *http.Request, errorMessage string) {

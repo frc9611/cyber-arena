@@ -24,7 +24,7 @@ function getIsFLL() {
 // Loads the JSON rankings data from the event server.
 var getRankingsData = function(callback) {
   if (getIsFLL()) {
-    $.getJSON("/api/fll/scores").done(function(scoreData) {
+    $.getJSON(arenaUrl("/api/fll/scores")).done(function(scoreData) {
       var list = (scoreData || []).map(function(s) {
         var rounds = (s.Rounds && s.Rounds.length ? s.Rounds : [0,0,0]);
         var nick = s.Nickname || "";
@@ -58,7 +58,7 @@ var getRankingsData = function(callback) {
     return; // prevent non-FLL path
   }
 
-  $.getJSON("/api/rankings", function(data) {
+  $.getJSON(arenaUrl("/api/rankings"), function(data) {
     rankingsData = data;
     if (callback) {
       callback(rankingsData);

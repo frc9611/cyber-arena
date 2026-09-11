@@ -11,10 +11,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no" />
-    <link rel="shortcut icon" href="/static/img/favicon.ico">
-    <link rel="stylesheet" href="/static/css/lib/bootstrap.min.css" />
-    <link rel="stylesheet" href="/static/css/cheesy-arena.css" />
-    <link rel="stylesheet" href="/static/css/field_monitor_display.css" />
+    <link rel="shortcut icon" href="{{url "/static/img/favicon.ico"}}">
+    <link rel="stylesheet" href="{{url "/static/css/lib/bootstrap.min.css"}}" />
+    <link rel="stylesheet" href="{{url "/static/css/cheesy-arena.css"}}" />
+    <link rel="stylesheet" href="{{url "/static/css/field_monitor_display.css"}}" />
   </head>
   <body>
     {{template "row" dict "leftPosition" "1" "rightPosition" "3"}}
@@ -26,13 +26,13 @@
       <span>Powered by CyberArena</span>
     </div>
   </body>
-  <script src="/static/js/lib/jquery.min.js"></script>
-  <script src="/static/js/lib/jquery.json-2.4.min.js"></script>
-  <script src="/static/js/lib/jquery.websocket-0.0.1.js"></script>
-  <script src="/static/js/lib/jquery.transit.min.js"></script>
-  <script src="/static/js/lib/bootstrap.min.js"></script>
-  <script src="/static/js/cheesy-websocket.js"></script>
-  <script src="/static/js/field_monitor_display.js"></script>
+  <script src="{{url "/static/js/lib/jquery.min.js"}}"></script>
+  <script src="{{url "/static/js/lib/jquery.json-2.4.min.js"}}"></script>
+  <script src="{{url "/static/js/lib/jquery.websocket-0.0.1.js"}}"></script>
+  <script src="{{url "/static/js/lib/jquery.transit.min.js"}}"></script>
+  <script src="{{url "/static/js/lib/bootstrap.min.js"}}"></script>
+  <script src="{{url "/static/js/cheesy-websocket.js"}}"></script>
+  <script src="{{url "/static/js/field_monitor_display.js"}}"></script>
 </html>
 
 {{define "row"}}

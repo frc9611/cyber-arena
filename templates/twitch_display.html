@@ -8,16 +8,16 @@
 <html>
   <head>
     <title>Twitch Stream Display - {{.EventSettings.Name}} - Cheesy Arena </title>
-    <link rel="shortcut icon" href="/static/img/favicon.ico">
-    <link rel="stylesheet" href="/static/css/twitch_display.css" />
+    <link rel="shortcut icon" href="{{url "/static/img/favicon.ico"}}">
+    <link rel="stylesheet" href="{{url "/static/css/twitch_display.css"}}" />
   </head>
   <body>
     <div id="twitchEmbed"></div>
     <script src="https://embed.twitch.tv/embed/v1.js"></script>
-    <script src="/static/js/lib/jquery.min.js"></script>
-    <script src="/static/js/lib/jquery.json-2.4.min.js"></script>
-    <script src="/static/js/lib/jquery.websocket-0.0.1.js"></script>
-    <script src="/static/js/cheesy-websocket.js"></script>
-    <script src="/static/js/twitch_display.js"></script>
+    <script src="{{url "/static/js/lib/jquery.min.js"}}"></script>
+    <script src="{{url "/static/js/lib/jquery.json-2.4.min.js"}}"></script>
+    <script src="{{url "/static/js/lib/jquery.websocket-0.0.1.js"}}"></script>
+    <script src="{{url "/static/js/cheesy-websocket.js"}}"></script>
+    <script src="{{url "/static/js/twitch_display.js"}}"></script>
   </body>
 </html>

@@ -38,56 +38,56 @@
     </head>
     <body>
       <div class="sidebar">
-        <a class="navbar-brand" href="/"><b>CyberArena</b></a>
+        <a class="navbar-brand" href="{{url "/"}}"><b>CyberArena</b></a>
         <ul class="nav navbar-nav" style="display: flex; flex-direction: column; padding: 7px;">
           <li class="dropdown">
             <a href="#" class="dropdown-toggle cr-sidebar-dropdown-menu-btn" data-toggle="dropdown">Partida</a>
             <ul class="dropdown-menu">
-              <li><a href="/match_play">Execução de Partidas</a></li>
+              <li><a href="{{url "/match_play"}}">Execução de Partidas</a></li>
               {{if .EventSettings.IsFll}}
                 {{if ne .EventSettings.RemoteSyncApiKey ""}}
                   {{if eq .EventSettings.RemoteSyncUrl ""}}
-                    <li><a href="/remote-sync">Remote Sync (Master)</a></li>
+                    <li><a href="{{url "/remote-sync"}}">Remote Sync (Master)</a></li>
                   {{end}}
                 {{end}}
-                <li><a href="/fll/review">Revisão FLL (Oficial)</a></li>
+                <li><a href="{{url "/fll/review"}}">Revisão FLL (Oficial)</a></li>
               {{else}}
-                  <li><a href="/match_review">Revisão de Partidas</a></li>
-                  <li><a href="/static/logs">Logs de Partidas</a></li>
-                  <li><a href="/alliance_selection">Seleção de Alianças</a></li>
+                  <li><a href="{{url "/match_review"}}">Revisão de Partidas</a></li>
+                  <li><a href="{{url "/static/logs"}}">Logs de Partidas</a></li>
+                  <li><a href="{{url "/alliance_selection"}}">Seleção de Alianças</a></li>
               {{end}}
             </ul>
             </li>
             <li class="dropdown">
-              <a href="/referee" class="cr-sidebar-dropdown-menu-btn">Arbitragem</a>
+              <a href="{{url "/referee"}}" class="cr-sidebar-dropdown-menu-btn">Arbitragem</a>
             </li>
             <li class="dropdown">
             <a href="#" class="dropdown-toggle cr-sidebar-dropdown-menu-btn" data-toggle="dropdown">Exibição</a>
             <ul class="dropdown-menu">
-              <li><a href="/display">Placeholder</a></li>
-              <li><a href="/displays/announcer">Anunciador</a></li>
-              <li><a href="/displays/audience">Público</a></li>
+              <li><a href="{{url "/display"}}">Placeholder</a></li>
+              <li><a href="{{url "/displays/announcer"}}">Anunciador</a></li>
+              <li><a href="{{url "/displays/audience"}}">Público</a></li>
               {{if eq .EventSettings.IsFll false}}
-                <li><a href="/displays/bracket">Chave</a></li>
-                <li><a href="/displays/field_monitor">Monitor de Campo</a></li>
-                <li><a href="/displays/field_monitor?fta=true">Monitor de Campo (FTA)</a></li>
-                <li><a href="/displays/queueing">Fila</a></li>
+                <li><a href="{{url "/displays/bracket"}}">Chave</a></li>
+                <li><a href="{{url "/displays/field_monitor"}}">Monitor de Campo</a></li>
+                <li><a href="{{url "/displays/field_monitor?fta=true"}}">Monitor de Campo (FTA)</a></li>
+                <li><a href="{{url "/displays/queueing"}}">Fila</a></li>
               {{end}}
-              <li><a href="/displays/rankings">Classificação</a></li>
+              <li><a href="{{url "/displays/rankings"}}">Classificação</a></li>
               <li class="divider"></li>
               <li class="dropdown-header">Estação de Aliança</li>
               {{if .EventSettings.IsFll}}
-                <li><a href="/displays/alliance_station?station=B1">Equipe da Mesa</a></li>
+                <li><a href="{{url "/displays/alliance_station?station=B1"}}">Equipe da Mesa</a></li>
               {{else}}
-                <li><a href="/displays/alliance_station?station=R1">Vermelho 1</a></li>
-                <li><a href="/displays/alliance_station?station=R2">Vermelho 2</a></li>
-                <li><a href="/displays/alliance_station?station=R3">Vermelho 3</a></li>
-                <li><a href="/displays/alliance_station?station=B1">Azul 1</a></li>
-                <li><a href="/displays/alliance_station?station=B2">Azul 2</a></li>
-                <li><a href="/displays/alliance_station?station=B3">Azul 3</a></li>
-                <li><a href="/displays/alliance_station?station=N2">Relógio</a></li>
-                <li><a href="/displays/alliance_station?station=N3">Pontuação Vermelha</a></li>
-                <li><a href="/displays/alliance_station?station=N1">Pontuação Azul</a></li>
+                <li><a href="{{url "/displays/alliance_station?station=R1"}}">Vermelho 1</a></li>
+                <li><a href="{{url "/displays/alliance_station?station=R2"}}">Vermelho 2</a></li>
+                <li><a href="{{url "/displays/alliance_station?station=R3"}}">Vermelho 3</a></li>
+                <li><a href="{{url "/displays/alliance_station?station=B1"}}">Azul 1</a></li>
+                <li><a href="{{url "/displays/alliance_station?station=B2"}}">Azul 2</a></li>
+                <li><a href="{{url "/displays/alliance_station?station=B3"}}">Azul 3</a></li>
+                <li><a href="{{url "/displays/alliance_station?station=N2"}}">Relógio</a></li>
+                <li><a href="{{url "/displays/alliance_station?station=N3"}}">Pontuação Vermelha</a></li>
+                <li><a href="{{url "/displays/alliance_station?station=N1"}}">Pontuação Azul</a></li>
               {{end}}
 
             </ul>
@@ -97,46 +97,46 @@
             <ul class="dropdown-menu">
               {{if .EventSettings.IsFll}}
               <li class="dropdown-header">Relatórios FLL em PDF</li>
-              <li><a target="_blank" href="/reports/pdf/fll/teams">Lista de Equipes FLL</a></li>
-              <li><a target="_blank" href="/reports/pdf/fll/matches">Resultados das Partidas FLL</a></li>
+              <li><a target="_blank" href="{{url "/reports/pdf/fll/teams"}}">Lista de Equipes FLL</a></li>
+              <li><a target="_blank" href="{{url "/reports/pdf/fll/matches"}}">Resultados das Partidas FLL</a></li>
               <li class="divider"></li>
               {{end}}
               <li class="dropdown-header">Relatórios em PDF</li>
-              <li><a target="_blank" href="/reports/pdf/teams">Lista de Equipes</a></li>
-              <li><a target="_blank" href="/reports/pdf/schedule/practice">Agenda de Treinos</a></li>
-              <li><a target="_blank" href="/reports/pdf/schedule/qualification">Agenda de Qualificação</a></li>
-              <li><a target="_blank" href="/reports/pdf/schedule/elimination">Agenda de Eliminatórias</a></li>
-              <li><a target="_blank" href="/reports/pdf/rankings">Classificação</a></li>
-              <li><a target="_blank" href="/reports/pdf/alliances">Alianças de Eliminatórias</a></li>
-              <li><a target="_blank" href="/reports/pdf/bracket">Chave de Eliminatórias</a></li>
-              <li><a target="_blank" href="/reports/pdf/backups">Equipes de Backup</a></li>
-              <li><a target="_blank" href="/reports/pdf/coupons">Cupons de Alianças de Eliminatórias</a></li>
-              <li><a target="_blank" href="/reports/pdf/teams?showHasConnected=true">Status de Conexão das Equipes</a></li>
+              <li><a target="_blank" href="{{url "/reports/pdf/teams"}}">Lista de Equipes</a></li>
+              <li><a target="_blank" href="{{url "/reports/pdf/schedule/practice"}}">Agenda de Treinos</a></li>
+              <li><a target="_blank" href="{{url "/reports/pdf/schedule/qualification"}}">Agenda de Qualificação</a></li>
+              <li><a target="_blank" href="{{url "/reports/pdf/schedule/elimination"}}">Agenda de Eliminatórias</a></li>
+              <li><a target="_blank" href="{{url "/reports/pdf/rankings"}}">Classificação</a></li>
+              <li><a target="_blank" href="{{url "/reports/pdf/alliances"}}">Alianças de Eliminatórias</a></li>
+              <li><a target="_blank" href="{{url "/reports/pdf/bracket"}}">Chave de Eliminatórias</a></li>
+              <li><a target="_blank" href="{{url "/reports/pdf/backups"}}">Equipes de Backup</a></li>
+              <li><a target="_blank" href="{{url "/reports/pdf/coupons"}}">Cupons de Alianças de Eliminatórias</a></li>
+              <li><a target="_blank" href="{{url "/reports/pdf/teams?showHasConnected=true"}}">Status de Conexão das Equipes</a></li>
               <li class="divider"></li>
               <li class="dropdown-header">Exportação de Dados CSV</li>
-              <li><a target="_blank" href="/reports/csv/teams">Lista de Equipes</a></li>
-              <li><a target="_blank" href="/reports/csv/schedule/practice">Agenda de Treinos</a></li>
-              <li><a target="_blank" href="/reports/csv/schedule/qualification">Agenda de Qualificação</a></li>
-              <li><a target="_blank" href="/reports/csv/schedule/elimination">Agenda de Eliminatórias</a></li>
-              <li><a target="_blank" href="/reports/csv/rankings">Classificação</a></li>
-              <li><a target="_blank" href="/reports/csv/backups">Equipes de Backup</a></li>
+              <li><a target="_blank" href="{{url "/reports/csv/teams"}}">Lista de Equipes</a></li>
+              <li><a target="_blank" href="{{url "/reports/csv/schedule/practice"}}">Agenda de Treinos</a></li>
+              <li><a target="_blank" href="{{url "/reports/csv/schedule/qualification"}}">Agenda de Qualificação</a></li>
+              <li><a target="_blank" href="{{url "/reports/csv/schedule/elimination"}}">Agenda de Eliminatórias</a></li>
+              <li><a target="_blank" href="{{url "/reports/csv/rankings"}}">Classificação</a></li>
+              <li><a target="_blank" href="{{url "/reports/csv/backups"}}">Equipes de Backup</a></li>
               {{if .EventSettings.NetworkSecurityEnabled}}
-              <li><a target="_blank" href="/reports/csv/wpa_keys">Chaves WPA</a></li>
+              <li><a target="_blank" href="{{url "/reports/csv/wpa_keys"}}">Chaves WPA</a></li>
               {{end}}
             </ul>
             </li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle cr-sidebar-dropdown-menu-btn" data-toggle="dropdown">Configurações</a>
               <ul class="dropdown-menu">
-                <li><a href="/setup/settings">Configurações</a></li>
+                <li><a href="{{url "/setup/settings"}}">Configurações</a></li>
                 <li><a href="{{url "/setup/arena"}}">Arena Master{{if eq .EventSettings.ArenaToken ""}} (não configurado){{end}}</a></li>
-                <li><a href="/setup/teams">Lista de Equipes</a></li>
-                <li><a href="/setup/schedule">Agendamento de Partidas</a></li>
-                <li><a href="/setup/awards">Prêmios</a></li>
-                <li><a href="/setup/lower_thirds">Terços Inferiores</a></li>
-                <li><a href="/setup/sponsor_slides">Slides de Patrocinadores</a></li>
-                <li><a href="/setup/displays">Configuração de Exibição</a></li>
-                <li><a href="/setup/field_testing">Teste de Campo</a></li>
+                <li><a href="{{url "/setup/teams"}}">Lista de Equipes</a></li>
+                <li><a href="{{url "/setup/schedule"}}">Agendamento de Partidas</a></li>
+                <li><a href="{{url "/setup/awards"}}">Prêmios</a></li>
+                <li><a href="{{url "/setup/lower_thirds"}}">Terços Inferiores</a></li>
+                <li><a href="{{url "/setup/sponsor_slides"}}">Slides de Patrocinadores</a></li>
+                <li><a href="{{url "/setup/displays"}}">Configuração de Exibição</a></li>
+                <li><a href="{{url "/setup/field_testing"}}">Teste de Campo</a></li>
               </ul>
             </li>
 
@@ -215,24 +215,25 @@
 {{end}}
 
 {{define "head_common"}}
+<script>window.ARENA_BASE_PATH = "{{arenaBasePath}}";</script>
   <title>{{template "title" .}} - {{.EventSettings.Name}} - Cyber Arena</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="shortcut icon" href="/static/img/favicon.ico">
-  <link rel="apple-touch-icon" href="/static/img/apple-icon.png">
-  <link href="/static/css/lib/bootstrap.min.css" rel="stylesheet">
-  <link href="/static/css/lib/bootstrap-datetimepicker.min.css" rel="stylesheet">
-  <link href="/static/css/cheesy-arena.css" rel="stylesheet">
+  <link rel="shortcut icon" href="{{url "/static/img/favicon.ico"}}">
+  <link rel="apple-touch-icon" href="{{url "/static/img/apple-icon.png"}}">
+  <link href="{{url "/static/css/lib/bootstrap.min.css"}}" rel="stylesheet">
+  <link href="{{url "/static/css/lib/bootstrap-datetimepicker.min.css"}}" rel="stylesheet">
+  <link href="{{url "/static/css/cheesy-arena.css"}}" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 {{end}}
 
 {{define "script_common"}}
-  <script src="/static/js/lib/jquery.min.js"></script>
-  <script src="/static/js/lib/jquery.json-2.4.min.js"></script>
-  <script src="/static/js/lib/jquery.websocket-0.0.1.js"></script>
-  <script src="/static/js/lib/bootstrap.min.js"></script>
-  <script src="/static/js/lib/moment.min.js"></script>
-  <script src="/static/js/lib/bootstrap-datetimepicker.min.js"></script>
-  <script src="/static/js/lib/handlebars-1.3.0.js"></script>
-  <script src="/static/js/cheesy-websocket.js"></script>
+  <script src="{{url "/static/js/lib/jquery.min.js"}}"></script>
+  <script src="{{url "/static/js/lib/jquery.json-2.4.min.js"}}"></script>
+  <script src="{{url "/static/js/lib/jquery.websocket-0.0.1.js"}}"></script>
+  <script src="{{url "/static/js/lib/bootstrap.min.js"}}"></script>
+  <script src="{{url "/static/js/lib/moment.min.js"}}"></script>
+  <script src="{{url "/static/js/lib/bootstrap-datetimepicker.min.js"}}"></script>
+  <script src="{{url "/static/js/lib/handlebars-1.3.0.js"}}"></script>
+  <script src="{{url "/static/js/cheesy-websocket.js"}}"></script>
 {{end}}

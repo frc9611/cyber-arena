@@ -12,7 +12,7 @@
       <legend>Configuração de Slides de Patrocinadores</legend>
       <p>Coloque as imagens em /static/img/sponsors/</p>
       {{range $i, $sponsorSlide := .SponsorSlides}}
-        <form class="form-horizontal existing" action="/setup/sponsor_slides" method="POST">
+        <form class="form-horizontal existing" action="{{url "/setup/sponsor_slides"}}" method="POST">
           <div class="form-group">
             <div class="col-lg-7">
               <input type="hidden" name="id" value="{{$sponsorSlide.Id}}" />

@@ -15,7 +15,7 @@
   {{end}}
   {{if len .Alliances | eq 0}}
     <div class="col-lg-3">
-      <form action="/alliance_selection/start" method="POST">
+      <form action="{{url "/alliance_selection/start"}}" method="POST">
         <legend>Seleção de Alianças</legend>
         <button type="submit" class="btn btn-info">Iniciar Seleção de Alianças</button>
       </form>
@@ -117,7 +117,7 @@
         <p>Você tem certeza que deseja reiniciar a seleção de alianças?</p>
       </div>
       <div class="modal-footer">
-        <form class="form-horizontal" action="/alliance_selection/reset" method="POST">
+        <form class="form-horizontal" action="{{url "/alliance_selection/reset"}}" method="POST">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
           <button type="submit" class="btn btn-danger">Redefinir Seleção de Alianças</button>
         </form>
@@ -132,7 +132,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h4 class="modal-title">Confirmar</h4>
       </div>
-      <form class="form-horizontal" action="/alliance_selection/finalize" method="POST">
+      <form class="form-horizontal" action="{{url "/alliance_selection/finalize"}}" method="POST">
         <div class="modal-body">
           <p>Você tem certeza que deseja finalizar o processo de seleção de alianças?</p>
           <div class="form-group">
@@ -166,7 +166,7 @@
         <p>Você tem certeza que deseja publicar as alianças ao The Blue Alliance? Isso irá sobrescrever qualquer dado existente.  </p>
       </div>
       <div class="modal-footer">
-        <form class="form-horizontal" action="/alliance_selection/publish" method="POST">
+        <form class="form-horizontal" action="{{url "/alliance_selection/publish"}}" method="POST">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-primary">Publish Alliances</button>
         </form>

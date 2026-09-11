@@ -147,7 +147,7 @@ func (web *Web) matchPlayLoadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/match_play", 303)
+	http.Redirect(w, r, web.arena.Config.Path("/match_play"), 303)
 }
 
 // Loads the results for the given match into the display buffer.
@@ -189,7 +189,7 @@ func (web *Web) matchPlayShowResultHandler(w http.ResponseWriter, r *http.Reques
 	web.arena.SavedMatchResult = matchResult
 	web.arena.ScorePostedNotifier.Notify()
 
-	http.Redirect(w, r, "/match_play", 303)
+	http.Redirect(w, r, web.arena.Config.Path("/match_play"), 303)
 }
 
 // Clears the match results display buffer.
@@ -203,7 +203,7 @@ func (web *Web) matchPlayClearResultHandler(w http.ResponseWriter, r *http.Reque
 	web.arena.SavedMatchResult = model.NewMatchResult()
 	web.arena.ScorePostedNotifier.Notify()
 
-	http.Redirect(w, r, "/match_play", 303)
+	http.Redirect(w, r, web.arena.Config.Path("/match_play"), 303)
 }
 
 // The websocket endpoint for the match play client to send control commands and receive status updates.

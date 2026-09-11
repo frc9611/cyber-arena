@@ -277,7 +277,7 @@ var handleScorePosted = function(data) {
   }
 
   // Reload the bracket to reflect any changes.
-  $("#bracketSvg").attr("src", "/api/bracket/svg?activeMatch=saved&v=" + new Date().getTime());
+  $("#bracketSvg").attr("src", arenaUrl("/api/bracket/svg?activeMatch=saved&v=") + new Date().getTime());
 };
 
 // Handles a websocket message to play a sound to signal match start/stop/etc.
@@ -680,7 +680,7 @@ var transitionTimeoutToIntro = function(callback) {
 
 // Loads sponsor slide data and builds the slideshow HTML.
 var initializeSponsorDisplay = function() {
-  $.getJSON("/api/sponsor_slides", function(slides) {
+  $.getJSON(arenaUrl("/api/sponsor_slides"), function(slides) {
     $("#sponsorContainer").empty();
 
     // Inject the HTML for each slide into the DOM.
@@ -722,7 +722,7 @@ var initializeSponsorDisplay = function() {
 };
 
 var getAvatarUrl = function(teamId) {
-  return "/api/teams/" + teamId + "/avatar";
+  return arenaUrl("/api/teams/" + teamId + "/avatar");
 };
 
 var getRankingText = function(teamId, rankings) {

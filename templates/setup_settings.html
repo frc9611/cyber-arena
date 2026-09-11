@@ -15,7 +15,7 @@
   {{end}}
   <div class="col-lg-6 col-lg-offset-1">
     <div class="well">
-      <form class="form-horizontal" action="/setup/settings" method="POST">
+      <form class="form-horizontal" action="{{url "/setup/settings"}}" method="POST">
         <fieldset>
           <legend>Configurações do Evento</legend>
           <div class="form-group">
@@ -355,7 +355,7 @@
     <div class="well">
       <legend>Banco de Dados</legend>
       <p>
-        <a href="/setup/db/save"><button class="btn btn-info">Salvar Cópia do Banco de Dados</button></a>
+        <a href="{{url "/setup/db/save"}}"><button class="btn btn-info">Salvar Cópia do Banco de Dados</button></a>
       </p>
       <p>
         <button type="button" class="btn btn-primary" onclick="$('#uploadDatabase').modal('show');">
@@ -377,7 +377,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h4 class="modal-title">Escolher Arquivo de Backup</h4>
       </div>
-      <form class="form-horizontal" action="/setup/db/restore" enctype="multipart/form-data" method="POST">
+      <form class="form-horizontal" action="{{url "/setup/db/restore"}}" enctype="multipart/form-data" method="POST">
         <div class="modal-body">
           <p>Selecione o arquivo de banco de dados para carregar. <b>Isso substituirá quaisquer dados existentes.</b></p>
           <input type="file" name="databaseFile">
@@ -401,7 +401,7 @@
         <p>Tem certeza de que deseja limpar todos os dados de partida, classificação e seleção de alianças?</p>
       </div>
       <div class="modal-footer">
-        <form class="form-horizontal" action="/setup/db/clear" method="POST">
+        <form class="form-horizontal" action="{{url "/setup/db/clear"}}" method="POST">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
           <button type="submit" class="btn btn-primary">Limpar Todos os Dados de Partida</button>
         </form>

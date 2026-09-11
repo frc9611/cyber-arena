@@ -92,7 +92,7 @@ func (web *Web) allianceSelectionPostHandler(w http.ResponseWriter, r *http.Requ
 	cachedRankedTeams = newRankedTeams
 
 	web.arena.AllianceSelectionNotifier.Notify()
-	http.Redirect(w, r, "/alliance_selection", 303)
+	http.Redirect(w, r, web.arena.Config.Path("/alliance_selection"), 303)
 }
 
 // Sets up the empty alliances and populates the ranked team list.
@@ -133,7 +133,7 @@ func (web *Web) allianceSelectionStartHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	web.arena.AllianceSelectionNotifier.Notify()
-	http.Redirect(w, r, "/alliance_selection", 303)
+	http.Redirect(w, r, web.arena.Config.Path("/alliance_selection"), 303)
 }
 
 // Resets the alliance selection process back to the starting point.
@@ -176,7 +176,7 @@ func (web *Web) allianceSelectionResetHandler(w http.ResponseWriter, r *http.Req
 	web.arena.AllianceSelectionAlliances = []model.Alliance{}
 	cachedRankedTeams = []*RankedTeam{}
 	web.arena.AllianceSelectionNotifier.Notify()
-	http.Redirect(w, r, "/alliance_selection", 303)
+	http.Redirect(w, r, web.arena.Config.Path("/alliance_selection"), 303)
 }
 
 // Saves the selected alliances to the database and generates the first round of elimination matches.
@@ -271,7 +271,7 @@ func (web *Web) allianceSelectionFinalizeHandler(w http.ResponseWriter, r *http.
 		_ = web.arena.LoadMatch(&matches[0])
 	}
 
-	http.Redirect(w, r, "/match_play", 303)
+	http.Redirect(w, r, web.arena.Config.Path("/match_play"), 303)
 }
 
 // Publishes the alliances to the web.
@@ -285,7 +285,7 @@ func (web *Web) allianceSelectionPublishHandler(w http.ResponseWriter, r *http.R
 		http.Error(w, "Failed to publish alliances: "+err.Error(), 500)
 		return
 	}
-	http.Redirect(w, r, "/alliance_selection", 303)
+	http.Redirect(w, r, web.arena.Config.Path("/alliance_selection"), 303)
 }
 
 func (web *Web) renderAllianceSelection(w http.ResponseWriter, r *http.Request, errorMessage string) {

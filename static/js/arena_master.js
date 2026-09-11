@@ -3,7 +3,7 @@ var arenaBootstrap = null;
 
 function arenaPost(path, body, done) {
   $.ajax({
-    url: path,
+    url: arenaUrl(path),
     type: "POST",
     contentType: "application/json",
     data: JSON.stringify(body || {}),
@@ -30,7 +30,7 @@ function arenaShow(step) {
 }
 
 function arenaRefresh(done) {
-  $.getJSON("/api/arena-master/status")
+  $.getJSON(arenaUrl("/api/arena-master/status"))
     .done(function(data) {
       arenaStatus = data;
       arenaShow(data.step);
@@ -38,7 +38,7 @@ function arenaRefresh(done) {
       if (done) { done(data); }
     })
     .fail(function(xhr) {
-      if (xhr.status === 401) { window.location = "/login?redirect=/setup/arena"; return; }
+      if (xhr.status === 401) { window.location = arenaUrl("/login?redirect=") + encodeURIComponent(arenaUrl("/setup/arena")); return; }
       $("#arenaError").text("Perdi contato com esta arena. O cyber-arena parou?").show();
     });
 }

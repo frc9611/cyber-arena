@@ -3,6 +3,10 @@
 //
 // Shared code for initiating websocket connections back to the server for full-duplex communication.
 
+function arenaUrl(path) {
+  return (window.ARENA_BASE_PATH || "") + path;
+}
+
 var CheesyWebsocket = function(path, events) {
   var that = this;
   var protocol = "ws://";
@@ -13,7 +17,7 @@ var CheesyWebsocket = function(path, events) {
   if (window.location.port !== "") {
     url += ":" + window.location.port;
   }
-  url += path;
+  url += (window.ARENA_BASE_PATH || "") + path;
 
   // Append the page's query string to the websocket URL.
   url += window.location.search;

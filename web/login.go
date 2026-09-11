@@ -92,7 +92,7 @@ func (web *Web) userIsAdmin(w http.ResponseWriter, r *http.Request) bool {
 		if r.URL.RawQuery != "" {
 			redirect += "?" + r.URL.RawQuery
 		}
-		http.Redirect(w, r, "/login?redirect="+url.QueryEscape(redirect), 307)
+		http.Redirect(w, r, web.arena.Config.Path("/login?redirect=")+url.QueryEscape(redirect), 307)
 		return false
 	}
 }

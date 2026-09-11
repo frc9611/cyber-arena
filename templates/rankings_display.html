@@ -9,10 +9,10 @@
 <html>
   <head>
     <title>Rankings Display - {{.EventSettings.Name}} - Cheesy Arena </title>
-    <link rel="shortcut icon" href="/static/img/favicon.ico">
-    <link rel="stylesheet" href="/static/css/lib/bootstrap.min.css" />
-    <link rel="stylesheet" href="/static/css/cheesy-arena.css" />
-    <link rel="stylesheet" href="/static/css/rankings_display.css" />
+    <link rel="shortcut icon" href="{{url "/static/img/favicon.ico"}}">
+    <link rel="stylesheet" href="{{url "/static/css/lib/bootstrap.min.css"}}" />
+    <link rel="stylesheet" href="{{url "/static/css/cheesy-arena.css"}}" />
+    <link rel="stylesheet" href="{{url "/static/css/rankings_display.css"}}" />
   </head>
   <body data-is-fll="{{.EventSettings.IsFll}}">
     <div id="column">
@@ -98,12 +98,12 @@
     </script>
     {{end}}
 
-    <script src="/static/js/lib/handlebars-1.3.0.js"></script>
-    <script src="/static/js/lib/jquery.min.js"></script>
-    <script src="/static/js/lib/jquery.json-2.4.min.js"></script>
-    <script src="/static/js/lib/jquery.websocket-0.0.1.js"></script>
-    <script src="/static/js/lib/jquery.transit.min.js"></script>
-    <script src="/static/js/cheesy-websocket.js"></script>
-    <script src="/static/js/rankings_display.js"></script>
+    <script src="{{url "/static/js/lib/handlebars-1.3.0.js"}}"></script>
+    <script src="{{url "/static/js/lib/jquery.min.js"}}"></script>
+    <script src="{{url "/static/js/lib/jquery.json-2.4.min.js"}}"></script>
+    <script src="{{url "/static/js/lib/jquery.websocket-0.0.1.js"}}"></script>
+    <script src="{{url "/static/js/lib/jquery.transit.min.js"}}"></script>
+    <script src="{{url "/static/js/cheesy-websocket.js"}}"></script>
+    <script src="{{url "/static/js/rankings_display.js"}}"></script>
   </body>
 </html>

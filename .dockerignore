@@ -1,0 +1,9 @@
+.git
+.github
+coverage
+dist
+event.db
+db/
+*.db
+node_modules
+access_point_config.tar.gz

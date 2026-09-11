@@ -11,7 +11,7 @@
 <div class="row">
   {{if eq .EventSettings.IsFll false }} <!--not FLL-->
   <div class="col-lg-4">
-    <a href="/match_play/0/load"><b class="btn btn-info">Carregar Partida de Testes</b></a><br /><br />
+    <a href="{{url "/match_play/0/load"}}"><b class="btn btn-info">Carregar Partida de Testes</b></a><br /><br />
     <ul class="nav nav-tabs" style="margin-bottom: 15px;">
       <li{{if eq .CurrentMatchType "practice" }} class="active"{{end}}>
         <a href="#practice" class="cr-match-play-side-table-top" data-toggle="tab">Prática</a>
@@ -163,7 +163,7 @@
           onclick="$('#confirmDiscardResults').modal('show');" disabled>
         Descartar
       </button>
-      <a href="/match_review/current/edit">
+      <a href="{{url "/match_review/current/edit"}}">
         <button type="button" id="editResults" class="btn btn-default btn-lg btn-match-play" disabled>
           Editar Resultados
         </button>
@@ -429,7 +429,7 @@
             {{if .SavedMatch.DisplayName}}{{.SavedMatchType}} {{.SavedMatch.DisplayName}}{{else}}None{{end}}
           </span>
           &nbsp;
-          <a href="/match_play/clear_result">
+          <a href="{{url "/match_play/clear_result"}}">
             <b class="btn btn-info btn-xs">Limpar</b>
           </a>
         </div>
@@ -473,7 +473,7 @@
             overwrite the previous results?</p>
       </div>
       <div class="modal-footer">
-        <form class="form-horizontal" action="/setup/teams/clear" method="POST">
+        <form class="form-horizontal" action="{{url "/setup/teams/clear"}}" method="POST">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
           <button type="button" class="btn btn-primary" onclick="commitResults();">Commit Results</button>
         </form>
@@ -492,7 +492,7 @@
         <p>Você tem certeza que quer descartar os resultados da partida?</p>
       </div>
       <div class="modal-footer">
-        <form class="form-horizontal" action="/setup/teams/clear" method="POST">
+        <form class="form-horizontal" action="{{url "/setup/teams/clear"}}" method="POST">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
           <button type="button" class="btn btn-primary" onclick="discardResults();">Descartar Resultados</button>
         </form>
@@ -502,8 +502,8 @@
 </div>
 {{end}}
 {{define "script"}}
-<script src="/static/js/match_timing.js"></script>
-<script src="/static/js/match_play.js"></script>
+<script src="{{url "/static/js/match_timing.js"}}"></script>
+<script src="{{url "/static/js/match_play.js"}}"></script>
 {{end}}
 {{define "matchPlayTeam"}}
 <div class="row form-group" id="status{{.color}}{{.position}}">

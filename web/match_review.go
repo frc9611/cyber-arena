@@ -129,7 +129,7 @@ func (web *Web) matchReviewEditPostHandler(w http.ResponseWriter, r *http.Reques
 		*web.arena.RedScore = *matchResult.RedScore
 		*web.arena.BlueScore = *matchResult.BlueScore
 
-		http.Redirect(w, r, "/match_play", 303)
+		http.Redirect(w, r, web.arena.Config.Path("/match_play"), 303)
 	} else {
 		err = web.commitMatchScore(match, &matchResult, true)
 		if err != nil {
@@ -137,7 +137,7 @@ func (web *Web) matchReviewEditPostHandler(w http.ResponseWriter, r *http.Reques
 			return
 		}
 
-		http.Redirect(w, r, "/match_review", 303)
+		http.Redirect(w, r, web.arena.Config.Path("/match_review"), 303)
 	}
 }
 

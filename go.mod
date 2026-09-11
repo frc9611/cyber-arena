@@ -1,6 +1,6 @@
 module github.com/Team254/cheesy-arena-lite
 
-go 1.18
+go 1.22
 
 require (
 	github.com/dchest/uniuri v0.0.0-20200228104902-7aecb25e1fe5
@@ -11,6 +11,7 @@ require (
 	github.com/jung-kurt/gofpdf v1.16.2
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/stretchr/testify v1.8.4
+	go.bug.st/serial v1.6.4
 	go.etcd.io/bbolt v1.3.5
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
 )
@@ -19,9 +20,7 @@ require (
 	github.com/creack/goselect v0.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/goburrow/serial v0.1.0 // indirect
-	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	go.bug.st/serial v1.6.4 // indirect
 	golang.org/x/sys v0.19.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

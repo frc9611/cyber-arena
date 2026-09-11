@@ -15,13 +15,13 @@
     {{else if eq .EventSettings.RemoteSyncApiKey ""}}
       <div class="alert alert-info">
         <strong>Not Configured:</strong> Remote sync API key is not configured. Go to 
-        <a href="/setup/settings">Settings</a> to configure the API key for remote sync.
+        <a href="{{url "/setup/settings"}}">Settings</a> to configure the API key for remote sync.
       </div>
     {{else if ne .EventSettings.RemoteSyncUrl ""}}
       <div class="alert alert-warning">
         <strong>Client Mode:</strong> This instance is configured as a client (RemoteSyncUrl is set). 
         This page is only available on the master node. Clear the RemoteSyncUrl in 
-        <a href="/setup/settings">Settings</a> to use this as a master.
+        <a href="{{url "/setup/settings"}}">Settings</a> to use this as a master.
       </div>
     {{else}}
       <div class="row">
@@ -120,7 +120,7 @@
           <ul>
             <li>FLL scores are automatically synchronized between nodes</li>
             <li>When you commit a match result, scores are sent to all connected systems</li>
-            <li>You can manually review and edit scores in the <a href="/fll/review">FLL Review</a> page</li>
+            <li>You can manually review and edit scores in the <a href="{{url "/fll/review"}}">FLL Review</a> page</li>
           </ul>
         </div>
       </div>

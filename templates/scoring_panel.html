@@ -94,11 +94,11 @@
 <div id="postMatchMessage">Waiting for the next match...</div>
 {{end}}
 {{define "head"}}
-<link href="/static/css/scoring_panel.css" rel="stylesheet">
+<link href="{{url "/static/css/scoring_panel.css"}}" rel="stylesheet">
 {{end}}
 {{define "script"}}
-<script src="/static/js/match_timing.js"></script>
-<script src="/static/js/scoring_panel.js"></script>
+<script src="{{url "/static/js/match_timing.js"}}"></script>
+<script src="{{url "/static/js/scoring_panel.js"}}"></script>
 {{end}}
 {{define "goal"}}
 <div class="goal">

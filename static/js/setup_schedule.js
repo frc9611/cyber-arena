@@ -78,7 +78,7 @@ var deleteBlock = function(blockNumber) {
 var generateSchedule = function() {
   var form = $("#scheduleForm");
   form.attr("method", "POST");
-  form.attr("action", "/setup/schedule/generate");
+  form.attr("action", arenaUrl("/setup/schedule/generate"));
   var addField = function(name, value) {
   var field = $(document.createElement("input"));
     field.attr("type", "hidden");

@@ -94,7 +94,7 @@ func (web *Web) sponsorSlidesPostHandler(w http.ResponseWriter, r *http.Request)
 		}
 	}
 
-	http.Redirect(w, r, "/setup/sponsor_slides", 303)
+	http.Redirect(w, r, web.arena.Config.Path("/setup/sponsor_slides"), 303)
 }
 
 // Swaps the sponsor slide having the given ID with the one immediately above or below it.

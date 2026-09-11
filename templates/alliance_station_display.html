@@ -8,10 +8,10 @@
 <html>
   <head>
     <title>Alliance Station Display - {{.EventSettings.Name}} - Cheesy Arena </title>
-    <link rel="shortcut icon" href="/static/img/favicon.ico">
-    <link rel="stylesheet" href="/static/css/lib/bootstrap.min.css" />
-    <link rel="stylesheet" href="/static/css/cheesy-arena.css" />
-    <link rel="stylesheet" href="/static/css/alliance_station_display.css" />
+    <link rel="shortcut icon" href="{{url "/static/img/favicon.ico"}}">
+    <link rel="stylesheet" href="{{url "/static/css/lib/bootstrap.min.css"}}" />
+    <link rel="stylesheet" href="{{url "/static/css/cheesy-arena.css"}}" />
+    <link rel="stylesheet" href="{{url "/static/css/alliance_station_display.css"}}" />
   </head>
   <body data-is-fll="{{.EventSettings.IsFll}}">
     <div id="match" class="mode">
@@ -30,14 +30,14 @@
       </div>
     </div>
     <div id="logo" class="mode">
-      <img id="logoImg" src="/static/img/frc-logo.png" alt="logo" />
+      <img id="logoImg" src="{{url "/static/img/frc-logo.png"}}" alt="logo" />
     </div>
     <div id="fieldReset" class="mode"><div>FIELD<br />RESET</div></div>
-    <script src="/static/js/lib/jquery.min.js"></script>
-    <script src="/static/js/lib/jquery.json-2.4.min.js"></script>
-    <script src="/static/js/lib/jquery.websocket-0.0.1.js"></script>
-    <script src="/static/js/cheesy-websocket.js"></script>
-    <script src="/static/js/match_timing.js"></script>
-    <script src="/static/js/alliance_station_display.js"></script>
+    <script src="{{url "/static/js/lib/jquery.min.js"}}"></script>
+    <script src="{{url "/static/js/lib/jquery.json-2.4.min.js"}}"></script>
+    <script src="{{url "/static/js/lib/jquery.websocket-0.0.1.js"}}"></script>
+    <script src="{{url "/static/js/cheesy-websocket.js"}}"></script>
+    <script src="{{url "/static/js/match_timing.js"}}"></script>
+    <script src="{{url "/static/js/alliance_station_display.js"}}"></script>
   </body>
 </html>

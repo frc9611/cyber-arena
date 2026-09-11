@@ -9,7 +9,7 @@
 
 <div class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0; background-color: #fff1 !important; opacity: 100% !important;">
     <div class="navbar-header" style="text-align: center !important;">
-      <a class="navbar-brand" href="/" style="font-family: 'Roboto' !important; font-weight: 600;">Arbitragem - CyberArena</a>
+      <a class="navbar-brand" href="{{url "/"}}" style="font-family: 'Roboto' !important; font-weight: 600;">Arbitragem - CyberArena</a>
     </div>
 </div>
 
@@ -369,13 +369,13 @@
   {{end}}
 {{end}}
 {{define "head"}}
-<link rel="manifest" href="/static/manifest/referee.manifest">
+<link rel="manifest" href="{{url "/static/manifest/referee.manifest"}}">
 <meta name="viewport" content="width=device-width, user-scalable=no">
-<link href="/static/css/referee_panel.css" rel="stylesheet">
+<link href="{{url "/static/css/referee_panel.css"}}" rel="stylesheet">
 {{end}}
 {{define "script"}}
-<script src="/static/js/match_timing.js"></script>
-<script src="/static/js/referee_panel.js"></script>
+<script src="{{url "/static/js/match_timing.js"}}"></script>
+<script src="{{url "/static/js/referee_panel.js"}}"></script>
 {{end}}
 {{define "teamCard"}}
 <div class="team-card" id="{{.alliance}}Team{{.position}}Card" data-alliance="{{.alliance}}" onclick="cycleCard(this);">

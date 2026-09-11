@@ -30,7 +30,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <form class="form-horizontal" action="/setup/teams/clear" method="POST">
+        <form class="form-horizontal" action="{{url "/setup/teams/clear"}}" method="POST">
           <button type="button" class="btn btn-default" data-dismiss="modal">Dismiss</button>
         </form>
       </div>
@@ -84,6 +84,6 @@
 {{define "head"}}
 {{end}}
 {{define "script"}}
-<script src="/static/js/match_timing.js"></script>
-<script src="/static/js/announcer_display.js"></script>
+<script src="{{url "/static/js/match_timing.js"}}"></script>
+<script src="{{url "/static/js/announcer_display.js"}}"></script>
 {{end}}

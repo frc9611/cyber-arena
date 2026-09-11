@@ -86,6 +86,9 @@ func NewWeb(arena *field.Arena) *Web {
 		"url": func(path string) string {
 			return arena.Config.Path(path)
 		},
+		"arenaBasePath": func() string {
+			return arena.Config.BasePath
+		},
 	}
 
 	return web
@@ -93,12 +96,19 @@ func NewWeb(arena *field.Arena) *Web {
 
 // Starts the webserver and blocks, waiting on requests. Does not return until the application exits.
 func (web *Web) ServeWebInterface(port int) {
-	http.Handle("/static/", http.StripPrefix("/static/", addNoCacheHeader(http.FileServer(http.Dir("static/")))))
-	http.Handle("/", web.newHandler())
-	log.Printf("Serving HTTP requests on port %d", port)
+	base := web.arena.Config.BasePath
+	http.Handle(base+"/static/",
+		http.StripPrefix(base+"/static/", addNoCacheHeader(http.FileServer(http.Dir("static/")))))
+	http.Handle(base+"/", web.newHandler())
+	if base != "" {
+		http.Handle("/", http.RedirectHandler(base+"/", http.StatusFound))
+	}
+	log.Printf("Serving HTTP requests on port %d%s", port, base)
 
 	// Start Server
-	http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
+		log.Fatalf("Could not listen on port %d: %v", port, err)
+	}
 }
 
 // Serves the root page of Cheesy Arena.
@@ -128,7 +138,11 @@ func addNoCacheHeader(handler http.Handler) http.Handler {
 
 // Sets up the mapping between URLs and handlers.
 func (web *Web) newHandler() http.Handler {
-	router := mux.NewRouter()
+	root := mux.NewRouter()
+	router := root
+	if web.arena.Config.BasePath != "" {
+		router = root.PathPrefix(web.arena.Config.BasePath).Subrouter()
+	}
 	router.HandleFunc("/", web.indexHandler).Methods("GET")
 	router.HandleFunc("/alliance_selection", web.allianceSelectionGetHandler).Methods("GET")
 	router.HandleFunc("/alliance_selection", web.allianceSelectionPostHandler).Methods("POST")
@@ -242,7 +256,7 @@ func (web *Web) newHandler() http.Handler {
 	router.HandleFunc("/api/remote-sync/instances", web.remoteSyncInstancesHandler).Methods("GET")
 	router.HandleFunc("/api/remote-sync/info", web.remoteSyncInfoHandler).Methods("GET")
 	router.HandleFunc("/api/remote-sync/start-match", web.remoteSyncStartMatchHandler).Methods("POST")
-	return router
+	return root
 }
 
 // Writes the given error out as plain text with a status code of 500.
