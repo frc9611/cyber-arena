@@ -163,3 +163,39 @@ func (web *Web) checkAuthPassword(user, password string, r *http.Request) (strin
 	}
 	return "INVALID", fmt.Errorf("Usuário ou senha incorretos.")
 }
+
+func (web *Web) apiRequireAdmin(w http.ResponseWriter, r *http.Request) bool {
+	if web.arena.EventSettings.AdminPassword == "" {
+		writeJsonError(w, http.StatusForbidden, "mesa_sem_senha",
+			"Defina a senha de administrador antes de conectar esta arena a qualquer lugar.")
+		return false
+	}
+	session := web.getUserSessionFromCookie(r)
+	if session == nil || session.Role != "ADMIN" {
+		writeJsonError(w, http.StatusUnauthorized, "sessao_expirada",
+			"Sua sessão terminou. Entre de novo.")
+		return false
+	}
+	return true
+}
+
+func (web *Web) apiRequireJsonPost(w http.ResponseWriter, r *http.Request) bool {
+	if !strings.HasPrefix(r.Header.Get("Content-Type"), "application/json") {
+		writeJsonError(w, http.StatusUnsupportedMediaType, "corpo_invalido",
+			"Esta rota só aceita application/json.")
+		return false
+	}
+	origin := r.Header.Get("Origin")
+	if origin == "" {
+		writeJsonError(w, http.StatusForbidden, "origem_ausente",
+			"Pedido de escrita sem origem. Use a tela do assistente.")
+		return false
+	}
+	parsed, err := url.Parse(origin)
+	if err != nil || parsed.Host != r.Host {
+		writeJsonError(w, http.StatusForbidden, "origem_estranha",
+			"Este pedido veio de outra página.")
+		return false
+	}
+	return true
+}

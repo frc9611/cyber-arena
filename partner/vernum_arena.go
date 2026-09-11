@@ -14,6 +14,7 @@ import (
 
 const (
 	ArenaTokenHeader   = "X-Arena-Token"
+	ArenaTokenScheme   = "ak_"
 	arenaRequestExpiry = 20 * time.Second
 )
 
@@ -328,6 +329,10 @@ type ArenaError struct {
 
 func (e *ArenaError) Error() string {
 	return e.Message
+}
+
+func DescribeTransportError(err error) *ArenaError {
+	return describeTransportError(err)
 }
 
 func describeTransportError(err error) *ArenaError {

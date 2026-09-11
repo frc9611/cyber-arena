@@ -129,6 +129,7 @@
               <a href="#" class="dropdown-toggle cr-sidebar-dropdown-menu-btn" data-toggle="dropdown">Configurações</a>
               <ul class="dropdown-menu">
                 <li><a href="/setup/settings">Configurações</a></li>
+                <li><a href="{{url "/setup/arena"}}">Arena Master{{if eq .EventSettings.ArenaToken ""}} (não configurado){{end}}</a></li>
                 <li><a href="/setup/teams">Lista de Equipes</a></li>
                 <li><a href="/setup/schedule">Agendamento de Partidas</a></li>
                 <li><a href="/setup/awards">Prêmios</a></li>

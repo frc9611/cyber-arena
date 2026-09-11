@@ -1,0 +1,134 @@
+{{define "title"}}Arena Master{{end}}
+{{define "body"}}
+<div id="arenaWizard" data-step="{{.Step}}" data-mode="{{.Mode}}" data-env-token="{{.EnvToken}}">
+
+  <div id="arenaBlocked" class="alert alert-danger" style="display: none">
+    <strong>Esta instância subiu em modo standalone.</strong>
+    Quem sobe o processo decide o modo, não esta tela. Peça para subirem com
+    <code>ARENA_MODE=local</code>, ou sem a variável. Nada aqui vai funcionar enquanto isso não mudar.
+  </div>
+
+  <div id="arenaPanel" class="panel panel-default" style="display: none">
+    <div class="panel-heading"><h3 class="panel-title">Arena Master</h3></div>
+    <div class="panel-body">
+      <h4 id="arenaState"></h4>
+      <dl class="dl-horizontal">
+        <dt>Evento</dt><dd id="arenaEventName"></dd>
+        <dt>Endereço</dt><dd><span id="arenaMasterUrl" class="text-muted"></span></dd>
+        <dt>Esta máquina</dt><dd id="arenaClientName"></dd>
+        <dt>Local</dt><dd id="arenaVenue"></dd>
+        <dt>Token</dt><dd><code id="arenaTokenPrefix"></code></dd>
+        <dt>Último envio</dt><dd id="arenaLastSync"></dd>
+        <dt>Revisão</dt><dd id="arenaRevision"></dd>
+      </dl>
+      <div id="arenaError" class="alert alert-danger" style="display: none"></div>
+      <button id="arenaSyncNow" class="btn btn-primary">Sincronizar agora</button>
+      <button id="arenaCheckAgain" class="btn btn-default">Conferir de novo</button>
+      <button id="arenaDisconnect" class="btn btn-danger pull-right">Desconectar</button>
+    </div>
+  </div>
+
+  <div id="arenaStep1" class="panel panel-warning" style="display: none">
+    <div class="panel-heading"><h3 class="panel-title">Passo 1 de 4 &mdash; Trancar esta arena</h3></div>
+    <div class="panel-body">
+      <p>
+        Enquanto esta arena não tiver senha, qualquer pessoa na rede do ginásio abre as telas de
+        administração &mdash; e guardar aqui a credencial do Arena Master antes disso seria entregá-la
+        junto. Defina a senha primeiro.
+      </p>
+      <div class="form-group">
+        <label for="arenaPassword">Senha de administrador</label>
+        <input type="password" id="arenaPassword" class="form-control" autocomplete="new-password">
+      </div>
+      <div class="form-group">
+        <label for="arenaPasswordConfirm">Repita a senha</label>
+        <input type="password" id="arenaPasswordConfirm" class="form-control" autocomplete="new-password">
+      </div>
+      <button id="arenaSavePassword" class="btn btn-primary">Definir senha e continuar</button>
+      <span id="arenaPasswordError" class="text-danger"></span>
+    </div>
+  </div>
+
+  <div id="arenaStep2" class="panel panel-default" style="display: none">
+    <div class="panel-heading"><h3 class="panel-title">Passo 2 de 4 &mdash; Conectar</h3></div>
+    <div class="panel-body">
+      <div class="form-group">
+        <label for="arenaUrl">Endereço do Arena Master</label>
+        <input type="text" id="arenaUrl" class="form-control" placeholder="https://server.frc9611.com">
+      </div>
+      <div class="form-group">
+        <label for="arenaToken">Token desta instância</label>
+        <textarea id="arenaToken" class="form-control" rows="2" spellcheck="false"
+          style="font-family: monospace" placeholder="ak_..."></textarea>
+        <p class="help-block">
+          O administrador do evento criou este token e mandou para você. Ele aparece uma vez só lá,
+          então cole o que te mandaram &mdash; espaços e quebras de linha no fim não atrapalham.
+        </p>
+      </div>
+      <div class="form-group">
+        <label for="arenaExpectedSlug">Fim do endereço do evento</label>
+        <input type="text" id="arenaExpectedSlug" class="form-control" placeholder="regional-inverno-2026">
+        <p class="help-block">
+          Veio no mesmo recado que o token. É a única forma de eu saber que este token é
+          <em>deste</em> evento e não do evento vizinho.
+        </p>
+      </div>
+      <div id="arenaInsecure" class="form-group" style="display: none">
+        <label for="arenaConfirmInsecure">Digite CONFIRMO para mandar o token sem https</label>
+        <input type="text" id="arenaConfirmInsecure" class="form-control">
+      </div>
+      <button id="arenaConnect" class="btn btn-primary">Conectar e conferir o endereço</button>
+      <button id="arenaSaveOffline" class="btn btn-default">Salvar sem testar (estou sem rede)</button>
+      <div id="arenaConnectResult" style="margin-top: 12px"></div>
+    </div>
+  </div>
+
+  <div id="arenaStep3" class="panel panel-info" style="display: none">
+    <div class="panel-heading"><h3 class="panel-title">Passo 3 de 4 &mdash; Conferir com o Arena Master</h3></div>
+    <div class="panel-body">
+      <button id="arenaCheck" class="btn btn-primary">Conferir agora</button>
+      <div id="arenaCheckResult" style="margin-top: 14px"></div>
+    </div>
+  </div>
+
+  <div id="arenaStep4" class="panel panel-success" style="display: none">
+    <div class="panel-heading"><h3 class="panel-title">Passo 4 de 4 &mdash; Registrar esta máquina</h3></div>
+    <div class="panel-body">
+      <div class="form-group">
+        <label for="arenaClientNameInput">Nome desta máquina</label>
+        <input type="text" id="arenaClientNameInput" class="form-control" maxlength="80">
+      </div>
+      <div class="form-group">
+        <label for="arenaPublicUrlInput">Como chegar nela pela rede</label>
+        <input type="text" id="arenaPublicUrlInput" class="form-control" maxlength="200">
+      </div>
+      <div id="arenaVenuePick" class="form-group" style="display: none">
+        <label>Onde esta máquina fica</label>
+        <div id="arenaVenueOptions"></div>
+      </div>
+      <div id="arenaTakeoverBox" class="checkbox" style="display: none">
+        <label><input type="checkbox" id="arenaTakeover"> Assumir esta instância no lugar da outra máquina</label>
+      </div>
+      <button id="arenaRegister" class="btn btn-primary">Concluir e registrar</button>
+      <div id="arenaRegisterResult" style="margin-top: 12px"></div>
+    </div>
+  </div>
+
+  <div id="arenaStep5" class="panel panel-default" style="display: none">
+    <div class="panel-heading"><h3 class="panel-title">Quase lá &mdash; o que trago para esta arena?</h3></div>
+    <div class="panel-body">
+      <p>Nada disto é enviado ao servidor. São mudanças só aqui.</p>
+      <div class="checkbox"><label><input type="checkbox" id="arenaImportTeams" checked> <span id="arenaImportTeamsLabel">Acrescentar as equipes do evento</span></label></div>
+      <div class="checkbox"><label><input type="checkbox" id="arenaApplySettings" checked> <span id="arenaApplySettingsLabel">Aplicar a configuração do evento</span></label></div>
+      <p id="arenaCacheAge" class="help-block"></p>
+      <button id="arenaApply" class="btn btn-primary">Aplicar agora</button>
+      <button id="arenaSkipApply" class="btn btn-default">Pular &mdash; faço isso depois</button>
+      <div id="arenaApplyResult" style="margin-top: 12px"></div>
+    </div>
+  </div>
+</div>
+{{end}}
+
+{{define "script"}}
+<script src="/static/js/arena_master.js"></script>
+{{end}}

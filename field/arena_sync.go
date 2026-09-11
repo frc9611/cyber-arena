@@ -193,21 +193,30 @@ func (arena *Arena) recordSyncOutcome(result *partner.ArenaSyncResult, err error
 	})
 }
 
+func (arena *Arena) SaveArenaSettings(mutate func(*model.EventSettings)) error {
+	return arena.saveArenaProgressErr(mutate)
+}
+
 func (arena *Arena) saveArenaProgress(mutate func(*model.EventSettings)) {
+	if err := arena.saveArenaProgressErr(mutate); err != nil {
+		log.Printf("Arena Master: %v", err)
+	}
+}
+
+func (arena *Arena) saveArenaProgressErr(mutate func(*model.EventSettings)) error {
 	arenaSettingsMutex.Lock()
 	defer arenaSettingsMutex.Unlock()
 	fresh, err := arena.Database.GetEventSettings()
 	if err != nil {
-		log.Printf("Arena Master: não consegui reler as configurações: %v", err)
-		return
+		return fmt.Errorf("não consegui reler as configurações: %v", err)
 	}
 	mutate(fresh)
 	if err := arena.Database.UpdateEventSettings(fresh); err != nil {
-		log.Printf("Arena Master: não consegui gravar as configurações: %v", err)
-		return
+		return fmt.Errorf("não consegui gravar as configurações: %v", err)
 	}
 	*arena.EventSettings = *fresh
 	arena.ReloadArenaMasterClient()
+	return nil
 }
 
 func (arena *Arena) BuildArenaSnapshot(settings *arenaSyncConfig) (*partner.ArenaSnapshot, error) {
