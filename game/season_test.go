@@ -186,3 +186,24 @@ func TestDivRoundsTowardsMinusInfinity(t *testing.T) {
 	assert.Equal(t, -4, floorDiv(7, -2))
 	assert.Equal(t, 3, floorDiv(-7, -2))
 }
+
+// O árbitro marca o LEAVE depois que o autônomo acabou — continua sendo um LEAVE do autônomo, e é a
+// opção que diz isso, não o relógio. Com o relógio mandando, os pontos caíam no período errado e o
+// desempate "LEAVE + Coral do auto" ficava zerado numa partida que teve os dois.
+func TestAnOptionThatDeclaresItsPeriodIgnoresTheClock(t *testing.T) {
+	season := SeasonByKey("frc-2025-reefscape")
+	score := &Score{SeasonKey: season.Key, Level: "REGIONAL", Robots: 3}
+	score.Occupy(season.Group("leave"), 1, "left", "teleop")
+	assert.Equal(t, "auto", score.States("leave")[0].OccupiedIn)
+
+	// O coral não declara período: acontece nos dois, e aí o relógio é que responde.
+	score.Occupy(season.Group("coralL4"), 1, "coral", "teleop")
+	assert.Equal(t, "teleop", score.States("coralL4")[0].OccupiedIn)
+	score.Occupy(season.Group("coralL4"), 2, "coral", "auto")
+	assert.Equal(t, "auto", score.States("coralL4")[1].OccupiedIn)
+
+	outcome := Evaluate(season, "REGIONAL", score, nil)
+	assert.Equal(t, 3, outcome.Categories["leave"])
+	assert.Equal(t, 5+7, outcome.Categories["coral"], "um coral no teleop e um no auto")
+	assert.Equal(t, 3+7, outcome.PeriodPoints["auto"], "o LEAVE e o coral do auto somam no autônomo")
+}

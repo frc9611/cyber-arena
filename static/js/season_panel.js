@@ -252,11 +252,12 @@ var seasonPanel = (function() {
         "Este evento não tem temporada configurada. Escolha uma em Configurações."));
       return;
     }
-    host.appendChild(drawAlliance("red"));
+    // Azul à esquerda e vermelha à direita, a mesma ordem do placar no topo da tela.
     host.appendChild(drawAlliance("blue"));
+    host.appendChild(drawAlliance("red"));
     if (foulHost) {
-      foulHost.appendChild(drawFouls("red"));
       foulHost.appendChild(drawFouls("blue"));
+      foulHost.appendChild(drawFouls("red"));
     }
   }
 

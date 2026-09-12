@@ -57,9 +57,9 @@ func (web *Web) refereePanelWebsocketHandler(w http.ResponseWriter, r *http.Requ
 	// Subscribe the websocket to the notifiers whose messages will be passed on to the client, in a separate goroutine.
 	go ws.HandleNotifiers(
 		web.arena.MatchLoadNotifier,
+		web.arena.MatchTimingNotifier,
 		web.arena.MatchTimeNotifier,
 		web.arena.RealtimeScoreNotifier,
-		web.arena.MatchTimingNotifier,
 		web.arena.ReloadDisplaysNotifier,
 	)
 

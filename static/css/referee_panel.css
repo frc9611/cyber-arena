@@ -229,37 +229,137 @@ h3 {
   height: 40px;
   accent-color: #0066B3;
 } 
-/* Painel desenhado da temporada */
-.sp-headline { display: flex; align-items: baseline; gap: 12px; }
-.sp-season-name { color: #888; font-size: 0.9em; }
-.sp-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 8px; }
-.sp-alliance { padding: 8px; border-radius: 6px; background: #ffffff10; }
-.sp-alliance-red { border-top: 3px solid #d9534f; }
-.sp-alliance-blue { border-top: 3px solid #337ab7; }
-.sp-alliance-title { margin: 0 0 8px 0; font-weight: 600; }
-.sp-entry { margin-bottom: 10px; }
-.sp-entry-label { display: block; font-weight: 600; font-size: 0.95em; }
-.sp-help { display: block; color: #999; font-size: 0.8em; margin-top: 2px; }
-.sp-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
-.sp-btn { min-width: 44px; min-height: 44px; font-size: 1.2em; border: 1px solid #0003; border-radius: 4px; }
-.sp-value { min-width: 40px; text-align: center; font-size: 1.3em; font-weight: 600; }
-.sp-number { width: 90px; }
-.sp-toggle, .sp-choice, .sp-slot, .sp-foul { border: 1px solid #0003; border-radius: 4px; background: #fff; }
-.sp-toggle { min-height: 44px; width: 100%; }
-.sp-on { background: #5cb85c; color: #fff; border-color: #4cae4c; }
+/* Painel desenhado da temporada. Azul à esquerda e vermelha à direita, como o placar do topo e como
+   o painel de faltas sempre foram: a cor errada de um lado é um placar registrado na aliança errada. */
+.sp-headline {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 8px 12px 0 12px;
+}
+.sp-headline h3 { margin: 0; color: #fff; font-weight: 600; }
+.sp-season-name { color: #fff9; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+
+.sp-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 8px 12px 12px 12px;
+  align-items: start;
+}
+.sp-alliance {
+  background-color: #fff1;
+  border-radius: 8px;
+  box-shadow: 0 6px 8px 2px #0005;
+  padding: 8px 10px 12px 10px;
+  min-width: 0;
+}
+.sp-alliance-red { border-top: 4px solid #d62d33; }
+.sp-alliance-blue { border-top: 4px solid #0066B3; }
+.sp-alliance-title {
+  margin: 4px 0 10px 0;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 600;
+  font-family: "Roboto";
+  letter-spacing: .5px;
+}
+
+.sp-entry { margin-bottom: 12px; }
+.sp-entry-label {
+  display: block;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: "Roboto";
+}
+.sp-help { display: block; color: #fff8; font-size: 12px; line-height: 1.25; margin: 2px 0 4px 0; }
+.sp-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+
+.sp-btn {
+  min-width: 56px;
+  min-height: 44px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  background-color: #3d8933;
+}
+.sp-btn-minus { background-color: #de6832; }
+.sp-value {
+  min-width: 52px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  font-family: "Roboto";
+}
+.sp-number {
+  width: 84px;
+  text-align: center;
+  padding: 8px;
+  border-radius: 4px;
+  border: solid 1px #fff3;
+  background-color: #fff;
+}
+
+.sp-toggle, .sp-choice, .sp-slot {
+  color: #fff;
+  background-color: #ffffff14;
+  border: solid 1px #fff3;
+  border-radius: 4px;
+  font-weight: 600;
+  font-family: "Roboto";
+}
+.sp-toggle { min-height: 44px; width: 100%; font-size: 16px; }
+.sp-toggle.sp-on, .sp-choice.sp-on { background-color: #3d8933; border-color: #4cae4c; }
+
+/* A cor diz em que período o lugar foi ocupado, que é o que o árbitro precisa ver sem perguntar. */
 .sp-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-top: 4px; }
-.sp-slot { min-height: 44px; }
-.sp-slot-on { background: #5cb85c; color: #fff; }
-.sp-slot-auto { background: #f0ad4e; color: #fff; }
-.sp-robot-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
-.sp-robot-name { min-width: 70px; font-size: 0.9em; }
-.sp-choice { flex: 1; min-height: 44px; }
-.sp-foul { display: block; width: 100%; min-height: 44px; margin-bottom: 6px; text-align: left; padding: 0 10px; }
-.sp-outcomes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 8px; }
-.sp-outcome { padding: 8px; border-radius: 6px; background: #ffffff10; }
-.sp-cat, .sp-rp { display: flex; justify-content: space-between; padding: 2px 0; }
-.sp-rp { border-top: 1px dashed #0002; }
-.sp-rp.sp-on .sp-cat-value { color: #3c763d; font-weight: 700; }
-.sp-cat-label { color: #bbb; }
-.sp-cat-value { font-weight: 600; }
-.sp-empty { color: #999; padding: 16px; }
+.sp-slot { min-height: 46px; font-size: 16px; }
+.sp-slot-on { background-color: #3d8933; border-color: #4cae4c; }
+.sp-slot-auto { background-color: #cf8a1c; border-color: #e0a63c; }
+
+.sp-robot-row { display: flex; align-items: center; gap: 5px; margin-top: 5px; }
+.sp-robot-name { min-width: 64px; color: #fff; font-size: 14px; font-weight: 600; }
+.sp-choice { flex: 1; min-height: 46px; font-size: 16px; }
+
+.sp-foul {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  margin-bottom: 6px;
+  padding: 0 12px;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  border: solid 1px #fff3;
+  border-radius: 6px;
+  background-color: transparent;
+}
+.sp-alliance-red .sp-foul { background-color: #d62d33; }
+.sp-alliance-blue .sp-foul { background-color: #0066B3; }
+
+.sp-outcomes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 12px 12px 12px; }
+.sp-outcome {
+  background-color: #fff1;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+.sp-outcome.sp-alliance-red { border-top: 4px solid #d62d33; }
+.sp-outcome.sp-alliance-blue { border-top: 4px solid #0066B3; }
+.sp-cat, .sp-rp { display: flex; justify-content: space-between; padding: 3px 0; font-family: "Roboto"; }
+.sp-rp { border-top: 1px solid #fff2; margin-top: 2px; }
+.sp-cat-label { color: #fff9; font-size: 14px; }
+.sp-cat-value { color: #fff; font-weight: 700; font-size: 15px; }
+.sp-rp.sp-on { background-color: #3d893322; }
+.sp-rp.sp-on .sp-cat-value, .sp-rp.sp-on .sp-cat-label { color: #8fd97f; }
+.sp-empty { color: #fff9; padding: 24px 12px; font-size: 16px; }
+
+#fouls h3, #scoring h3 { color: #fff; font-weight: 600; padding-left: 12px; }
+
+@media (max-width: 900px) {
+  .sp-panel, .sp-outcomes { grid-template-columns: 1fr; }
+}

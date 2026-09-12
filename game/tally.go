@@ -142,9 +142,12 @@ func (score *Score) Occupy(group *SlotGroup, slot int, optionId, period string) 
 	if option == nil {
 		return
 	}
-	landed := period
+	// Uma opção que declara o próprio período manda nele. O árbitro marca o LEAVE depois que o
+	// autônomo acabou, e continua sendo um LEAVE do autônomo; só quem não declara — o coral, que
+	// acontece nos dois — é que pergunta ao relógio.
+	landed := option.Period
 	if landed == "" {
-		landed = option.Period
+		landed = period
 	}
 	state.Occupant = optionId
 	state.OccupiedIn = landed

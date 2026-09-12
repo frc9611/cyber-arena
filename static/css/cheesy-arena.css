@@ -8,6 +8,9 @@
 /** CSS CYBERRAIN (cr) - Início */
 
 body {
+  /* A cor tem de estar aqui: com background-attachment fixed a imagem só cobre a altura da tela, e
+     tudo o que passa disso numa página longa aparecia em branco, com texto branco por cima. */
+  background-color: #171717;
   background-image: url("../img/cr-bg-cool.png");
   background-size: cover;
   background-repeat: no-repeat;
