@@ -552,6 +552,7 @@ func (arena *Arena) registerWithArenaMaster() error {
  * nem as equipes reescritas por cima do que o evento ja viveu.
  */
 func (arena *Arena) importFromBootstrap(boot *partner.ArenaBootstrap) {
+	arena.adoptSeasonFromBootstrap(boot)
 	teams, err := arena.Database.GetAllTeams()
 	if err != nil {
 		log.Printf("Arena Master: não consegui ler as equipes locais: %v", err)
@@ -617,4 +618,47 @@ func (arena *Arena) applyCloudWiring() {
 		settings.RemoteSyncUrl = cfg.FllMasterUrl
 		settings.RemoteSyncClients = strings.Join(cfg.FllClientList(), ",")
 	})
+}
+
+// O pacote que o evento mandou fica gravado e volta no boot, antes de qualquer partida carregar. Uma
+// arena que perdeu a rede na véspera continua pontuando pela temporada certa.
+func (arena *Arena) adoptStoredSeason() {
+	body := arena.EventSettings.SeasonBody
+	if body == "" {
+		return
+	}
+	season, err := game.AdoptSeason([]byte(body))
+	if err != nil {
+		log.Printf("Arena Master: o pacote de temporada gravado não carrega: %v", err)
+		return
+	}
+	log.Printf("Temporada %s r%d adotada do evento.", season.Key, season.Revision)
+}
+
+// Adota a temporada que o evento publicou. O hash é comparado antes: um documento igual não precisa
+// ser regravado, e um diferente substitui o que estava aqui, porque quem manda na regra é o evento.
+func (arena *Arena) adoptSeasonFromBootstrap(boot *partner.ArenaBootstrap) {
+	season := boot.Event.Season
+	if season == nil || season.Body == "" {
+		return
+	}
+	if season.Hash != "" && season.Hash == arena.EventSettings.SeasonHash {
+		return
+	}
+	adopted, err := game.AdoptSeason([]byte(season.Body))
+	if err != nil {
+		log.Printf("Arena Master: o pacote de %s r%d foi recusado: %v", season.Key, season.Revision, err)
+		return
+	}
+	arena.saveArenaProgress(func(settings *model.EventSettings) {
+		settings.SeasonKey = adopted.Key
+		settings.SeasonRevision = adopted.Revision
+		settings.SeasonHash = season.Hash
+		settings.SeasonBody = season.Body
+		if season.Level != "" {
+			settings.EventLevel = season.Level
+		}
+		settings.IsFll = adopted.Format == game.FormatSheet
+	})
+	log.Printf("Temporada %s r%d adotada do Arena Master.", adopted.Key, adopted.Revision)
 }

@@ -142,6 +142,7 @@ func NewArena(dbPath string, cfg *config.Config) (*Arena, error) {
 	arena.restFieldEstop = false
 
 	arena.arenaSyncWake = make(chan struct{}, 1)
+	arena.adoptStoredSeason()
 	arena.applyCloudWiring()
 	arena.ReloadArenaMasterClient()
 

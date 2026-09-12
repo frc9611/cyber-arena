@@ -76,24 +76,36 @@ type ArenaBootstrap struct {
 		DeleteSuspended      bool   `json:"deleteSuspended"`
 	} `json:"instance"`
 	Event struct {
-		EventId             int64       `json:"eventId"`
-		Slug                string      `json:"slug"`
-		Name                string      `json:"name"`
-		Location            string      `json:"location"`
-		TournamentType      string      `json:"tournamentType"`
-		TournamentTypeLabel string      `json:"tournamentTypeLabel"`
-		ElimType            string      `json:"elimType"`
-		IsFll               bool        `json:"isFll"`
-		TeamsPerAlliance    int         `json:"teamsPerAlliance"`
-		NumElimAlliances    int         `json:"numElimAlliances"`
-		StartsAt            string      `json:"startsAt"`
-		EndsAt              string      `json:"endsAt"`
-		Published           bool        `json:"published"`
-		Venue               ArenaVenue  `json:"venue"`
-		Counts              ArenaCounts `json:"counts"`
-		CountsFromHere      ArenaCounts `json:"countsFromHere"`
+		EventId             int64        `json:"eventId"`
+		Slug                string       `json:"slug"`
+		Name                string       `json:"name"`
+		Location            string       `json:"location"`
+		TournamentType      string       `json:"tournamentType"`
+		TournamentTypeLabel string       `json:"tournamentTypeLabel"`
+		ElimType            string       `json:"elimType"`
+		IsFll               bool         `json:"isFll"`
+		TeamsPerAlliance    int          `json:"teamsPerAlliance"`
+		NumElimAlliances    int          `json:"numElimAlliances"`
+		StartsAt            string       `json:"startsAt"`
+		EndsAt              string       `json:"endsAt"`
+		Published           bool         `json:"published"`
+		Season              *ArenaSeason `json:"season"`
+		Venue               ArenaVenue   `json:"venue"`
+		Counts              ArenaCounts  `json:"counts"`
+		CountsFromHere      ArenaCounts  `json:"countsFromHere"`
 	} `json:"event"`
 	Teams []ArenaBootstrapTeam `json:"teams"`
+}
+
+type ArenaSeason struct {
+	Key      string `json:"key"`
+	Revision int    `json:"revision"`
+	Hash     string `json:"hash"`
+	Program  string `json:"program"`
+	Name     string `json:"name"`
+	Format   string `json:"format"`
+	Level    string `json:"level"`
+	Body     string `json:"body"`
 }
 
 type ArenaHeartbeat struct {

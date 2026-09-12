@@ -70,6 +70,9 @@ type EventSettings struct {
 	ArenaLocalFingerprint string
 	ArenaIsAnchor         bool
 	SeasonKey             string
+	SeasonRevision        int
+	SeasonHash            string
+	SeasonBody            string
 	EventLevel            string
 	ArenaSyncEnabled      bool
 	ArenaSyncSeconds      int

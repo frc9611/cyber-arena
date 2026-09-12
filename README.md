@@ -111,6 +111,17 @@ As telas não têm mais coluna cravada: a tabela, o telão, o CSV e o PDF desenh
 critério da temporada, e o `/api/rankings` manda os rótulos junto com as linhas — é a única fonte que
 a tela de classificação consulta, porque ela não assina `matchLoad`.
 
+### Puxar a temporada do Arena Master
+
+Uma arena não precisa de um build novo para rodar uma temporada nova. O evento no Arena Master aponta
+para uma revisão publicada, e o `bootstrap` entrega o **documento inteiro**: a arena adota o pacote,
+**roda os casos dele** antes de aceitar — um pacote que falha nos próprios casos é recusado e a arena
+diz por quê —, grava o documento e o hash, e passa a pontuar por ele. Se a rede cair na véspera, o
+documento gravado volta no boot.
+
+O hash é comparado antes de adotar: um documento igual não é regravado, e um diferente substitui o
+que estava aqui, porque quem manda na regra é o evento.
+
 Um resultado gravado **antes** das temporadas não tem tally, e continua sendo lido como sempre: a
 soma dos quatro números digitados. As quatro colunas mantiveram o nome no banco e na API; só os
 campos Go viraram `Legacy*`. Nada foi reescrito no banco de um evento que já aconteceu.

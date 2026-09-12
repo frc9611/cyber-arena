@@ -338,6 +338,21 @@ func AllSeasons() []*Season {
 	return answer
 }
 
+// Adota um documento que este binário não embute. É o que deixa uma arena rodar a temporada que o
+// Arena Master publicou sem esperar por um build novo — e o hash é como ela prova, depois, que rodou
+// exatamente aquele documento.
+func AdoptSeason(body []byte) (*Season, error) {
+	season, err := ParseSeason(body)
+	if err != nil {
+		return nil, err
+	}
+	if failures := season.RunTests(); len(failures) > 0 {
+		return nil, fmt.Errorf("o pacote não passa nos próprios casos: %s", failures[0].Error())
+	}
+	RegisterSeason(season)
+	return season, nil
+}
+
 func RegisterSeason(season *Season) {
 	if _, known := seasons[season.Key]; !known {
 		seasonOrder = append(seasonOrder, season.Key)
