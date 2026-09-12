@@ -182,6 +182,9 @@ func newTallySide(season *Season, level string, score *Score) *tallySide {
 		if action.Kind == KindToggle {
 			continue
 		}
+		if !side.pays(action) {
+			continue
+		}
 		for _, period := range action.PeriodsOrAny() {
 			points := score.ActionPoints(action, period)
 			if points == 0 {
@@ -198,6 +201,18 @@ func newTallySide(season *Season, level string, score *Score) *tallySide {
 		}
 	}
 	return side
+}
+
+// Uma ação pode valer zero por causa do estado do resto da folha: o bônus do M11 só paga com a
+// missão principal cumprida. A condição lê só o tally — nunca categoria, total ou flag —, que é o
+// que a deixa avaliável antes de qualquer soma existir.
+func (side *tallySide) pays(action *SeasonAction) bool {
+	if action.PointsWhen.Empty() {
+		return true
+	}
+	raw := &evaluator{own: side, opponent: side, flags: map[string]bool{},
+		flagPts: map[string]int{}, eligible: map[string]bool{}, stage: stageTally}
+	return raw.value(action.PointsWhen, side) != 0
 }
 
 func (side *tallySide) creditFouls(from *tallySide) {

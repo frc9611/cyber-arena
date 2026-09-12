@@ -1,0 +1,158 @@
+{
+  "schema": 2,
+  "key": "frc-2026-rebuilt",
+  "revision": 1,
+  "revisionNote": "Valores da Table 6-4 e limiares da Table 6-5 do manual de 2026. A ordem de desempate da Table 11-2 não estava publicada em setembro de 2026: a declarada aqui é a forma corrente (placar sem faltas, TOWER, FUEL) e pode ser corrigida sem mexer em expressão.",
+  "program": "FRC",
+  "name": "REBUILT",
+  "year": 2026,
+  "format": "alliance",
+  "robotsPerAlliance": 3,
+
+  "periods": [
+    { "id": "auto",   "label": "Autônomo",    "durationSec": 20,  "scoring": true },
+    { "id": "teleop", "label": "Teleoperado", "durationSec": 140, "warningSec": 30, "scoring": true }
+  ],
+
+  "eventLevels": [
+    { "id": "REGIONAL",     "label": "Regional" },
+    { "id": "DISTRICT",     "label": "Distrital" },
+    { "id": "DCMP",         "label": "Campeonato distrital" },
+    { "id": "CHAMPIONSHIP", "label": "Mundial" }
+  ],
+
+  "thresholds": {
+    "energizedFuel":    { "REGIONAL": 100, "DISTRICT": 100, "DCMP": 100, "CHAMPIONSHIP": 100 },
+    "superchargedFuel": { "REGIONAL": 360, "DISTRICT": 360, "DCMP": 360, "CHAMPIONSHIP": 360 },
+    "traversalPoints":  { "REGIONAL": 50,  "DISTRICT": 50,  "DCMP": 50,  "CHAMPIONSHIP": 50 }
+  },
+  "thresholdsOverridable": true,
+
+  "categories": [
+    { "id": "fuel",          "label": "Fuel" },
+    { "id": "tower",         "label": "Tower" },
+    { "id": "foulCommitted", "label": "Faltas cometidas", "kind": "foulCommitted" },
+    { "id": "foulReceived",  "label": "Faltas recebidas",  "kind": "foulReceived" }
+  ],
+
+  "slotGroups": [
+    { "id": "tower", "label": "Tower", "category": "tower",
+      "help": "Um degrau por robô em cada período. No autônomo só o nível 1, e no máximo dois robôs.",
+      "slots": "robots", "exclusiveBy": "slotPeriod", "provenance": true, "tracksEver": true,
+      "layout": "robots",
+      "maxOccupied": { "auto": 2 },
+      "options": [
+        { "id": "level1", "label": "Nível 1", "short": "1", "points": { "auto": 15, "teleop": 10 } },
+        { "id": "level2", "label": "Nível 2", "short": "2", "points": { "teleop": 20 } },
+        { "id": "level3", "label": "Nível 3", "short": "3", "points": { "teleop": 30 } } ] }
+  ],
+
+  "actions": [
+    { "id": "fuelActive", "label": "Fuel no HUB ativo", "category": "fuel", "unit": "count",
+      "periods": ["auto", "teleop"], "points": { "auto": 1, "teleop": 1 },
+      "help": "O módulo de campo decide o balde: o árbitro tem um botão de FUEL só." },
+
+    { "id": "fuelInactive", "label": "Fuel no HUB inativo", "category": "fuel", "unit": "count",
+      "periods": ["auto", "teleop"], "points": { "auto": 0, "teleop": 0 },
+      "help": "Não vale ponto e não conta para os RP de FUEL. Fica registrado para a revisão." },
+
+    { "id": "minorFoul", "label": "Falta menor", "kind": "foul", "unit": "count",
+      "points": 5, "creditsOpponent": true },
+    { "id": "majorFoul", "label": "Falta maior", "kind": "foul", "unit": "count",
+      "points": 15, "creditsOpponent": true },
+    { "id": "deliberacao", "label": "Deliberação do árbitro-chefe", "kind": "adjustment",
+      "unit": "freeValue", "creditsOpponent": true, "confirm": true }
+  ],
+
+  "field": {
+    "family": "alternatingGoals",
+    "params": {
+      "windows": [
+        { "id": "auto",       "seconds": 20, "bothActive": true },
+        { "id": "transition", "seconds": 10, "bothActive": true },
+        { "id": "shift1",     "seconds": 25, "bothActive": false },
+        { "id": "shift2",     "seconds": 25, "bothActive": false },
+        { "id": "shift3",     "seconds": 25, "bothActive": false },
+        { "id": "shift4",     "seconds": 25, "bothActive": false },
+        { "id": "endgame",    "seconds": 30, "bothActive": true }
+      ],
+      "decidedBy": "fuelActive@auto",
+      "winnerStartsInactive": true,
+      "graceSec": 3,
+      "activeAction": "fuelActive",
+      "inactiveAction": "fuelInactive",
+      "signalActive": "A",
+      "signalInactive": "I"
+    }
+  },
+
+  "ranking": {
+    "mode": "alliance",
+    "rsDecimals": 2,
+    "result": { "win": 3, "tie": 1, "loss": 0 },
+    "surrogate":    { "rp": 0, "sortZero": true, "countsPlayed": true },
+    "disqualified": { "rp": 0, "sortZero": true, "countsPlayed": true },
+
+    "rankingPoints": [
+      { "id": "energizedRp", "label": "ENERGIZED RP", "points": 1,
+        "when": [">=", ["cat", "fuel"], ["thr", "energizedFuel"]] },
+
+      { "id": "superchargedRp", "label": "SUPERCHARGED RP", "points": 1,
+        "when": [">=", ["cat", "fuel"], ["thr", "superchargedFuel"]] },
+
+      { "id": "traversalRp", "label": "TRAVERSAL RP", "points": 1,
+        "when": [">=", ["cat", "tower"], ["thr", "traversalPoints"]] }
+    ],
+
+    "tiebreakers": [
+      { "id": "noFoul", "label": "Pontos sem faltas", "expr": ["-", ["total"], ["cat", "foulReceived"]] },
+      { "id": "tower",  "label": "Pontos de Tower",   "expr": ["cat", "tower"] },
+      { "id": "fuel",   "label": "Pontos de Fuel",    "expr": ["cat", "fuel"] }
+    ]
+  },
+
+  "tests": [
+    { "name": "Fuel no hub inativo não vale ponto nem conta para o ENERGIZED",
+      "level": "REGIONAL", "robots": 3,
+      "state": { "actions": { "fuelActive@teleop": 99, "fuelInactive@teleop": 40 } },
+      "expect": { "total": 99, "categories": { "fuel": 99 }, "rpEarned": [],
+                  "sort": [99, 0, 99] } },
+
+    { "name": "ENERGIZED com 100 de fuel",
+      "level": "REGIONAL", "robots": 3,
+      "state": { "actions": { "fuelActive@teleop": 100 } },
+      "expect": { "total": 100, "rpEarned": ["energizedRp"] } },
+
+    { "name": "SUPERCHARGED leva o ENERGIZED junto",
+      "level": "REGIONAL", "robots": 3,
+      "state": { "actions": { "fuelActive@auto": 120, "fuelActive@teleop": 240 } },
+      "expect": { "total": 360, "categories": { "fuel": 360 },
+                  "rpEarned": ["energizedRp", "superchargedRp"] } },
+
+    { "name": "TRAVERSAL com dois robôs no nível 3",
+      "level": "REGIONAL", "robots": 3,
+      "state": { "slots": { "tower": { "1": { "option": "level3", "in": "teleop" },
+                                       "2": { "option": "level3", "in": "teleop" } } } },
+      "expect": { "total": 60, "categories": { "tower": 60 }, "rpEarned": ["traversalRp"] } },
+
+    { "name": "TRAVERSAL não sai com 40 pontos de Tower",
+      "level": "REGIONAL", "robots": 3,
+      "state": { "slots": { "tower": { "1": { "option": "level2", "in": "teleop" },
+                                       "2": { "option": "level2", "in": "teleop" } } } },
+      "expect": { "total": 40, "rpEarned": [] } },
+
+    { "name": "O mesmo robô sobe o nível 1 no auto e o nível 3 no teleop, e os dois contam",
+      "level": "REGIONAL", "robots": 3,
+      "steps": [ { "group": "tower", "slot": 1, "option": "level1", "period": "auto" },
+                 { "group": "tower", "slot": 1, "option": "level3", "period": "teleop" } ],
+      "expect": { "total": 45, "categories": { "tower": 45 } } },
+
+    { "name": "Falta maior credita 15 ao adversário",
+      "level": "REGIONAL", "robots": 3,
+      "state": { "actions": { "minorFoul": 1 } },
+      "opponent": { "actions": { "majorFoul": 2 } },
+      "expect": { "total": 30,
+                  "categories": { "foulCommitted": 5, "foulReceived": 30 },
+                  "sort": [0, 0, 0] } }
+  ]
+}

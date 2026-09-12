@@ -1,0 +1,165 @@
+{
+  "schema": 2,
+  "key": "ftc-2025-decode",
+  "revision": 1,
+  "revisionNote": "Valores conferidos contra o resumo oficial: classificado 3, overflow 1, PATTERN 2 por índice casado (9 índices, 18 no máximo), base parcial 5 e cheia 10, bônus de empilhamento 20. Os limiares de RP do Campeonato Regional são 21/42/22; os de evento comum são estimados e são editáveis por nível.",
+  "program": "FTC",
+  "name": "DECODE",
+  "year": 2025,
+  "format": "alliance",
+  "robotsPerAlliance": 2,
+
+  "periods": [
+    { "id": "auto",   "label": "Autônomo",    "durationSec": 30,  "scoring": true },
+    { "id": "pause",  "label": "Transição",   "durationSec": { "OTHER": 8, "REGIONAL_CHAMPIONSHIP": 8, "CHAMPIONSHIP": 15 }, "scoring": false },
+    { "id": "teleop", "label": "Teleoperado", "durationSec": 120, "warningSec": 20, "scoring": true }
+  ],
+
+  "eventLevels": [
+    { "id": "OTHER",                 "label": "Evento comum" },
+    { "id": "REGIONAL_CHAMPIONSHIP", "label": "Campeonato regional" },
+    { "id": "CHAMPIONSHIP",          "label": "FIRST Championship" }
+  ],
+
+  "thresholds": {
+    "movementPoints": { "OTHER": 15, "REGIONAL_CHAMPIONSHIP": 21, "CHAMPIONSHIP": 21 },
+    "artifactPoints": { "OTHER": 30, "REGIONAL_CHAMPIONSHIP": 42, "CHAMPIONSHIP": 42 },
+    "patternPoints":  { "OTHER": 12, "REGIONAL_CHAMPIONSHIP": 22, "CHAMPIONSHIP": 22 }
+  },
+  "thresholdsOverridable": true,
+
+  "categories": [
+    { "id": "artifact",      "label": "Artefatos" },
+    { "id": "pattern",       "label": "Pattern" },
+    { "id": "base",          "label": "Base" },
+    { "id": "foulCommitted", "label": "Faltas cometidas", "kind": "foulCommitted" },
+    { "id": "foulReceived",  "label": "Faltas recebidas",  "kind": "foulReceived" }
+  ],
+
+  "matchRandom": [
+    { "id": "motif", "label": "Motif do obelisco", "scope": "match",
+      "values": [
+        { "id": "tag21", "label": "Tag 21 — VPP" },
+        { "id": "tag22", "label": "Tag 22 — PVP" },
+        { "id": "tag23", "label": "Tag 23 — PPV" } ] }
+  ],
+
+  "slotGroups": [
+    { "id": "base", "label": "Volta à base", "category": "base",
+      "help": "Um crédito por robô, e imóvel no apito final. O empilhado não toca o chão da base: a dupla soma 30, não 40.",
+      "slots": "robots", "exclusiveBy": "slot", "provenance": false, "layout": "robots",
+      "options": [
+        { "id": "partial", "label": "Parcial (toca a fita)", "short": "P", "period": "teleop", "points": 5 },
+        { "id": "full",    "label": "Inteiramente na base",  "short": "B", "period": "teleop", "points": 10 },
+        { "id": "stacked", "label": "Empilhado sobre o outro", "short": "E", "period": "teleop", "points": 20 } ] },
+
+    { "id": "leave", "label": "Saiu da LAUNCH LINE", "category": "base",
+      "help": "No autônomo, o robô que sai da linha de lançamento.",
+      "slots": "robots", "exclusiveBy": "slot", "provenance": false, "layout": "robots",
+      "options": [ { "id": "left", "label": "Saiu", "short": "L", "period": "auto", "points": 3 } ] }
+  ],
+
+  "actions": [
+    { "id": "classified", "label": "Artefato classificado", "category": "artifact", "unit": "count",
+      "periods": ["auto", "teleop"], "points": { "auto": 3, "teleop": 3 },
+      "help": "Até os nove primeiros de cada goal; o que passa disso é overflow." },
+
+    { "id": "overflow", "label": "Artefato em overflow", "category": "artifact", "unit": "count",
+      "periods": ["auto", "teleop"], "points": { "auto": 1, "teleop": 1 } },
+
+    { "id": "patternIndex", "label": "Índice casado com o motif", "category": "pattern", "unit": "count",
+      "periods": ["auto", "teleop"], "points": { "auto": 2, "teleop": 2 }, "max": 9,
+      "help": "Nove índices na rampa, o motif repetido três vezes. Conferido no fim de cada período." },
+
+    { "id": "minorFoul", "label": "Falta menor", "kind": "foul", "unit": "count",
+      "points": 5, "creditsOpponent": true },
+    { "id": "majorFoul", "label": "Falta maior", "kind": "foul", "unit": "count",
+      "points": 15, "creditsOpponent": true },
+    { "id": "g418b", "label": "G418.B — concede o PATTERN RP ao adversário", "kind": "toggle",
+      "unit": "toggle", "periods": ["teleop"],
+      "help": "O árbitro marca; o RP vai para o outro lado sem sair deste." },
+    { "id": "deliberacao", "label": "Deliberação do árbitro-chefe", "kind": "adjustment",
+      "unit": "freeValue", "creditsOpponent": true, "confirm": true }
+  ],
+
+  "ranking": {
+    "mode": "alliance",
+    "rsDecimals": 2,
+    "result": { "win": 3, "tie": 1, "loss": 0 },
+    "surrogate":    { "rp": 0, "sortZero": true, "countsPlayed": true },
+    "disqualified": { "rp": 0, "sortZero": true, "countsPlayed": true },
+
+    "rankingPoints": [
+      { "id": "movementRp", "label": "MOVEMENT RP", "points": 1,
+        "when": [">=", ["cat", "base"], ["thr", "movementPoints"]] },
+
+      { "id": "artifactRp", "label": "ARTIFACT RP", "points": 1,
+        "when": [">=", ["cat", "artifact"], ["thr", "artifactPoints"]] },
+
+      { "id": "patternRp", "label": "PATTERN RP", "points": 1,
+        "when": [">=", ["cat", "pattern"], ["thr", "patternPoints"]] }
+    ],
+
+    "grants": [
+      { "rp": "patternRp", "when": ["opp", ["n", "g418b"]] }
+    ],
+
+    "tiebreakers": [
+      { "id": "noFoul",   "label": "Pontos sem faltas",  "expr": ["-", ["total"], ["cat", "foulReceived"]] },
+      { "id": "autoAgg",  "label": "Pontos do autônomo",
+        "expr": ["+", ["pts", "leave"], ["pts", "classified", "auto"], ["pts", "overflow", "auto"],
+                      ["pts", "patternIndex", "auto"]] },
+      { "id": "artifact", "label": "Pontos de artefato", "expr": ["cat", "artifact"] }
+    ]
+  },
+
+  "tests": [
+    { "name": "Cenário do dossiê: 9 classificados, 3 overflow, motif casado e dois robôs na base",
+      "level": "OTHER", "robots": 2, "draw": { "motif": "tag22" },
+      "state": {
+        "actions": { "classified@teleop": 9, "overflow@teleop": 3, "patternIndex@teleop": 9 },
+        "slots": { "base": { "1": "full", "2": "stacked" } } },
+      "expect": { "total": 78,
+                  "categories": { "artifact": 30, "pattern": 18, "base": 30 },
+                  "rpEarned": ["movementRp", "artifactRp", "patternRp"] } },
+
+    { "name": "No FIRST Championship o mesmo PATTERN de 18 não alcança os 22",
+      "level": "CHAMPIONSHIP", "robots": 2, "draw": { "motif": "tag22" },
+      "state": {
+        "actions": { "classified@teleop": 9, "overflow@teleop": 3, "patternIndex@teleop": 9 },
+        "slots": { "base": { "1": "full", "2": "stacked" } } },
+      "expect": { "total": 78, "rpEarned": ["movementRp"] } },
+
+    { "name": "Base parcial nos dois robôs não alcança o MOVEMENT",
+      "level": "OTHER", "robots": 2,
+      "state": { "slots": { "base": { "1": "partial", "2": "partial" } } },
+      "expect": { "total": 10, "categories": { "base": 10 }, "rpEarned": [] } },
+
+    { "name": "O G418.B do adversário concede o PATTERN RP sem tirar o dele",
+      "level": "OTHER", "robots": 2,
+      "state": { "actions": { "classified@teleop": 1 } },
+      "opponent": { "actions": { "g418b@teleop": 1 } },
+      "expect": { "rpEarned": [], "rpEligible": ["patternRp"] } },
+
+    { "name": "Quem já tinha o PATTERN RP e recebe por falta continua com um só",
+      "level": "OTHER", "robots": 2,
+      "state": { "actions": { "patternIndex@teleop": 9 } },
+      "opponent": { "actions": { "g418b@teleop": 1 } },
+      "expect": { "rpEarned": ["patternRp"], "rpEligible": ["patternRp"] } },
+
+    { "name": "O sorteio do motif chega na partida e é legível",
+      "level": "OTHER", "robots": 2, "draw": { "motif": "tag23" },
+      "state": { "actions": { "classified@auto": 10, "patternIndex@auto": 9 } },
+      "expect": { "total": 48, "categories": { "artifact": 30, "pattern": 18 },
+                  "rpEarned": ["artifactRp", "patternRp"],
+                  "sort": [48, 48, 30] } },
+
+    { "name": "Falta dos dois lados",
+      "level": "OTHER", "robots": 2,
+      "state": { "actions": { "minorFoul": 2 } },
+      "opponent": { "actions": { "majorFoul": 1 } },
+      "expect": { "total": 15,
+                  "categories": { "foulCommitted": 10, "foulReceived": 15 },
+                  "sort": [0, 0, 0] } }
+  ]
+}

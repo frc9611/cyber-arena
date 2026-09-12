@@ -131,6 +131,7 @@ type SeasonAction struct {
 	Hidden          bool            `json:"hidden,omitempty"`
 	Confirm         bool            `json:"confirm,omitempty"`
 	Derived         Expr            `json:"derived,omitempty"`
+	PointsWhen      Expr            `json:"pointsWhen,omitempty"`
 	Tiers           map[string]int  `json:"tiers,omitempty"`
 	Choices         []SlotOption    `json:"choices,omitempty"`
 }

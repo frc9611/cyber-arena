@@ -315,6 +315,13 @@ func (season *Season) validateExpressions() error {
 				return err
 			}
 		}
+		if !action.PointsWhen.Empty() {
+			// A condição corre antes de qualquer soma existir, então só pode ler o tally.
+			if err := check(action.PointsWhen, exprScope{
+				label: "pointsWhen of " + action.ID, insideOpp: true}); err != nil {
+				return err
+			}
+		}
 	}
 	for _, flag := range season.Flags {
 		if err := check(flag.When, exprScope{label: "flag " + flag.ID, allowFlags: true}); err != nil {

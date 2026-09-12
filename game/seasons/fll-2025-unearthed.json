@@ -1,0 +1,199 @@
+{
+  "schema": 2,
+  "key": "fll-2025-unearthed",
+  "revision": 1,
+  "revisionNote": "Os valores são exatamente os que a arena já usava no HTML da arbitragem, que é o que o evento rodou. O M03 e o M11 têm bônus dependente da missão principal.",
+  "program": "FLL",
+  "name": "UNEARTHED",
+  "year": 2025,
+  "format": "sheet",
+
+  "periods": [
+    { "id": "match", "label": "Partida", "durationSec": 150, "warningSec": 30, "scoring": true }
+  ],
+
+  "eventLevels": [
+    { "id": "QUALIFIER", "label": "Seletiva" },
+    { "id": "REGIONAL",  "label": "Regional" },
+    { "id": "NATIONAL",  "label": "Nacional" }
+  ],
+
+  "thresholds": { "rounds": { "*": 3 } },
+
+  "categories": [
+    { "id": "missions",      "label": "Missões" },
+    { "id": "precision",     "label": "Tokens de precisão" },
+    { "id": "foulCommitted", "label": "Penalidades", "kind": "foulCommitted" },
+    { "id": "foulReceived",  "label": "Recebidas",   "kind": "foulReceived" }
+  ],
+
+  "actions": [
+    { "id": "EI", "label": "EI — Inspeção de equipamentos", "category": "missions",
+      "unit": "toggle", "periods": ["match"], "points": { "match": 20 }, "group": "ei" },
+
+    { "id": "M01_COUNT", "label": "M01 — Resíduos tocando o tapete", "category": "missions",
+      "unit": "count", "max": 2, "periods": ["match"], "points": { "match": 10 }, "group": "m01" },
+    { "id": "M01_BRUSH", "label": "M01 — Pincel não toca o sítio", "category": "missions",
+      "unit": "toggle", "periods": ["match"], "points": { "match": 10 }, "group": "m01" },
+
+    { "id": "M02_COUNT", "label": "M02 — Seções superiores limpas", "category": "missions",
+      "unit": "count", "max": 3, "periods": ["match"], "points": { "match": 10 }, "group": "m02" },
+
+    { "id": "M03_MAIN", "label": "M03 — Carrinho da sua equipe no campo adversário",
+      "category": "missions", "unit": "toggle", "periods": ["match"], "points": { "match": 30 },
+      "group": "m03" },
+    { "id": "M03_BONUS", "label": "M03 — Bônus: carrinho adversário no seu campo",
+      "category": "missions", "unit": "toggle", "periods": ["match"], "points": { "match": 10 },
+      "group": "m03", "help": "Só com a missão principal cumprida.",
+      "pointsWhen": [">=", ["n", "M03_MAIN"], 1] },
+
+    { "id": "M04_SAFE", "label": "M04 — Artefato não toca a mina", "category": "missions",
+      "unit": "toggle", "periods": ["match"], "points": { "match": 30 }, "group": "m04" },
+    { "id": "M04_SUPPORTS", "label": "M04 — Ambas as estruturas em pé", "category": "missions",
+      "unit": "toggle", "periods": ["match"], "points": { "match": 10 }, "group": "m04" },
+
+    { "id": "M05_FLOOR", "label": "M05 — Piso na vertical", "category": "missions",
+      "unit": "toggle", "periods": ["match"], "points": { "match": 30 }, "group": "m05" },
+
+    { "id": "M06_BLOCKS", "label": "M06 — Blocos de minério fora da forja", "category": "missions",
+      "unit": "count", "max": 3, "periods": ["match"], "points": { "match": 10 }, "group": "m06" },
+
+    { "id": "M07_MILL", "label": "M07 — Mó não toca a base", "category": "missions",
+      "unit": "toggle", "periods": ["match"], "points": { "match": 30 }, "group": "m07" },
+
+    { "id": "M08_SILO", "label": "M08 — Peças preservadas fora do silo", "category": "missions",
+      "unit": "count", "max": 3, "periods": ["match"], "points": { "match": 10 }, "group": "m08" },
+
+    { "id": "M09_ROOF", "label": "M09 — Telhado totalmente levantado", "category": "missions",
+      "unit": "toggle", "periods": ["match"], "points": { "match": 20 }, "group": "m09" },
+    { "id": "M09_UTENSILS", "label": "M09 — Utensílios levantados", "category": "missions",
+      "unit": "toggle", "periods": ["match"], "points": { "match": 10 }, "group": "m09" },
+
+    { "id": "M10_SCALE", "label": "M10 — Balança inclinada tocando o tapete", "category": "missions",
+      "unit": "toggle", "periods": ["match"], "points": { "match": 20 }, "group": "m10" },
+    { "id": "M10_PLATE", "label": "M10 — Prato totalmente removido", "category": "missions",
+      "unit": "toggle", "periods": ["match"], "points": { "match": 10 }, "group": "m10" },
+
+    { "id": "M11_ARTIFACTS", "label": "M11 — Artefatos acima da camada do solo", "category": "missions",
+      "unit": "toggle", "periods": ["match"], "points": { "match": 20 }, "group": "m11" },
+    { "id": "M11_FLAG", "label": "M11 — Bônus: bandeira abaixada", "category": "missions",
+      "unit": "toggle", "periods": ["match"], "points": { "match": 10 }, "group": "m11",
+      "help": "Só com a missão principal cumprida.",
+      "pointsWhen": [">=", ["n", "M11_ARTIFACTS"], 1] },
+
+    { "id": "M12_SAND", "label": "M12 — Areia totalmente limpa", "category": "missions",
+      "unit": "toggle", "periods": ["match"], "points": { "match": 20 }, "group": "m12" },
+    { "id": "M12_SHIP", "label": "M12 — Navio totalmente levantado", "category": "missions",
+      "unit": "toggle", "periods": ["match"], "points": { "match": 10 }, "group": "m12" },
+
+    { "id": "M13_STATUE", "label": "M13 — Estátua completamente levantada", "category": "missions",
+      "unit": "toggle", "periods": ["match"], "points": { "match": 30 }, "group": "m13" },
+
+    { "id": "M14_FORUM", "label": "M14 — Artefatos tocando tapete e fórum", "category": "missions",
+      "unit": "count", "max": 7, "periods": ["match"], "points": { "match": 5 }, "group": "m14" },
+
+    { "id": "M15_FLAGS", "label": "M15 — Bandeiras dentro do sítio", "category": "missions",
+      "unit": "count", "max": 3, "periods": ["match"], "points": { "match": 10 }, "group": "m15" },
+
+    { "id": "PT", "label": "PT — Tokens de precisão restantes", "category": "precision",
+      "unit": "tiered", "max": 6, "periods": ["match"], "group": "pt",
+      "tiers": { "0": 0, "1": 10, "2": 15, "3": 25, "4": 35, "5": 50, "6": 50 },
+      "help": "Vale o total do degrau, não por unidade." },
+
+    { "id": "GP", "label": "GP — Gracious Professionalism®", "kind": "toggle", "unit": "choice",
+      "periods": ["match"], "group": "gp",
+      "choices": [
+        { "id": "developing", "label": "Em desenvolvimento", "points": 0 },
+        { "id": "accomplished", "label": "Cumprido", "points": 0 },
+        { "id": "exceeds", "label": "Excede", "points": 0 } ],
+      "help": "Não vale ponto: é registro do árbitro." }
+  ],
+
+  "sheet": {
+    "teamsPerTable": 2,
+    "rounds": 3,
+    "groups": [
+      { "id": "ei",  "label": "EI — Inspeção de equipamentos", "entries": ["EI"] },
+      { "id": "m01", "label": "M01 — Limpeza da superfície", "entries": ["M01_COUNT", "M01_BRUSH"] },
+      { "id": "m02", "label": "M02 — Revelação do mapa", "entries": ["M02_COUNT"] },
+      { "id": "m03", "label": "M03 — Explorador do poço de mina", "entries": ["M03_MAIN", "M03_BONUS"] },
+      { "id": "m04", "label": "M04 — Recuperação cuidadosa", "entries": ["M04_SAFE", "M04_SUPPORTS"] },
+      { "id": "m05", "label": "M05 — Quem morava aqui?", "entries": ["M05_FLOOR"] },
+      { "id": "m06", "label": "M06 — Forja", "entries": ["M06_BLOCKS"] },
+      { "id": "m07", "label": "M07 — Levantamento de peso", "entries": ["M07_MILL"] },
+      { "id": "m08", "label": "M08 — Silo", "entries": ["M08_SILO"] },
+      { "id": "m09", "label": "M09 — O que está à venda?", "entries": ["M09_ROOF", "M09_UTENSILS"] },
+      { "id": "m10", "label": "M10 — Incline as balanças", "entries": ["M10_SCALE", "M10_PLATE"] },
+      { "id": "m11", "label": "M11 — Artefatos do pescador", "entries": ["M11_ARTIFACTS", "M11_FLAG"] },
+      { "id": "m12", "label": "M12 — Operação de salvamento", "entries": ["M12_SAND", "M12_SHIP"] },
+      { "id": "m13", "label": "M13 — Reconstrução da estátua", "entries": ["M13_STATUE"] },
+      { "id": "m14", "label": "M14 — Fórum", "entries": ["M14_FORUM"] },
+      { "id": "m15", "label": "M15 — Marcação do sítio", "entries": ["M15_FLAGS"] },
+      { "id": "pt",  "label": "PT — Tokens de precisão", "entries": ["PT"] },
+      { "id": "gp",  "label": "GP — Gracious Professionalism®", "entries": ["GP"] }
+    ]
+  },
+
+  "ranking": {
+    "mode": "bestOf",
+    "rounds": 3,
+    "tiebreak": "lexicographic",
+    "rsDecimals": 0,
+
+    "rankingPoints": [
+      { "id": "scored", "label": "Pontuou", "points": 0, "when": [">", ["total"], 0] }
+    ],
+
+    "tiebreakers": [
+      { "id": "best",    "label": "Melhor rodada", "expr": ["total"], "agg": "max" },
+      { "id": "mission", "label": "Pontos de missão", "expr": ["cat", "missions"] }
+    ]
+  },
+
+  "tests": [
+    { "name": "O bônus do M11 não paga sem a missão principal",
+      "level": "QUALIFIER",
+      "state": { "actions": { "M11_FLAG@match": 1 } },
+      "expect": { "total": 0, "categories": { "missions": 0 } } },
+
+    { "name": "O bônus do M03 também depende da missão principal",
+      "level": "QUALIFIER",
+      "state": { "actions": { "M03_BONUS@match": 1 } },
+      "expect": { "total": 0 } },
+
+    { "name": "M03 completa: 30 da missão e 10 do bônus",
+      "level": "QUALIFIER",
+      "state": { "actions": { "M03_MAIN@match": 1, "M03_BONUS@match": 1 } },
+      "expect": { "total": 40 } },
+
+    { "name": "M11 completa: 20 da missão e 10 do bônus",
+      "level": "QUALIFIER",
+      "state": { "actions": { "M11_ARTIFACTS@match": 1, "M11_FLAG@match": 1 } },
+      "expect": { "total": 30, "categories": { "missions": 30 } } },
+
+    { "name": "Os tokens de precisão valem o degrau, não a unidade",
+      "level": "QUALIFIER",
+      "state": { "actions": { "PT@match": 4 } },
+      "expect": { "total": 35, "categories": { "precision": 35 } } },
+
+    { "name": "Seis tokens valem o mesmo que cinco",
+      "level": "QUALIFIER",
+      "state": { "actions": { "PT@match": 6 } },
+      "expect": { "total": 50 } },
+
+    { "name": "Contagem: três blocos do M06 e sete artefatos do M14",
+      "level": "QUALIFIER",
+      "state": { "actions": { "M06_BLOCKS@match": 3, "M14_FORUM@match": 7 } },
+      "expect": { "total": 65, "categories": { "missions": 65 } } },
+
+    { "name": "Uma partida em branco não pontua",
+      "level": "QUALIFIER",
+      "state": { "actions": { "EI@match": 0 } },
+      "expect": { "total": 0, "rpEarned": [] } },
+
+    { "name": "Inspeção de equipamentos mais a estátua",
+      "level": "QUALIFIER",
+      "state": { "actions": { "EI@match": 1, "M13_STATUE@match": 1 } },
+      "expect": { "total": 50, "rpEarned": ["scored"], "sort": [50, 50] } }
+  ]
+}
