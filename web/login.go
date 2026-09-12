@@ -199,15 +199,20 @@ func (web *Web) checkAuthPassword(user, password string, r *http.Request) (strin
 }
 
 func (web *Web) apiRequireAdmin(w http.ResponseWriter, r *http.Request) bool {
-	if web.arena.EventSettings.AdminPassword == "" {
+	if web.authCanBeSkipped() && web.arena.EventSettings.AdminPassword == "" {
 		writeJsonError(w, http.StatusForbidden, "mesa_sem_senha",
 			"Defina a senha de administrador antes de conectar esta arena a qualquer lugar.")
 		return false
 	}
 	session := web.getUserSessionFromCookie(r)
-	if session == nil || session.Role != "ADMIN" {
+	if session == nil {
 		writeJsonError(w, http.StatusUnauthorized, "sessao_expirada",
 			"Sua sessão terminou. Entre de novo.")
+		return false
+	}
+	if session.Role != "ADMIN" {
+		writeJsonError(w, http.StatusForbidden, "nao_administra",
+			"Você acompanha este evento, mas quem mexe na conexão com o Arena Master é quem o administra.")
 		return false
 	}
 	return true

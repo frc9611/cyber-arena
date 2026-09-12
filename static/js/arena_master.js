@@ -39,7 +39,8 @@ function arenaRefresh(done) {
     })
     .fail(function(xhr) {
       if (xhr.status === 401) { window.location = arenaUrl("/login?redirect=") + encodeURIComponent(arenaUrl("/setup/arena")); return; }
-      $("#arenaError").text("Perdi contato com esta arena. O cyber-arena parou?").show();
+      var said = xhr.responseJSON && xhr.responseJSON.message;
+      $("#arenaError").text(said || "Perdi contato com esta arena. O cyber-arena parou?").show();
     });
 }
 
